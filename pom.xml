@@ -21,8 +21,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <thymeleaf-spring4.version>3.0.2.RELEASE</thymeleaf-spring4.version>
-        <thymeleaf-layout-dialect.version>2.1.2</thymeleaf-layout-dialect.version>
+        <thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
     </properties>
+
 
 
     <dependencies>
@@ -60,7 +61,7 @@
             <version>${thymeleaf-spring4.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.thymeleaf</groupId>
+            <groupId>nz.net.ultraq.thymeleaf</groupId>
             <artifactId>thymeleaf-layout-dialect</artifactId>
             <version>${thymeleaf-layout-dialect.version}</version>
         </dependency>
@@ -70,6 +71,14 @@
 
     <build>
         <finalName>photo-pond</finalName>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -101,6 +110,7 @@
                 </configuration>
             </plugin>
         </plugins>
+
     </build>
 
 
