@@ -10,7 +10,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ApplicationRunnerTest {
+public class ApplicationRunnerIT {
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
