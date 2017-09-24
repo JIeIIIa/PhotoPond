@@ -23,7 +23,7 @@
         <thymeleaf-spring4.version>3.0.2.RELEASE</thymeleaf-spring4.version>
         <thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
 
-        <skip.unitTest>true</skip.unitTest>
+        <skip.integrationTest>false</skip.integrationTest>
         <integrationTest.mask>**/*IT.java</integrationTest.mask>
     </properties>
 
@@ -114,26 +114,13 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>unit-tests</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${skip.unitTest}</skip>
-                            <excludes>
-                                <exclude>${integrationTest.mask}</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>integration-tests</id>
                         <phase>integration-test</phase>
                         <goals>
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <skip>false</skip>
+                            <skip>${skip.integrationTest}</skip>
                             <includes>
                                 <include>${integrationTest.mask}</include>
                             </includes>
