@@ -25,6 +25,7 @@
 
         <skip.integrationTest>false</skip.integrationTest>
         <integrationTest.mask>**/*IT.java</integrationTest.mask>
+        <log4j2.version>2.7</log4j2.version>
     </properties>
 
 
@@ -33,6 +34,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -69,6 +76,11 @@
             <version>${thymeleaf-layout-dialect.version}</version>
         </dependency>
 
+        <!-- LOG4J2-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
     </dependencies>
 
 

@@ -1,5 +1,7 @@
 package ua.kiev.prog.photopond.configuration;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -19,11 +21,14 @@ import org.thymeleaf.templatemode.TemplateMode;
 @EnableWebMvc
 @ComponentScan("ua.kiev.prog.photopond")
 public class Application extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+    private static Logger log = LogManager.getLogger(Application.class);
+
     @Autowired
     ApplicationContext applicationContext;
 
     public Application() {
         super();
+        log.debug("Create instance of " + this.getClass().getName());
     }
 
     @Override
