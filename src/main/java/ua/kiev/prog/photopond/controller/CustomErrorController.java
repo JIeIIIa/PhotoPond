@@ -1,0 +1,63 @@
+package ua.kiev.prog.photopond.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
+import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+
+@Controller
+public class CustomErrorController implements ErrorController {
+    private static final String ERROR_PATH=  "/error";
+
+    @Value("${debug}")
+    private boolean debug;
+
+    @Autowired
+    private ErrorAttributes errorAttributes;
+
+    @RequestMapping(value = ERROR_PATH)
+    public ModelAndView error(HttpServletRequest request, HttpServletResponse response, ModelAndView modelAndView) {
+        // Appropriate HTTP response code (e.g. 404 or 500) is automatically set by Spring.
+        // Here we just define response body.
+
+//        return getErrorAttributes(request, debug);
+
+        Map<String, Object> errorAttributes = getErrorAttributes(request, debug);
+
+        /*modelAndView.addObject("timestamp", new Date());
+        modelAndView.addObject("message", "");
+        modelAndView.addObject("error", "");
+        modelAndView.addObject("status", 200);
+        modelAndView.addObject("url", request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI).toString());*/
+
+        modelAndView.addAllObjects(errorAttributes);
+
+        return modelAndView;
+    }
+
+    @Override
+    public String getErrorPath() {
+        return ERROR_PATH;
+    }
+
+    private Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
+        RequestAttributes requestAttributes = new ServletRequestAttributes(request);
+        return errorAttributes.getErrorAttributes(requestAttributes, includeStackTrace);
+    }
+
+
+    @RequestMapping("/test/NullPointerException")
+    public void NPE() {
+        throw new NullPointerException("from CustomErrorController");
+    }
+
+}
