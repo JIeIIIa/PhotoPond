@@ -20,31 +20,35 @@ import org.thymeleaf.templatemode.TemplateMode;
 @Configuration
 @EnableWebMvc
 @ComponentScan("ua.kiev.prog.photopond")
-public class Application extends WebMvcConfigurerAdapter implements ApplicationContextAware {
-    private static Logger log = LogManager.getLogger(Application.class);
+public class ApplicationConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+    private static Logger log = LogManager.getLogger(ApplicationConfig.class);
 
     @Autowired
     ApplicationContext applicationContext;
 
-    public Application() {
+    public ApplicationConfig() {
         super();
         log.debug("Create instance of " + this.getClass().getName());
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        log.trace("Set application context in " + this.getClass().getName());
         this.applicationContext = applicationContext;
     }
 
     @Bean
     public ThymeleafViewResolver viewResolver() {
+        log.trace("Start configuration view resolver");
         ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
         viewResolver.setTemplateEngine(templateEngine());
+        log.trace("Finish configuration view resolver");
         return viewResolver;
     }
 
     @Bean
     public SpringTemplateEngine templateEngine() {
+        log.trace("Start configuration template engine");
         // SpringTemplateEngine automatically applies SpringStandardDialect and
         // enables Spring's own MessageSource message resolution mechanisms.
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
@@ -55,11 +59,13 @@ public class Application extends WebMvcConfigurerAdapter implements ApplicationC
         // across different data types, so this flag is "false" by default
         // for safer backwards compatibility.
         templateEngine.setEnableSpringELCompiler(true);
+        log.trace("Finish configuration template engine");
         return templateEngine;
     }
 
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
+        log.trace("Start configuration template resolver");
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setApplicationContext(this.applicationContext);
         templateResolver.setPrefix("/WEB-INF/templates/");
@@ -68,11 +74,13 @@ public class Application extends WebMvcConfigurerAdapter implements ApplicationC
         // Template cache is true by default. Set to false if you want
         // templates to be automatically updated when modified.
         templateResolver.setCacheable(false);
+        log.trace("Finish configuration template resolver");
         return templateResolver;
     }
 
     @Bean
     public ResourceBundleMessageSource messageSource() {
+        log.trace("Setup message source");
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         return messageSource;
     }

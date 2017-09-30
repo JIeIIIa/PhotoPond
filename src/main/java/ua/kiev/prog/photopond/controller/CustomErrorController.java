@@ -1,5 +1,7 @@
 package ua.kiev.prog.photopond.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ErrorAttributes;
@@ -16,28 +18,27 @@ import java.util.Map;
 
 @Controller
 public class CustomErrorController implements ErrorController {
+    private static Logger log = LogManager.getLogger(CustomErrorController.class);
+
     private static final String ERROR_PATH=  "/error";
 
-    @Value("${debug}")
-    private boolean debug;
+    @Value("${includeStackTrace}")
+    private boolean includeStackTrace;
+
+
 
     @Autowired
     private ErrorAttributes errorAttributes;
 
     @RequestMapping(value = ERROR_PATH)
     public ModelAndView error(HttpServletRequest request, HttpServletResponse response, ModelAndView modelAndView) {
-        // Appropriate HTTP response code (e.g. 404 or 500) is automatically set by Spring.
-        // Here we just define response body.
 
-//        return getErrorAttributes(request, debug);
-
-        Map<String, Object> errorAttributes = getErrorAttributes(request, debug);
-
-        /*modelAndView.addObject("timestamp", new Date());
-        modelAndView.addObject("message", "");
-        modelAndView.addObject("error", "");
-        modelAndView.addObject("status", 200);
-        modelAndView.addObject("url", request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI).toString());*/
+        Map<String, Object> errorAttributes = getErrorAttributes(request, includeStackTrace);
+        if (includeStackTrace) {
+            log.debug(errorAttributes);
+        } else {
+            log.debug(errorAttributes.get("message"));
+        }
 
         modelAndView.addAllObjects(errorAttributes);
 
