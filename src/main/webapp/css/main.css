@@ -1,0 +1,125 @@
+body {
+	font-size: 20px;
+	min-width: 320px;
+
+	font-family: "Roboto", sans-serif;
+	overflow-x: hidden;
+	
+	font-weight: 300;
+
+	-webkit-font-smoothing: antialiased;
+	-webkit-overflow-scrolling: touch;
+
+}
+
+.logo {	
+	font-family: "Roboto Slab";
+	font-weight: 900;
+	font-size: 1.8rem;
+}
+
+.logo .capitalLetter {
+	position: absolute;
+	font-size: 2.5em;
+	top: 0%;
+	margin-top: -0.2em;
+	z-index: 30;
+}
+
+.logo .pond{
+	position: absolute;
+	font-size: 2em;
+	top: 00%;
+	margin-top: 0.05em;
+	margin-left: 0.75em;
+	z-index: 30;
+}
+
+.logo .photo {	
+	position: absolute;
+	font-size: 0.8em;
+	top: 0%;
+	margin-left: 2.5em;
+	margin-top: 0.35em;
+	letter-spacing: 0.4em;
+	z-index: 30;
+}
+
+.hidden {
+	display: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Roboto Slab";
+	font-weight: 600;
+}
+
+
+.navbar a:hover, .navbar a:focus {
+	/*text-decoration: none;*/
+	outline: 0;
+}
+
+.navbar {
+	font-weight: 800;
+	
+ 	z-index: 100;
+}
+
+
+.navbar-brand {
+	font-size: 1.5rem;
+	padding-bottom: 0.75em;
+}
+
+.navbar li {
+	margin-left: 1.5em;
+}
+
+.navbar-inverse .nav-item.active .nav-link {
+	border-bottom: 5px solid;
+	padding-bottom: 0px;
+}
+
+.navbar-toggler .fa.fa-bars {
+	font-size: 2em;
+}
+
+.navbar .bnt-primary {
+	text-transform: uppercase;
+	font-weight: 900;
+}
+
+.navbar-toggler {
+	/*font-size: 1.25em;*/
+}
+
+.collapse {
+	background-color: inherit;
+	z-index: 20;
+}
+
+
+#headerwrap {
+	min-height: 40rem;
+	width: 100%;
+
+	/* чтоб изображение нормально выглядело на всех разрешениях */
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+#headerwrap h1 {
+	font-size: 3.5em;
+	margin-top: 17rem;
+	font-weight: 600;
+	letter-spacing: 0.15em;
+}
+
+#headerwrap h2 {
+	font-size: 1.5em;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
