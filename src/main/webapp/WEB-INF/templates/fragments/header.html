@@ -23,6 +23,7 @@
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/skins/default-skin.min.css}">
 </head>
+<body>
 <div th:fragment="header">
     <div class="navbar  navbar-toggleable navbar-inverse fixed-top">
         <a class="navbar-brand" href="#">&nbsp;
@@ -45,26 +46,26 @@
         <div class="collapse navbar-collapse justify-content-end text-center" id="navbarSupportedContent">
             <ul class="nav navbar-nav">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Home</a>
+                    <a class="nav-link" href="#" th:text="#{header.home}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
+                    <a class="nav-link" href="#" th:text="#{header.about}">About</a>
                 </li>
 
                 <li class="nav-item ">
-                    <a class="btn bnt-primary btn-block my-1" href="#" style="font-size:1em; font-style:inherit;">
+                    <a class="btn bnt-primary btn-block my-1" href="#" style="font-size:1em; font-style:inherit;"  th:text="#{header.login}">
                         Log In
                     </a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle pr-0" id="navbarDropdownMenuLink" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false"><i class="fa fa-language"></i> Ru
+                       aria-haspopup="true" aria-expanded="false"><i class="fa fa-language"></i> <div th:text="#{header.language}">Eng</div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right inverse-dropdown text-center"
                          aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#" th:href="@{/(lang=uk)}">Ukr</a>
-                        <a class="dropdown-item" href="#" th:href="@{/(lang=ru)}">Rus</a>
-                        <a class="dropdown-item" href="#" th:href="@{//(lang=en)}">Eng</a>
+                        <a class="dropdown-item" href="#" th:href="@{__${#httpServletRequest.requestURI}__(lang='uk')}" th:text="#{header.ukr}">Ukr</a>
+                        <a class="dropdown-item" href="#" th:href="@{__${#httpServletRequest.requestURI}__(lang='ru')}" th:text="#{header.rus}">Rus</a>
+                        <a class="dropdown-item" href="#" th:href="@{__${#httpServletRequest.requestURI}__(lang='en')}" th:text="#{header.eng}">Eng</a>
                     </div>
                 </li>
             </ul>
