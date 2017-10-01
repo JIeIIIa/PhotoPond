@@ -5,73 +5,13 @@
 
 
 <head>
-    <!-- Required meta tags -->
-    <meta charset="UTF-8">
 
     <title>PhotoPond - main page</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- jQuery -->
-    <script th:src="@{/libs/jquery/jquery-3.2.1.min.js}"></script>
-
-    <!-- Bootstrap CSS -->
-    <script th:src="@{/libs/bootstrap/tether-1.3.3/js/tether.min.js}"></script>
-    <link rel="stylesheet" th:href="@{/libs/bootstrap/css/bootstrap.min.css}">
-    <script th:src="@{/libs/bootstrap/js/bootstrap.min.js}"></script>
-
-    <link rel="stylesheet" th:href="@{/css/main.css}">
-    <link rel="stylesheet" th:href="@{/css/skins/default-skin.min.css}">
+    <object th:include="fragments/head :: head" th:remove="tag"/>
 </head>
 <body>
-<div class="navbar  navbar-toggleable navbar-inverse fixed-top">
-    <a class="navbar-brand" href="#">&nbsp;
-        <span class="logo">
-				<span class="capitalLetter"><i>P</i></span>
-				<span class="photo"><i>hoto</i></span>
-				<span class="pond"><i>ond</i></span>
 
-			</span>
-
-    </a>
-
-
-    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-            aria-label="Toggle navigation">
-        <i class="fa fa-bars" aria-hidden="true"></i>
-    </button>
-
-    <div class="collapse navbar-collapse justify-content-end text-center" id="navbarSupportedContent">
-        <ul class="nav navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
-            </li>
-
-            <li class="nav-item ">
-                <a class="btn bnt-primary btn-block my-1" href="#" style="font-size:1em; font-style:inherit;">
-                    Log In
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle pr-0" id="navbarDropdownMenuLink" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false"><i class="fa fa-language"></i> Ru
-                </a>
-                <div class="dropdown-menu dropdown-menu-right inverse-dropdown text-center"
-                     aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="#" th:href="@{/(lang=uk)}">Ukr</a>
-                    <a class="dropdown-item" href="#" th:href="@{/(lang=ru)}">Rus</a>
-                    <a class="dropdown-item" href="#" th:href="@{//(lang=en)}">Eng</a>
-                </div>
-            </li>
-        </ul>
-
-    </div>
-</div>
-
+<div th:replace="fragments/header :: header">Static header</div>
 
 <div class="container-fluid">
 
@@ -90,6 +30,7 @@
 
 
 <h2 th:text="#{msg}">Message</h2>
+
 
 
 
