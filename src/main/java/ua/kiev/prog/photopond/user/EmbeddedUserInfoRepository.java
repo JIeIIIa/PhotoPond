@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class UserInfoEmbedRepository implements UserInfoSimpleRepository {
+public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     private List<UserInfo> users = new ArrayList<>();
 
-    public UserInfoEmbedRepository() {
+    public EmbeddedUserInfoRepository() {
         users.add(new UserInfo("user", "user"));
         users.add(new UserInfo("admin", "admin", UserRole.ADMIN));
     }
