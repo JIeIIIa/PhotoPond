@@ -17,7 +17,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static Logger log = LogManager.getLogger(SecurityConfiguration.class);
 
     @Autowired
-    @Qualifier("userDetailsServiceEmbedImpl")
+    @Qualifier("userDetailsServiceImpl")
     private UserDetailsService userDetailsService;
 
     @Autowired
