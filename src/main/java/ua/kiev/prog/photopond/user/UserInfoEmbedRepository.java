@@ -1,14 +1,12 @@
-package ua.kiev.prog.photopond.user.embed;
+package ua.kiev.prog.photopond.user;
 
 import org.springframework.stereotype.Repository;
-import ua.kiev.prog.photopond.user.UserInfo;
-import ua.kiev.prog.photopond.user.UserRole;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class UserInfoEmbedRepository {
+public class UserInfoEmbedRepository implements UserInfoSimpleRepository {
     private List<UserInfo> users = new ArrayList<>();
 
     public UserInfoEmbedRepository() {
