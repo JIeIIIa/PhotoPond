@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 @Configuration
 @EnableWebSecurity
@@ -40,6 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf()
                 .disable()
                 .authorizeRequests()
+                .antMatchers("/css/**", "/libs/**").permitAll()
                 .antMatchers("/**").hasAnyRole("USER", "ADMIN")
                 .and();
         http.exceptionHandling()
@@ -47,7 +49,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and();
         http.formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/")
+                .defaultSuccessUrl("/authorized.html",true)
                 .failureUrl("/login?error=true")
                 .loginProcessingUrl("/j_spring_security_check")
                 .usernameParameter("j_login")
@@ -59,5 +61,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
                 .invalidateHttpSession(true);
+        http.addFilterAfter(new AccessUserDirectoryFilter(), FilterSecurityInterceptor.class);
     }
 }
