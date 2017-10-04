@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.configuration;
+package ua.kiev.prog.photopond.core;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,13 +17,13 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 @Configuration
 @EnableWebMvc
 @ComponentScan("ua.kiev.prog.photopond")
-public class ApplicationConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
-    private static Logger log = LogManager.getLogger(ApplicationConfig.class);
+public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+    private static Logger log = LogManager.getLogger(ApplicationConfiguration.class);
 
     @Autowired
     private ApplicationContext applicationContext;
 
-    public ApplicationConfig() {
+    public ApplicationConfiguration() {
         super();
         log.debug("Create instance of " + this.getClass().getName());
     }

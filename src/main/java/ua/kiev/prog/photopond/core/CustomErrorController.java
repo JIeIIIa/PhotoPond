@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.controller;
+package ua.kiev.prog.photopond.core;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

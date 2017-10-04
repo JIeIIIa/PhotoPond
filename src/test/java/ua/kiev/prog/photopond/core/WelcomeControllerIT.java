@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.controller;
+package ua.kiev.prog.photopond.core;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class WelcomeIT {
+public class WelcomeControllerIT {
     private MockMvc mockMvc;
 
     @Autowired
