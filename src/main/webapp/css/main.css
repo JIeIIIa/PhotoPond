@@ -7,6 +7,9 @@ body {
 	
 	font-weight: 300;
 
+	margin: 0;
+	padding: 5em 0 0;
+
 	-webkit-font-smoothing: antialiased;
 	-webkit-overflow-scrolling: touch;
 
