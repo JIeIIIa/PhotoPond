@@ -14,4 +14,10 @@ public class Welcome {
         log.debug("Request to \"/\"");
         return "index";
     }
+
+    @RequestMapping("/login")
+    public String login() {
+        log.debug("Request to /login");
+        return "login";
+    }
 }
