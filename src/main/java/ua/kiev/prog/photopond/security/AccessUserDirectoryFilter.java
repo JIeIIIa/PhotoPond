@@ -23,12 +23,12 @@ public class AccessUserDirectoryFilter implements Filter {
         log.debug("Filtering request");
         String userLogin = getUserLogin();
 
-        try {
-            startUrlContainsLogin((HttpServletRequest) servletRequest, userLogin);
+        startUrlContainsLogin((HttpServletRequest) servletRequest, userLogin);
+        /*try {
         } catch (AccessDeniedException e) {
             log.debug("Access denied for " + userLogin);
             throw new ServletException("URL access denied", e);
-        }
+        }*/
 
         filterChain.doFilter(servletRequest, servletResponse);
 

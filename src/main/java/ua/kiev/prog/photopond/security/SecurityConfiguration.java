@@ -61,6 +61,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
                 .invalidateHttpSession(true);
-        http.addFilterAfter(new AccessUserDirectoryFilter(), FilterSecurityInterceptor.class);
+        http
+                .addFilterAfter(new AccessUserDirectoryFilter(), FilterSecurityInterceptor.class)
+                .addFilterBefore(new CustomSecurityFilter(), FilterSecurityInterceptor.class);
     }
 }

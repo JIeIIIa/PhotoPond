@@ -49,4 +49,10 @@ public class SecurityController {
     public String userTest(@PathVariable("login") String login) {
         return login + "   testing page";
     }
+
+    @RequestMapping("/testingAccessDenied")
+    @ResponseBody
+    public String testingAccessDenied() {
+        return "Access denied! /testingAccessDenied";
+    }
 }
