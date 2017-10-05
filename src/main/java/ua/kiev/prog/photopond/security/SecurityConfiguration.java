@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 @Configuration
 @EnableWebSecurity
@@ -61,8 +60,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
                 .invalidateHttpSession(true);
-        http
-                .addFilterAfter(new AccessUserDirectoryFilter(), FilterSecurityInterceptor.class)
-                .addFilterBefore(new CustomSecurityFilter(), FilterSecurityInterceptor.class);
     }
 }
