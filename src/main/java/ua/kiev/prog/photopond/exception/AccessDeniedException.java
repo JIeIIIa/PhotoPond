@@ -1,8 +1,6 @@
 package ua.kiev.prog.photopond.exception;
 
-import javax.servlet.ServletException;
-
-public class AccessDeniedException extends ServletException {
+public class AccessDeniedException extends PhotoPondException {
     public AccessDeniedException() {
         super();
     }
@@ -19,5 +17,7 @@ public class AccessDeniedException extends ServletException {
         super(cause);
     }
 
-
+    protected AccessDeniedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }
