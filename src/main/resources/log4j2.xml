@@ -42,7 +42,7 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="ua.kiev.prog.PhotoPond" level="all" additivity="false">
+        <Logger name="ua.kiev.prog.photopond" level="all" additivity="false">
             <AppenderRef ref="ASYNC"/>
         </Logger>
 
