@@ -42,6 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/css/**", "/libs/**").permitAll()
                 .antMatchers("/**").hasAnyRole("USER", "ADMIN")
+                .anyRequest().permitAll()
                 .and();
         http.exceptionHandling()
                 .accessDeniedPage("/unauthorized")
