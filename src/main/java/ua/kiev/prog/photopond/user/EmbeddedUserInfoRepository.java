@@ -1,6 +1,7 @@
 package ua.kiev.prog.photopond.user;
 
 import org.springframework.stereotype.Repository;
+import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +37,11 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
         return false;
     }
 
-    synchronized public void addUser(UserInfo user) {
-        if (user != null) {
-            users.add(user);
+    synchronized public void addUser(UserInfo user) throws AddToRepositoryException{
+        if (user == null) {
+            throw new AddToRepositoryException("Can't add NULL-value as user in Repository");
         }
+        users.add(user);
     }
 
 
