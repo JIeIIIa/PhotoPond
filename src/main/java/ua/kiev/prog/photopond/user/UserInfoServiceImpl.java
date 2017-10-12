@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
@@ -21,7 +22,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public void addUser(UserInfo user) {
         log.debug("call addUser:  " + user);
-        userInfoRepository.addUser(user);
+        try {
+            userInfoRepository.addUser(user);
+        } catch (AddToRepositoryException e) {
+            /*NOP*/
+        }
     }
 
     @Override

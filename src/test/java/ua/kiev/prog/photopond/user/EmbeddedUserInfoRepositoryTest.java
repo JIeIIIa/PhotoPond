@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
+import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 import java.util.Arrays;
 
@@ -57,7 +58,7 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void addUserTest() {
+    public void addUserTest() throws AddToRepositoryException {
         final String anotherUserLogin = "anotherUser";
         UserInfo anotherUser = new UserInfo(anotherUserLogin, "pass", UserRole.USER);
 
@@ -68,6 +69,11 @@ public class EmbeddedUserInfoRepositoryTest {
         assertThat(embeddedUserInfoRepository.findByLogin(anotherUserLogin))
                 .isNotNull()
                 .isEqualTo(anotherUser);
+    }
+
+    @Test(expected = AddToRepositoryException.class)
+    public void addNullAsUserTest() throws AddToRepositoryException {
+        embeddedUserInfoRepository.addUser(null);
     }
 }
 
