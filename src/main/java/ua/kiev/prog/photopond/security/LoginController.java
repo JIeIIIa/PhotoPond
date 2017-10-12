@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class SecurityController {
-    private static Logger log = LogManager.getLogger(SecurityController.class);
+public class LoginController {
+    private static Logger log = LogManager.getLogger(LoginController.class);
 
     @RequestMapping("/login")
     public String login() {

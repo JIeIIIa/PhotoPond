@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @TestConfiguration
-public class SpringSecurityWebAuthenticationTestConfig {
+public class SpringSecurityWebAuthenticationTestConfiguration {
 
     @Bean
     @Primary

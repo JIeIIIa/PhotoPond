@@ -22,10 +22,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = SecurityController.class)
-@ContextConfiguration(classes = SpringSecurityWebAuthenticationTestConfig.class)
+@WebMvcTest(controllers = LoginController.class)
+@ContextConfiguration(classes = SpringSecurityWebAuthenticationTestConfiguration.class)
 @AutoConfigureMockMvc
-public class SecurityControllerMvcTest {
+public class LoginControllerMvcTest {
     private static final String LOGIN_PROCESSING_URL = "/j_spring_security_check";
     @Autowired
     private MockMvc mockMvc;
