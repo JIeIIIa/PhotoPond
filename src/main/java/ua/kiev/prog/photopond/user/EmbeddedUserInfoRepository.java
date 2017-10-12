@@ -14,6 +14,10 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
         users.add(new UserInfo("admin", "admin", UserRole.ADMIN));
     }
 
+    public EmbeddedUserInfoRepository(List<UserInfo> users) {
+        this.users = new ArrayList<>(users);
+    }
+
     synchronized public UserInfo findByLogin(String login) {
         for (UserInfo user : users) {
             if (user.getLogin().equals(login)) {
