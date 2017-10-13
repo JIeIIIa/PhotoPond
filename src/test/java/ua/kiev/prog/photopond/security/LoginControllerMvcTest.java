@@ -46,6 +46,16 @@ public class LoginControllerMvcTest {
     public void requiresAuthentication() throws Exception {
         mockMvc
                 .perform(get("/user/user"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrlPattern("http:/*/login"))
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockUser(username = "someUser")
+    public void accessDeny() throws Exception {
+        mockMvc
+                .perform(get("/user/user"))
                 .andExpect(status().isUnauthorized())
                 .andDo(print());
     }
@@ -83,4 +93,9 @@ public class LoginControllerMvcTest {
                 .andExpect(redirectedUrl("/user/userR/"));
     }
 
+    @Test
+    public void availableRegistrationPageTest() throws Exception {
+        mockMvc.perform(get("/registration"))
+                .andExpect(status().isOk());
+    }
 }
