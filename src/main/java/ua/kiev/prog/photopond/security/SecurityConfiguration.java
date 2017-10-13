@@ -35,14 +35,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         log.debug("Configure HttpSecurity.");
-        super.configure(http);
 
         http.csrf()
                 .disable()
                 .authorizeRequests()
+                .antMatchers("/", "/index", "/registration").permitAll()
                 .antMatchers("/css/**", "/libs/**").permitAll()
-                .antMatchers("/**").hasAnyRole("USER", "ADMIN")
-                .anyRequest().permitAll()
+                .antMatchers("/test/**", "/testingAccessDenied").hasAnyRole("USER", "ADMIN")
+                .anyRequest().authenticated()
                 .and();
         http.exceptionHandling()
                 .accessDeniedPage("/unauthorized")
