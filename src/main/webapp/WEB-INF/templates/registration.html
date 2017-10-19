@@ -1,0 +1,38 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head>
+
+    <title>PhotoPond - registration page</title>
+    <object th:include="fragments/head :: head" th:remove="tag"/>
+</head>
+<body>
+
+<div class="container">
+
+    <!--/*@thymesVar id="userInfo" type="ua.kiev.prog.photopond.user.UserInfo"*/-->
+    <form action="#" th:action="@{/registration}" th:object="${userInfo}" method="post">
+        <table>
+            <tr>
+                <td>Login:</td>
+                <td><input type="text" th:field="*{login}" /></td>
+                <td th:if="${#fields.hasErrors('login')}" th:errors="*{login}">Login Error</td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td><input type="text" th:field="*{password}" /></td>
+                <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</td>
+            </tr>
+            <tr>
+                <td><button type="submit">Submit</button></td>
+            </tr>
+        </table>
+    </form>
+
+</div>
+
+</body>
+</html>

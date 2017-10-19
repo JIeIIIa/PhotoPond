@@ -93,9 +93,4 @@ public class LoginControllerMvcTest {
                 .andExpect(redirectedUrl("/user/userR/"));
     }
 
-    @Test
-    public void availableRegistrationPageTest() throws Exception {
-        mockMvc.perform(get("/registration"))
-                .andExpect(status().isOk());
-    }
 }

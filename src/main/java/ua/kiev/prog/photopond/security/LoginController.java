@@ -31,11 +31,6 @@ public class LoginController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/registration", method = RequestMethod.GET)
-    @ResponseBody
-    public String registrationPage() {
-        return "It's registration page";
-    }
 
     @RequestMapping(value = "/user/{login}", method = RequestMethod.GET)
     @ResponseBody
