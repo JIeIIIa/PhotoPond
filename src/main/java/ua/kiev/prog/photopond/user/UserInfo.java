@@ -1,9 +1,18 @@
 package ua.kiev.prog.photopond.user;
 
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class UserInfo {
     private long id;
 
+    @NotNull
+    @Size(min = 4, max = 30)
     private String login;
+
+    @NotNull
+    @Size(min = 6, max = 30)
     private String password;
 
     private UserRole role;
@@ -53,5 +62,23 @@ public class UserInfo {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserInfo userInfo = (UserInfo) o;
+
+        if (login != null ? !login.equals(userInfo.login) : userInfo.login != null) return false;
+        return password != null ? password.equals(userInfo.password) : userInfo.password == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = login != null ? login.hashCode() : 0;
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        return result;
     }
 }

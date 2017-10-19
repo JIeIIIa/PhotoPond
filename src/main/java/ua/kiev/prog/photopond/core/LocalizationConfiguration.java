@@ -18,7 +18,7 @@ public class LocalizationConfiguration{
     public ReloadableResourceBundleMessageSource messageSource() {
         log.trace("Setup message source");
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasenames("/WEB-INF/i18n/messages");
+        messageSource.setBasenames("/WEB-INF/i18n/messages", "/WEB-INF/i18n/validator");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }

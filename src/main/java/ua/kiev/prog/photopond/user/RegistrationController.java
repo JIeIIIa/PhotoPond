@@ -21,16 +21,6 @@ public class RegistrationController {
     @Autowired
     private UserInfoSimpleRepository userInfoSimpleRepository;
 
-/*
-    @Autowired
-    private UserInfoValidator userInfoValidator;
-
-    @InitBinder("userInfo")
-    public void dataBinding(WebDataBinder binder) {
-        binder.addValidators(userInfoValidator);
-    }
-*/
-
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public ModelAndView registrationPage(ModelAndView modelAndView) {
         log.debug("Request to /registration    method=GET");
@@ -42,7 +32,7 @@ public class RegistrationController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/registration",     method = RequestMethod.POST)
+    @RequestMapping(value = "/registration", method = RequestMethod.POST)
     public ModelAndView registrationAddPage(@Valid @ModelAttribute("userInfo") UserInfo userInfo,
                                             BindingResult bindingResult, ModelAndView modelAndView) throws AddToRepositoryException {
         log.debug("Request to /registration    method=POST");
