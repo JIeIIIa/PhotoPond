@@ -3,8 +3,12 @@ package ua.kiev.prog.photopond.user.registration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +28,15 @@ public class RegistrationController {
 
     @Autowired
     private UserInfoSimpleRepository userInfoSimpleRepository;
+
+    @Autowired
+    @Qualifier("registrationFormValidator")
+    private Validator validator;
+
+    @InitBinder(REGISTRATION_FORM_NAME)
+    private void initBinder(WebDataBinder binder) {
+        binder.addValidators(validator);
+    }
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public ModelAndView registrationPage() {
