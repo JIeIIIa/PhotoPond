@@ -33,10 +33,12 @@ import static ua.kiev.prog.photopond.user.registration.RegistrationController.RE
 @AutoConfigureMockMvc
 public class RegistrationControllerTest {
     private static final String REGISTRATION_URL = "/registration";
-    public static final String REGISTRATION_MODEL_NAME = "registration";
+    private static final String REGISTRATION_MODEL_NAME = "registration";
+
     private static final String LOGIN_ATTRIBUTE_NAME = "userInfo.login";
     private static final String PASSWORD_ATTRIBUTE_NAME = "userInfo.password";
     private static final String PASSWORD_CONFIRMATION_ATTRIBUTE_NAME = "passwordConfirmation";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -150,4 +152,13 @@ public class RegistrationControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    public void correctLoginWrongPasswordConfirmation() throws Exception {
+        MockHttpServletRequestBuilder post = post(REGISTRATION_URL)
+                .param(LOGIN_ATTRIBUTE_NAME, "someUser")
+                .param(PASSWORD_ATTRIBUTE_NAME, "password")
+                .param(PASSWORD_CONFIRMATION_ATTRIBUTE_NAME, "anotherPassword");
+
+        failureUserRegistration(post);
+    }
 }
