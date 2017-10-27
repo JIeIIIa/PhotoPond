@@ -20,7 +20,7 @@ public class RegistrationFormValidator implements Validator {
 
         if ((password == null && passwordConfirmation != null) ||
                 (password != null && !password.equals(passwordConfirmation))) {
-            errors.rejectValue("passwordConfirmation", "notEquals", "Password and confirmation aren't equals");
+            errors.rejectValue("passwordConfirmation", "RegistrationForm.passwordConfirmation", "Password and confirmation aren't equals");
         }
 
 
