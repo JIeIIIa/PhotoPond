@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.user;
+package ua.kiev.prog.photopond.user.registration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,42 +10,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
+import ua.kiev.prog.photopond.user.UserInfo;
+import ua.kiev.prog.photopond.user.UserInfoSimpleRepository;
+import ua.kiev.prog.photopond.user.UserRole;
 
 import javax.validation.Valid;
 
 
 @Controller
 public class RegistrationController {
+    public static final String REGISTRATION_FORM_NAME = "form";
     private static Logger log = LogManager.getLogger(RegistrationController.class);
 
     @Autowired
     private UserInfoSimpleRepository userInfoSimpleRepository;
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
-    public ModelAndView registrationPage(ModelAndView modelAndView) {
+    public ModelAndView registrationPage() {
+        ModelAndView modelAndView = new ModelAndView();
         log.debug("Request to /registration    method=GET");
         modelAndView.setViewName("registration");
         UserInfo user = new UserInfo();
         user.setLogin("qwe");
-        modelAndView.addObject("userInfo", user);
+        RegistrationForm form = new RegistrationForm(user);
+        modelAndView.addObject(REGISTRATION_FORM_NAME, form);
 
         return modelAndView;
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public ModelAndView registrationAddPage(@Valid @ModelAttribute("userInfo") UserInfo userInfo,
+    public ModelAndView registrationNewUser(@Valid @ModelAttribute(REGISTRATION_FORM_NAME) RegistrationForm form,
                                             BindingResult bindingResult, ModelAndView modelAndView) throws AddToRepositoryException {
         log.debug("Request to /registration    method=POST");
         if (bindingResult.hasErrors()) {
             log.debug("   has error redirect to registration");
-
             modelAndView.setViewName("registration");
-        } else {
-            log.debug("   no error redirect to Success");
-            userInfo.setRole(UserRole.USER);
-            userInfoSimpleRepository.addUser(userInfo);
-            modelAndView.setViewName("Success");
+            return modelAndView;
         }
+
+        log.debug("   no error redirect to Success");
+        form.getUserInfo().setRole(UserRole.USER);
+        userInfoSimpleRepository.addUser(form.getUserInfo());
+        modelAndView.setViewName("Success");
+
         return modelAndView;
     }
 }

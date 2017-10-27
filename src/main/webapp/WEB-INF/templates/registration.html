@@ -13,21 +13,31 @@
 
 <div class="container">
 
-    <!--/*@thymesVar id="userInfo" type="ua.kiev.prog.photopond.user.UserInfo"*/-->
-    <form action="#" th:action="@{/registration}" th:object="${userInfo}" method="post">
+    <!--/*@thymesVar id="form" type="ua.kiev.prog.photopond.user.registration.RegistrationForm"*/-->
+    <form action="#" th:action="@{/registration}" th:object="${form}" method="post">
         <table>
+            <div th:field="*{userInfo}">
+                <tr>
+                    <td>Login:</td>
+                    <td><input type="text" th:field="*{userInfo.login}"/></td>
+                    <td th:if="${#fields.hasErrors('userInfo.login')}" th:errors="*{userInfo.login}">Login Error</td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
+                    <td><input type="text" th:field="*{userInfo.password}"/></td>
+                    <td th:if="${#fields.hasErrors('userInfo.password')}" th:errors="*{userInfo.password}">Password Error</td>
+                </tr>
+            </div>
             <tr>
-                <td>Login:</td>
-                <td><input type="text" th:field="*{login}" /></td>
-                <td th:if="${#fields.hasErrors('login')}" th:errors="*{login}">Login Error</td>
+                <td>Password confirmation:</td>
+                <td>
+                    <input type="text" th:field="*{passwordConfirmation}" /></td>
+                    <td th:if="${#fields.hasErrors('passwordConfirmation')}" th:errors="*{passwordConfirmation}">Password and confirmation are different</td>
             </tr>
             <tr>
-                <td>Password:</td>
-                <td><input type="text" th:field="*{password}" /></td>
-                <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</td>
-            </tr>
-            <tr>
-                <td><button type="submit">Submit</button></td>
+                <td>
+                    <button type="submit">Submit</button>
+                </td>
             </tr>
         </table>
     </form>

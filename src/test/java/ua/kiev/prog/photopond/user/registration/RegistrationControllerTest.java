@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.user;
+package ua.kiev.prog.photopond.user.registration;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +15,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import ua.kiev.prog.photopond.security.SpringSecurityWebAuthenticationTestConfiguration;
+import ua.kiev.prog.photopond.user.UserInfo;
+import ua.kiev.prog.photopond.user.UserInfoSimpleRepository;
+import ua.kiev.prog.photopond.user.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -22,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ua.kiev.prog.photopond.user.registration.RegistrationController.REGISTRATION_FORM_NAME;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = RegistrationController.class)
@@ -30,7 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RegistrationControllerTest {
     private static final String REGISTRATION_URL = "/registration";
     public static final String REGISTRATION_MODEL_NAME = "registration";
-    public static final String USER_INFO_ATTRIBUTE_NAME = "userInfo";
+    private static final String LOGIN_ATTRIBUTE_NAME = "userInfo.login";
+    private static final String PASSWORD_ATTRIBUTE_NAME = "userInfo.password";
+    private static final String PASSWORD_CONFIRMATION_ATTRIBUTE_NAME = "passwordConfirmation";
     @Autowired
     private MockMvc mockMvc;
 
@@ -54,8 +60,9 @@ public class RegistrationControllerTest {
     public void sendCorrectData() throws Exception {
         UserInfo targetUser = new UserInfo("newUser", "somePassword");
         MockHttpServletRequestBuilder requestBuilder = post(REGISTRATION_URL)
-                .param("login", targetUser.getLogin())
-                .param("password", targetUser.getPassword())
+                .param(LOGIN_ATTRIBUTE_NAME, targetUser.getLogin())
+                .param(PASSWORD_ATTRIBUTE_NAME, targetUser.getPassword())
+                .param(PASSWORD_CONFIRMATION_ATTRIBUTE_NAME, targetUser.getPassword())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         mockMvc.perform(requestBuilder)
@@ -74,8 +81,8 @@ public class RegistrationControllerTest {
                 .andExpect(view().name(REGISTRATION_MODEL_NAME))
                 .andDo(print())
                 .andExpect(model().hasErrors())
-                .andExpect(model().attributeExists(USER_INFO_ATTRIBUTE_NAME))
-                .andExpect(model().attributeHasErrors(USER_INFO_ATTRIBUTE_NAME));
+                .andExpect(model().attributeExists(REGISTRATION_FORM_NAME))
+                .andExpect(model().attributeHasErrors(REGISTRATION_FORM_NAME));
     }
 
     @Test
@@ -87,7 +94,8 @@ public class RegistrationControllerTest {
 
     @Test
     public void nullLoginAndCorrectPassword() throws Exception {
-        MockHttpServletRequestBuilder post = post(REGISTRATION_URL).param("password", "qwerty123");
+        MockHttpServletRequestBuilder post = post(REGISTRATION_URL)
+                .param(PASSWORD_ATTRIBUTE_NAME, "qwerty123");
 
         failureUserRegistration(post);
     }
@@ -95,8 +103,8 @@ public class RegistrationControllerTest {
     @Test
     public void smallLoginAndCorrectPassword() throws Exception {
         MockHttpServletRequestBuilder post = post(REGISTRATION_URL)
-                .param("login", "use")
-                .param("password", "qwerty123");
+                .param(LOGIN_ATTRIBUTE_NAME, "use")
+                .param(PASSWORD_ATTRIBUTE_NAME, "qwerty123");
 
         failureUserRegistration(post);
     }
@@ -105,8 +113,8 @@ public class RegistrationControllerTest {
     @Test
     public void largeLoginAndCorrectPassword() throws Exception {
         MockHttpServletRequestBuilder post = post(REGISTRATION_URL)
-                .param("login", "0user1user2user3user4user5user6user7user8user9user")
-                .param("password", "qwerty123");
+                .param(LOGIN_ATTRIBUTE_NAME, "0user1user2user3user4user5user6user7user8user9user")
+                .param(PASSWORD_ATTRIBUTE_NAME, "qwerty123");
 
         failureUserRegistration(post);
     }
@@ -114,8 +122,8 @@ public class RegistrationControllerTest {
     @Test
     public void correctLoginAndSmallPassword() throws Exception {
         MockHttpServletRequestBuilder post = post(REGISTRATION_URL)
-                .param("login", "someUser")
-                .param("password", "pas");
+                .param(LOGIN_ATTRIBUTE_NAME, "someUser")
+                .param(PASSWORD_ATTRIBUTE_NAME, "pas");
 
         failureUserRegistration(post);
     }
@@ -123,8 +131,8 @@ public class RegistrationControllerTest {
     @Test
     public void correctLoginAndLargePassword() throws Exception {
         MockHttpServletRequestBuilder post = post(REGISTRATION_URL)
-                .param("login", "someUser")
-                .param("password", "0password1password2password3password");
+                .param(LOGIN_ATTRIBUTE_NAME, "someUser")
+                .param(PASSWORD_ATTRIBUTE_NAME, "0password1password2password3password");
 
         failureUserRegistration(post);
     }
@@ -132,8 +140,9 @@ public class RegistrationControllerTest {
     @Test
     public void correctLoginAndPassword() throws Exception {
         MockHttpServletRequestBuilder post = post(REGISTRATION_URL)
-                .param("login", "someUser")
-                .param("password", "password");
+                .param(LOGIN_ATTRIBUTE_NAME, "someUser")
+                .param(PASSWORD_ATTRIBUTE_NAME, "password")
+                .param(PASSWORD_CONFIRMATION_ATTRIBUTE_NAME, "password");
 
         mockMvc.perform(post)
                 .andExpect(status().isOk())
