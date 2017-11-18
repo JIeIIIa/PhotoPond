@@ -13,9 +13,10 @@
 
 <div class="container">
 
-    <!--/*@thymesVar id="form" type="ua.kiev.prog.photopond.user.registration.RegistrationForm"*/-->
-    <form action="#" th:action="@{/registration}" th:object="${form}" method="post">
+    <!--/*@thymesVar id="registrationForm" type="ua.kiev.prog.photopond.user.registration.RegistrationForm"*/-->
+    <form action="#" th:action="@{/registration}" th:object="${registrationForm}" method="post">
         <table>
+            <td th:if="${#fields.hasErrors('userInfo')}" th:errors="*{userInfo}" style="visibility: hidden">UserInfo error</td>
             <div th:field="*{userInfo}">
                 <tr>
                     <td>Login:</td>
