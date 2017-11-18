@@ -44,7 +44,8 @@
         </button>
 
         <div class="collapse navbar-collapse justify-content-end text-center" id="navbarSupportedContent">
-            <ul class="nav navbar-nav">
+            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+            <ul class="nav navbar-nav" th:with="isAuthorized = ${userLogin} == null">
                 <li class="nav-item active">
                     <a class="nav-link" href="#" th:text="#{header.home}">Home</a>
                 </li>
@@ -52,14 +53,25 @@
                     <a class="nav-link" href="#" th:text="#{header.about}">About</a>
                 </li>
 
-                <li class="nav-item ">
-                    <a class="btn bnt-primary btn-block my-1" href="#" style="font-size:1em; font-style:inherit;"  th:text="#{header.login}">
+
+                <li class="nav-item " th:if="${isAuthorized}">
+                    <a class="btn bnt-primary btn-block my-1" href="#" th:href="@{/login}" style="font-size:1em; font-style:inherit;" th:text="#{header.login}">
                         Log In
                     </a>
                 </li>
+                <li class="nav-item " th:unless="${isAuthorized}">
+                    <a class="btn bnt-primary btn-block my-1" href="#" th:href="@{/logout}" style="font-size:1em; font-style:inherit;">
+                        Log out
+                    </a>
+                </li>
+                <li class="nav-item " th:unless="${isAuthorized}">
+                    <a class="nav-link" href="#" th:text="${userLogin}">SomeLogin</a>
+                </li>
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle pr-0" id="navbarDropdownMenuLink" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false"><i class="fa fa-language"></i> <div th:text="#{header.language}">Eng</div>
+                       aria-haspopup="true" aria-expanded="false"><i class="fa fa-language"></i>
+                        <div th:text="#{header.language}">Eng</div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right inverse-dropdown text-center"
                          aria-labelledby="navbarDropdownMenuLink">

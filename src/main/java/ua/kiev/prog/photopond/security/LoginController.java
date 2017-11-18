@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 public class LoginController {
@@ -22,12 +23,13 @@ public class LoginController {
     }
 
     @RequestMapping("/authorized")
-    public ModelAndView authorized(ModelAndView modelAndView, Authentication authentication) {
+    public ModelAndView authorized(Authentication authentication) {
         String login = authentication.getName();
-        String redirectedUrl = "redirect:/user/" + login + "/";
-        modelAndView.setViewName(redirectedUrl);
+        String redirectedUrl = "user/" + login + "/";
+        RedirectView redirectView = new RedirectView(redirectedUrl, true, true, false);
+        ModelAndView modelAndView = new ModelAndView(redirectView);
         modelAndView.setStatus(HttpStatus.PERMANENT_REDIRECT);
-        log.debug("User '" + login + " is authorized and redirected to " + redirectedUrl);
+        log.debug("User '" + login + " is authorized and redirected to " + redirectView.getUrl());
         return modelAndView;
     }
 
@@ -38,7 +40,7 @@ public class LoginController {
         String authLogin = authentication.getName();
         String answer;
         if (authLogin.equals(login)) {
-            answer = "This is '" + login + "' user. Congratulation!";
+            answer = "<html>This is '" + login + "' user. Congratulation! <a href=\"/\">Start page</a></html>";
         } else {
             answer = "Access denied!!!";
         }

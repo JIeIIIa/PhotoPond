@@ -11,5 +11,6 @@ public class SecurityWebMVCConfiguration extends ApplicationConfiguration {
     public void addInterceptors(InterceptorRegistry registry) {
         super.addInterceptors(registry);
         registry.addInterceptor(new AccessUserDirectoryInterceptor()).addPathPatterns("/user/*/**");
+        registry.addInterceptor(new UserInformationInterceptor());
     }
 }
