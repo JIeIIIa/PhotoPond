@@ -9,8 +9,12 @@ import ua.kiev.prog.photopond.user.UserInfoSimpleRepository;
 
 @Component
 public class RegistrationFormValidator implements Validator {
+    private final UserInfoSimpleRepository userInfoSimpleRepository;
+
     @Autowired
-    private UserInfoSimpleRepository userInfoSimpleRepository;
+    public RegistrationFormValidator(UserInfoSimpleRepository userInfoSimpleRepository) {
+        this.userInfoSimpleRepository = userInfoSimpleRepository;
+    }
 
     @Override
     public boolean supports(Class<?> aClass) {
