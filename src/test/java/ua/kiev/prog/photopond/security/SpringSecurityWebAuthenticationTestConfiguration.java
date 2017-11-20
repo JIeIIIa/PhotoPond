@@ -1,8 +1,12 @@
 package ua.kiev.prog.photopond.security;
 
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -15,8 +19,27 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @TestConfiguration
 public class SpringSecurityWebAuthenticationTestConfiguration {
+
+    @Bean
+    @Primary
+    public AuthenticationManager createAuthenticationManager() {
+        AuthenticationManager am = mock(AuthenticationManager.class);
+        when(am.authenticate(any(Authentication.class))).thenAnswer(
+                new Answer<Authentication>() {
+                    public Authentication answer(InvocationOnMock invocation)
+                            throws Throwable {
+                        return (Authentication) invocation.getArguments()[0];
+                    }
+                });
+
+        return am;
+    }
 
     @Bean
     @Primary

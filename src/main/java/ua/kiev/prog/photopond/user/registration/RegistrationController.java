@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 import ua.kiev.prog.photopond.user.UserInfo;
-import ua.kiev.prog.photopond.user.UserInfoSimpleRepository;
+import ua.kiev.prog.photopond.user.UserInfoService;
 import ua.kiev.prog.photopond.user.UserRole;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,18 +30,22 @@ import javax.validation.Valid;
 
 @Controller
 public class RegistrationController {
-    public static final String REGISTRATION_FORM_NAME = "registrationForm";
+    static final String REGISTRATION_FORM_NAME = "registrationForm";
     private static Logger log = LogManager.getLogger(RegistrationController.class);
 
-    @Autowired
-    private UserInfoSimpleRepository userInfoSimpleRepository;
+    private final UserInfoService userInfoService;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final Validator validator;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    @Qualifier("registrationFormValidator")
-    private Validator validator;
+    public RegistrationController(UserInfoService userInfoService, AuthenticationManager authenticationManager,
+                                  @Qualifier("registrationFormValidator") Validator validator) {
+        this.userInfoService = userInfoService;
+        this.authenticationManager = authenticationManager;
+        this.validator = validator;
+    }
 
     @InitBinder(REGISTRATION_FORM_NAME)
     private void initBinder(WebDataBinder binder) {
@@ -80,7 +84,7 @@ public class RegistrationController {
         UserInfo userInfo = form.getUserInfo();
 
         userInfo.setRole(UserRole.USER);
-        userInfoSimpleRepository.addUser(userInfo);
+        userInfoService.addUser(userInfo);
 
         modelAndView.setView(new RedirectView("/user/" + userInfo.getLogin() + "/", true, true, false));
         autoLogin(userInfo.getLogin(), userInfo.getPassword(), request);
