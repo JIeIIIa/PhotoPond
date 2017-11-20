@@ -10,8 +10,12 @@ import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 public class UserInfoServiceImpl implements UserInfoService {
     private static Logger log = LogManager.getLogger(UserInfoServiceImpl.class);
 
+    private final UserInfoSimpleRepository userInfoRepository;
+
     @Autowired
-    private UserInfoSimpleRepository userInfoRepository;
+    public UserInfoServiceImpl(UserInfoSimpleRepository userInfoRepository) {
+        this.userInfoRepository = userInfoRepository;
+    }
 
     @Override
     public UserInfo getUserByLogin(String login) {

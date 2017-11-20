@@ -18,8 +18,12 @@ import java.util.Set;
 public class UserDetailsServiceImpl implements UserDetailsService{
     private static Logger log = LogManager.getLogger(UserDetailsServiceImpl.class);
 
+    private final UserInfoService userService;
+
     @Autowired
-    private UserInfoServiceImpl userService;
+    public UserDetailsServiceImpl(UserInfoService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {

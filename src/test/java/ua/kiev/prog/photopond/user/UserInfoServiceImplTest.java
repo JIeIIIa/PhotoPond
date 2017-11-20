@@ -3,7 +3,6 @@ package ua.kiev.prog.photopond.user;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -20,14 +19,14 @@ public class UserInfoServiceImplTest {
     @Mock
     private UserInfoSimpleRepository userRepository;
 
-    @InjectMocks
-    private UserInfoService instance = new UserInfoServiceImpl();
+    private UserInfoServiceImpl instance;
 
     private final String USER_LOGIN = "user";
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        instance = new UserInfoServiceImpl(userRepository);
     }
 
     @Test
