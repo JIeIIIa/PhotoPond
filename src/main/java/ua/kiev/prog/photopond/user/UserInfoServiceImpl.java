@@ -27,7 +27,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public void addUser(UserInfo user) {
-        log.debug("call addUser:  " + user);
+        log.debug("Add user:  " + user);
         try {
             userInfoRepository.addUser(user);
         } catch (AddToRepositoryException e) {
@@ -37,7 +37,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public boolean existByLogin(String login) {
-        log.debug("call existByLogin for login = '" + login + "'");
+        log.debug("Is exist user with [login = '" + login + "']");
         boolean existUser = userInfoRepository.existByLogin(login);
         log.debug("");
         return existUser;
@@ -45,13 +45,30 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public List<UserInfo> getAllUsers() {
-        log.debug("call getAllUsers");
+        log.trace("Find all users");
         return userInfoRepository.getAllUsers();
     }
 
     @Override
     public UserInfo delete(long id) {
-        log.debug("call delete(" + id + ")");
+        log.debug("Delete user with [id = " + id + "]");
         return userInfoRepository.delete(id);
+    }
+
+    @Override
+    public UserInfo update(UserInfo userInfo) {
+        log.trace("Update user with {id = " + userInfo.getId() + "]");
+        boolean existsUserWithSameLogin = userInfoRepository.existByLogin(userInfo.getLogin(), userInfo.getId());
+        if (existsUserWithSameLogin) {
+            return null;
+        }
+        return userInfoRepository.update(userInfo);
+
+    }
+
+    @Override
+    public UserInfo getUserById(long id) {
+        log.trace("Get user by [id = " + id + "]");
+        return userInfoRepository.getUserById(id);
     }
 }

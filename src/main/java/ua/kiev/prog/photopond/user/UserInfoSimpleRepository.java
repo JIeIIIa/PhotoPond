@@ -9,9 +9,15 @@ public interface UserInfoSimpleRepository {
 
     boolean existByLogin(String login);
 
+    boolean existByLogin(String login, long exceptId);
+
     void addUser(UserInfo user) throws AddToRepositoryException;
 
     List<UserInfo> getAllUsers();
 
     UserInfo delete(long id);
+
+    UserInfo update(UserInfo userInfo);
+
+    UserInfo getUserById(long id);
 }

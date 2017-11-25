@@ -12,4 +12,8 @@ public interface UserInfoService {
     List<UserInfo> getAllUsers();
 
     UserInfo delete(long id);
+
+    UserInfo update(UserInfo userInfo);
+
+    UserInfo getUserById(long id);
 }
