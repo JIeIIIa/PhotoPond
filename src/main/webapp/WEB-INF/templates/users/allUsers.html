@@ -1,0 +1,49 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head>
+
+    <title>Administration: all users</title>
+    <object th:include="fragments/head :: head" th:remove="tag"/>
+</head>
+<body>
+
+<object th:include="fragments/header :: header" th:remove="tag"/>
+<div class="container">
+    <div class="row">
+        <table class="table">
+            <thead class="thead-inverse">
+            <tr class="d-flex">
+                <th class="col-1">#</th>
+                <th class="col-4">Login</th>
+                <th class="col-4">Password</th>
+                <th class="col-2">Roles</th>
+                <th class="col-1">Action</th>
+            </tr>
+            </thead>
+            <!--/*@thymesVar id="usersList" type="java.util.List<ua.kiev.prog.photopond.user.UserInfo>"*/-->
+            <tbody th:each="user, iterStat : ${usersList}">
+            <tr class="d-flex">
+                <td class="col-1" th:text="${iterStat.index+1}">#</td>
+                <td class="col-4" th:text="${user.login}" th:object="${user.login}">Password</td>
+                <td class="col-4" th:text="${user.password}" th:object="${user.password}">Password</td>
+                <td class="col-2" th:text="${user.getRole().name()}">Role</td>
+                <td class="col-1">
+                    <a href="#" th:href="@{/administration/user/{id}(id=${user.id})}" method="DELETE">Del</a>
+                    <input type="submit" hidden>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+
+    </div>
+
+
+</div>
+
+</body>
+</html>

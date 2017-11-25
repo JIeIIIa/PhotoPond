@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
+import java.util.List;
+
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
     private static Logger log = LogManager.getLogger(UserInfoServiceImpl.class);
@@ -39,5 +41,17 @@ public class UserInfoServiceImpl implements UserInfoService {
         boolean existUser = userInfoRepository.existByLogin(login);
         log.debug("");
         return existUser;
+    }
+
+    @Override
+    public List<UserInfo> getAllUsers() {
+        log.debug("call getAllUsers");
+        return userInfoRepository.getAllUsers();
+    }
+
+    @Override
+    public UserInfo delete(long id) {
+        log.debug("call delete(" + id + ")");
+        return userInfoRepository.delete(id);
     }
 }
