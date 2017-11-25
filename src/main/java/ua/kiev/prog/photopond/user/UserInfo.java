@@ -18,17 +18,17 @@ public class UserInfo {
     private UserRole role;
 
     public UserInfo() {
-    }
-
-    public UserInfo(String login, String password) {
-        this.login = login;
-        this.password = password;
         role = UserRole.USER;
     }
 
-    public UserInfo(String login, String password, UserRole role) {
+    public UserInfo(String login, String password) {
+        this();
         this.login = login;
         this.password = password;
+    }
+
+    public UserInfo(String login, String password, UserRole role) {
+        this(login, password);
         this.role = role;
     }
 
@@ -62,6 +62,10 @@ public class UserInfo {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public boolean isDeactivated() {
+        return role == UserRole.DEACTIVATED;
     }
 
     @Override

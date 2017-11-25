@@ -2,7 +2,8 @@ package ua.kiev.prog.photopond.user;
 
 public enum UserRole {
     ADMIN,
-    USER;
+    USER,
+    DEACTIVATED;
 
 
     @Override

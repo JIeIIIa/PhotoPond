@@ -15,6 +15,7 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     public EmbeddedUserInfoRepository() {
         users.add(new UserInfo("user", "user"));
         users.add(new UserInfo("admin", "admin", UserRole.ADMIN));
+        users.add(new UserInfo("noActive", "noActive", UserRole.DEACTIVATED));
     }
 
     public EmbeddedUserInfoRepository(List<UserInfo> users) {
