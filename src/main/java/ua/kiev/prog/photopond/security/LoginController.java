@@ -25,7 +25,7 @@ public class LoginController {
     @RequestMapping("/authorized")
     public ModelAndView authorized(Authentication authentication) {
         String login = authentication.getName();
-        String redirectedUrl = "user/" + login + "/";
+        String redirectedUrl = "/user/" + login + "/";
         RedirectView redirectView = new RedirectView(redirectedUrl, true, true, false);
         ModelAndView modelAndView = new ModelAndView(redirectView);
         modelAndView.setStatus(HttpStatus.PERMANENT_REDIRECT);
@@ -57,5 +57,10 @@ public class LoginController {
     @ResponseBody
     public String testingAccessDenied() {
         return "Access denied! /testingAccessDenied";
+    }
+
+    @RequestMapping("/accessDenied")
+    public String accessDenied() {
+        return "/errors/accessDenied";
     }
 }
