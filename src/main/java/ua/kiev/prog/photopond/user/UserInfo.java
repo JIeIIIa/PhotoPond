@@ -1,6 +1,8 @@
 package ua.kiev.prog.photopond.user;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -64,6 +66,7 @@ public class UserInfo {
         this.role = role;
     }
 
+    @JsonIgnore
     public boolean isDeactivated() {
         return role == UserRole.DEACTIVATED;
     }

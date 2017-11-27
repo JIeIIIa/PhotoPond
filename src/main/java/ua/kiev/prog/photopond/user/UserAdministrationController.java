@@ -3,7 +3,9 @@ package ua.kiev.prog.photopond.user;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,13 +19,13 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/administration")
-public class UserController {
-    private static Logger log = LogManager.getLogger(UserController.class);
+public class UserAdministrationController {
+    private static Logger log = LogManager.getLogger(UserAdministrationController.class);
 
     private final UserInfoService userInfoService;
 
     @Autowired
-    public UserController(UserInfoService userInfoService) {
+    public UserAdministrationController(UserInfoService userInfoService) {
         this.userInfoService = userInfoService;
     }
 
@@ -33,7 +35,7 @@ public class UserController {
         List<UserInfo> users = userInfoService.getAllUsers();
         log.debug("Add list of users in modelAndView");
         modelAndView.addObject("usersList", users);
-        modelAndView.setViewName("users/allUsers");
+        modelAndView.setViewName("/users/allUsers");
 
         return modelAndView;
     }
@@ -42,12 +44,13 @@ public class UserController {
     public ResponseEntity<UserInfo> deleteUser(@PathVariable("id") long id) {
         log.trace("Delete user by [id = " + id + "]");
         UserInfo userInfo = userInfoService.delete(id);
+
         if (userInfo == null) {
             log.debug("Error: User with [id = " + id + "] not deleted");
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
         }
         log.debug("User with [id = " + id + "] was deleted");
-        return new ResponseEntity<>(userInfo, HttpStatus.OK);
+        return new ResponseEntity<>(userInfo, getHttpJsonHeaders(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.POST)
@@ -55,23 +58,32 @@ public class UserController {
         log.trace("Update user information for: " + userInfo);
         userInfo.setId(id);
         userInfo = userInfoService.update(userInfo);
+
         if (userInfo == null) {
             log.debug("Error: User with [id = " + id + "] not modified");
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
         }
         log.debug("User with [id = " + id + "] was modified");
-        return new ResponseEntity<>(userInfo, HttpStatus.OK);
+        return new ResponseEntity<>(userInfo, getHttpJsonHeaders(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     public ResponseEntity<UserInfo> updateUser(@PathVariable("id") long id) {
         log.trace("Get user by [id = " + id + "]");
+
         UserInfo userInfo = userInfoService.getUserById(id);
         if (userInfo == null) {
             log.debug("User with [id = " + id + "] not found");
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
         }
+
         log.debug("User with [id = " + id + "] was found");
-        return new ResponseEntity<>(userInfo, HttpStatus.OK);
+        return new ResponseEntity<>(userInfo, getHttpJsonHeaders(), HttpStatus.OK);
+    }
+
+    private HttpHeaders getHttpJsonHeaders() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        return responseHeaders;
     }
 }
