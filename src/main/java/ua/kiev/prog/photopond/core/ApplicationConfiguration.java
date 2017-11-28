@@ -3,10 +3,8 @@ package ua.kiev.prog.photopond.core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -16,11 +14,9 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("ua.kiev.prog.photopond")
 public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
     private static Logger log = LogManager.getLogger(ApplicationConfiguration.class);
 
-    @Autowired
     private ApplicationContext applicationContext;
 
     public ApplicationConfiguration() {
