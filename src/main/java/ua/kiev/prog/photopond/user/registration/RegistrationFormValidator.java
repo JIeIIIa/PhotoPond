@@ -5,15 +5,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ua.kiev.prog.photopond.user.UserInfo;
-import ua.kiev.prog.photopond.user.UserInfoSimpleRepository;
+import ua.kiev.prog.photopond.user.UserInfoService;
 
 @Component
 public class RegistrationFormValidator implements Validator {
-    private final UserInfoSimpleRepository userInfoSimpleRepository;
+    private final UserInfoService userInfoService;
 
     @Autowired
-    public RegistrationFormValidator(UserInfoSimpleRepository userInfoSimpleRepository) {
-        this.userInfoSimpleRepository = userInfoSimpleRepository;
+    public RegistrationFormValidator(UserInfoService userInfoService) {
+        this.userInfoService = userInfoService;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class RegistrationFormValidator implements Validator {
         }
         String passwordConfirmation = form.getPasswordConfirmation();
 
-        if (login != null && userInfoSimpleRepository.existByLogin(login)) {
+        if (login != null && userInfoService.existByLogin(login)) {
             errors.rejectValue("userInfo.login", "RegistrationForm.loginExists", "This login exists. Please, choose another login.");
         }
 
