@@ -3,12 +3,14 @@ package ua.kiev.prog.photopond.user;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 import java.util.List;
 
 @Service
+@ConditionalOnMissingBean(UserInfoService.class)
 public class UserInfoServiceImpl implements UserInfoService {
     private static Logger log = LogManager.getLogger(UserInfoServiceImpl.class);
 
@@ -39,7 +41,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     public boolean existByLogin(String login) {
         log.debug("Is exist user with [login = '" + login + "']");
         boolean existUser = userInfoRepository.existByLogin(login);
-        log.debug("");
+        log.debug("Exists user by [login = " + login + "]  =  " + existUser);
         return existUser;
     }
 
