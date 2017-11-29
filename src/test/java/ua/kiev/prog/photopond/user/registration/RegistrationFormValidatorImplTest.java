@@ -17,7 +17,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RegistrationFormValidatorTest {
+public class RegistrationFormValidatorImplTest {
     private Validator validatorUnderTest;
 
     @Mock
@@ -30,7 +30,7 @@ public class RegistrationFormValidatorTest {
     @Before
     public void setUp() throws Exception {
         when(userInfoService.existByLogin(any(String.class))).thenReturn(false);
-        validatorUnderTest = new RegistrationFormValidator(userInfoService);
+        validatorUnderTest = new RegistrationFormValidatorImpl(userInfoService);
         initRegistrationForm();
 
         errors = new BeanPropertyBindingResult(form, "form");
