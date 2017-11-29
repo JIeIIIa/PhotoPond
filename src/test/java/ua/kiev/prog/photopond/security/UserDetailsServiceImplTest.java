@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.user;
+package ua.kiev.prog.photopond.security;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +10,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import ua.kiev.prog.photopond.user.UserInfo;
+import ua.kiev.prog.photopond.user.UserInfoService;
+import ua.kiev.prog.photopond.user.UserRole;
 
 import java.util.Collection;
 

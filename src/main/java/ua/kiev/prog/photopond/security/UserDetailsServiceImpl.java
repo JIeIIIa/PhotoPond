@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.user;
+package ua.kiev.prog.photopond.security;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ua.kiev.prog.photopond.user.UserInfo;
+import ua.kiev.prog.photopond.user.UserInfoService;
 
 import java.util.HashSet;
 import java.util.Set;
