@@ -3,14 +3,14 @@ package ua.kiev.prog.photopond.user;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class EmbeddedUserInfoRepositoryTest {
     private static final String USER_LOGIN = "user";
     private EmbeddedUserInfoRepository embeddedUserInfoRepository;
@@ -41,8 +41,7 @@ public class EmbeddedUserInfoRepositoryTest {
     public void findUserSuccessTest() {
         assertThat(embeddedUserInfoRepository.findByLogin(USER_LOGIN))
                 .isNotNull()
-                .isEqualTo(testUser)
-        ;
+                .isEqualTo(testUser);
     }
 
     @Test

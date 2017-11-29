@@ -1,23 +1,21 @@
 package ua.kiev.prog.photopond.user;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import ua.kiev.prog.photopond.annotation.DefaultTest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = UserAdministrationController.class)
-@TestPropertySource(properties = "spring.profiles.active = SECURITY_MOCK")
+@WebMvcTest(controllers = UserAdministrationController.class, secure = false)
+@DefaultTest
 public class UserAdministrationControllerTest {
     private static final String URL_PREFIX = "/administration/user";
 
@@ -40,11 +38,6 @@ public class UserAdministrationControllerTest {
 
     @MockBean
     private UserInfoService userInfoService;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void getAllUsers() throws Exception {

@@ -1,14 +1,12 @@
 package ua.kiev.prog.photopond;
 
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-@RunWith(SpringRunner.class)
+
 public class TestControllerBasicConfiguration {
     protected MockMvc mockMvc;
 

@@ -1,41 +1,44 @@
 package ua.kiev.prog.photopond.core;
 
-import org.junit.Before;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import ua.kiev.prog.photopond.annotation.ITTest;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
-@WebAppConfiguration
+@ITTest
 public class WelcomeControllerIT {
-    private MockMvc mockMvc;
-
     @Autowired
-    private WebApplicationContext webApplicationContext;
+    MockMvc mockMvc;
 
-    @Before
-    public void setUp() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    @Test
+    public void mappedRoot() throws Exception {
+        checkIndex("/");
     }
 
     @Test
-    public void mappingTest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+    public void mappedIndex() throws Exception {
+        checkIndex("/index");
+    }
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/index"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+    @Test
+    public void mappedIndexHtml() throws Exception {
+        checkIndex("/index.html");
+    }
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/index.html"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+    private void checkIndex(String url) throws Exception {
+        mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("text/html;charset=UTF-8"))
+                .andExpect(view().name("index"))
+                .andExpect(content().string(Matchers.containsString("PhotoPond")))
+                .andDo(print());
     }
 }
