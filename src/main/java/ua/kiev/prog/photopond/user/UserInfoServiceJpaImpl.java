@@ -31,6 +31,9 @@ public class UserInfoServiceJpaImpl implements UserInfoService{
     @Override
     public void addUser(UserInfo user) {
         log.debug("Add user:  " + user);
+        if (user == null) {
+            return;
+        }
         userInfoRepository.save(user);
     }
 
@@ -38,7 +41,7 @@ public class UserInfoServiceJpaImpl implements UserInfoService{
     public boolean existByLogin(String login) {
         log.debug("Is exist user with [login = '" + login + "']");
         UserInfo user = userInfoRepository.findByLogin(login);
-        boolean existUser = (user == null);
+        boolean existUser = (user != null);
         log.debug("Exists user by [login = " + login + "]  =  " + existUser);
         return existUser;
     }
