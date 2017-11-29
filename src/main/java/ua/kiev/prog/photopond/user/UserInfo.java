@@ -3,11 +3,17 @@ package ua.kiev.prog.photopond.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
-public class UserInfo {
-    private long id;
+@Entity
+@Table(name = "usersInfo")
+public class UserInfo implements Serializable{
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     @NotNull
     @Size(min = 4, max = 30)
@@ -17,6 +23,7 @@ public class UserInfo {
     @Size(min = 6, max = 30)
     private String password;
 
+    @Enumerated(EnumType.ORDINAL)
     private UserRole role;
 
     public UserInfo() {
@@ -97,5 +104,12 @@ public class UserInfo {
                 ", password='" + password + '\'' +
                 ", role=" + role.name() +
                 '}';
+    }
+
+    public void copyFrom(UserInfo userInfo) {
+        id = userInfo.getId();
+        login = userInfo.getLogin();
+        password = userInfo.getPassword();
+        role = userInfo.getRole();
     }
 }
