@@ -3,7 +3,6 @@ package ua.kiev.prog.photopond.user.registration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,10 +40,10 @@ public class RegistrationController {
 
     @Autowired
     public RegistrationController(UserInfoService userInfoService, AuthenticationManager authenticationManager,
-                                  @Qualifier("registrationFormValidator") Validator validator) {
+                                  RegistrationFormValidator registrationFormValidator) {
         this.userInfoService = userInfoService;
         this.authenticationManager = authenticationManager;
-        this.validator = validator;
+        this.validator = registrationFormValidator;
     }
 
     @InitBinder(REGISTRATION_FORM_NAME)

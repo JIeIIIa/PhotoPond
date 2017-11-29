@@ -6,15 +6,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import ua.kiev.prog.photopond.security.SpringSecurityWebAuthenticationTestConfiguration;
+import ua.kiev.prog.photopond.annotation.SecurityTest;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoService;
 import ua.kiev.prog.photopond.user.UserRole;
@@ -28,9 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ua.kiev.prog.photopond.user.registration.RegistrationController.REGISTRATION_FORM_NAME;
 
 @RunWith(SpringRunner.class)
+@SecurityTest
 @WebMvcTest(controllers = RegistrationController.class)
-@ContextConfiguration(classes = SpringSecurityWebAuthenticationTestConfiguration.class)
-@AutoConfigureMockMvc
 public class RegistrationControllerTest {
     private static final String REGISTRATION_URL = "/registration";
     private static final String REGISTRATION_MODEL_NAME = "registration";
@@ -138,19 +135,6 @@ public class RegistrationControllerTest {
                 .param(PASSWORD_ATTRIBUTE_NAME, "0password1password2password3password");
 
         failureUserRegistration(post);
-    }
-
-    //    @Test
-    public void correctLoginAndPassword() throws Exception {
-        MockHttpServletRequestBuilder post = post(REGISTRATION_URL)
-                .param(LOGIN_ATTRIBUTE_NAME, "someUser")
-                .param(PASSWORD_ATTRIBUTE_NAME, "password")
-                .param(PASSWORD_CONFIRMATION_ATTRIBUTE_NAME, "password");
-
-        mockMvc.perform(post)
-                .andExpect(status().isOk())
-                .andExpect(view().name("Success"))
-                .andDo(print());
     }
 
     @Test
