@@ -48,7 +48,7 @@ public class UserInfoBuilderTest {
     public void defaultBuild() throws Exception {
         UserInfo userInfo = new UserInfoBuilder().build();
 
-        assertThat(userInfo.getId()).isEqualTo(0);
+        assertThat(userInfo.getId()).isEqualTo(Long.MIN_VALUE);
         assertThat(userInfo.getLogin())
                 .isNotNull()
                 .isEqualTo("");

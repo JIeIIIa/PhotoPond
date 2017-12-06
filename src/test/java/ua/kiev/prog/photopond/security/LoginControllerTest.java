@@ -5,12 +5,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ua.kiev.prog.photopond.annotation.SecurityTest;
+import ua.kiev.prog.photopond.user.UserInfoService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
@@ -27,6 +29,9 @@ public class LoginControllerTest {
     private static final String LOGIN_PROCESSING_URL = "/j_spring_security_check";
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private UserInfoService userInfoService;
 
     @Test
     public void loginFormTest() throws Exception {
