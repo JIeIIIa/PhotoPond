@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoService;
@@ -53,8 +55,8 @@ public class RegistrationController {
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public ModelAndView registrationPage() {
+        log.traceEntry("Method = GET,   uri = '/registration'");
         ModelAndView modelAndView = new ModelAndView();
-        log.debug("Request to /registration    method=GET");
         modelAndView.setViewName("registration");
 
         UserInfo user = new UserInfo();
@@ -72,31 +74,38 @@ public class RegistrationController {
     public ModelAndView registrationNewUser(@Valid @ModelAttribute(REGISTRATION_FORM_NAME) RegistrationForm form,
                                             BindingResult bindingResult, ModelAndView modelAndView,
                                             HttpServletRequest request) throws AddToRepositoryException {
-        log.debug("Request to /registration    method=POST");
+        log.traceEntry("Method = POST,   uri = '/registration'");
         if (bindingResult.hasErrors()) {
-            log.debug("   has error redirect to registration");
+            log.debug("Has errors in registration information. Redirect to /registration");
             modelAndView.setViewName("registration");
             return modelAndView;
         }
 
-        log.debug("   no error redirect to user home page");
+        log.trace("No error. Save user.");
         UserInfo userInfo = form.getUserInfo();
 
         userInfo.setRole(UserRole.USER);
         userInfoService.addUser(userInfo);
 
-        modelAndView.setView(new RedirectView("/user/" + userInfo.getLogin() + "/", true, true, false));
+        log.debug("Redirect to user home page.");
+        UriComponents uriComponents = UriComponentsBuilder.newInstance()
+                .path("/user/{login}")
+                .build()
+                .expand(userInfo.getLogin())
+                .encode();
+        modelAndView.setView(new RedirectView(uriComponents.toUriString(), true, true, false));
+
         autoLogin(userInfo.getLogin(), userInfo.getPassword(), request);
-        log.trace("   new user " + userInfo.getLogin() + " was logged in.");
 
         return modelAndView;
     }
 
     private void autoLogin(String login, String password, HttpServletRequest request) {
-        log.trace("   try to auto log in for user " + login);
+        log.traceEntry("Try to auto log in for user [ login = '{}' ]",  login);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(login, password);
         Authentication authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+        log.debug("Exit   New user [ login = '{}' ] was logged in.", login);
     }
 }
