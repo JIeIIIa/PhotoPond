@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 @ControllerAdvice
 public class MainExceptionController {
@@ -20,12 +18,14 @@ public class MainExceptionController {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
     public String directoryAccessDenied(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        Map<String, String> attributes = (Map<String, String>) session.getAttribute("attributeMap");
+        String loginUser = (String) request.getAttribute("userLogin");
+        String url = (String) request.getAttribute("url");
 
-        String loginUser = attributes.get("userLogin");
-        String url = attributes.get("url");
-        log.warn("directoryAccessDenied ->   url: " + url + "      access denied for userLogin = '" + loginUser + "'");
-        return "Happy access denied!   userLogin = " + loginUser + "   url: " + url;
+        StringBuilder stringBuilder = new StringBuilder()
+                .append("URL: " ).append(url)
+                .append("      access denied for [ userLogin = '").append(loginUser).append("' ]");
+
+        log.warn(stringBuilder.toString());
+        return "Happy access denied!   " + stringBuilder.toString();
     }
 }
