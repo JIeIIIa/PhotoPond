@@ -10,9 +10,9 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "usersInfo")
-public class UserInfo implements Serializable{
+public class UserInfo implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
@@ -28,6 +28,7 @@ public class UserInfo implements Serializable{
 
     public UserInfo() {
         role = UserRole.USER;
+        id = Long.MIN_VALUE;
     }
 
     public UserInfo(String login, String password) {

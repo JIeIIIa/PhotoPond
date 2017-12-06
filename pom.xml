@@ -77,6 +77,11 @@
             <artifactId>h2</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
         <!-- THYMELEAF -->
         <dependency>
             <groupId>org.thymeleaf</groupId>
