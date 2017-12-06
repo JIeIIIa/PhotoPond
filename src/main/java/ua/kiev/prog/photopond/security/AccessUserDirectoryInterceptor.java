@@ -22,18 +22,11 @@ public class AccessUserDirectoryInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         log.trace("Begin verifying access to user's directory.");
         Map pathVariables = (Map) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+
         String loginParameter = (String) pathVariables.get("login");
         String authorizedUsername = getUserLoginFromSecurityContext();
+        log.trace("Values:   [ loginParameter = '{}' ]   and   [ authorizedUsername = '{}']", loginParameter, authorizedUsername);
 
-        if (log.isTraceEnabled()) {
-            StringBuilder sb = new StringBuilder()
-                    .append("Values:  ")
-                    .append("[ loginParameter = '").append(loginParameter).append("' ]")
-                    .append("    and    ")
-                    .append("[ authorizedUsername = '").append(authorizedUsername).append("' ]");
-
-            log.trace(sb.toString());
-        }
         checkLogins(request, loginParameter, authorizedUsername);
         return true;
     }
@@ -49,7 +42,7 @@ public class AccessUserDirectoryInterceptor extends HandlerInterceptorAdapter {
                     .append(" does not have access to url: ").append(url)
                     .append("      URI = '").append(uri).append("'")
                     .append(" does not start with '/user/").append(authorizedUsername).append("'");
-            log.debug(sb.toString());
+            log.warn(sb.toString());
 
             addSessionAttribute(request, authorizedUsername, url);
             throw new AccessDeniedException(sb.toString());
@@ -64,17 +57,10 @@ public class AccessUserDirectoryInterceptor extends HandlerInterceptorAdapter {
     }
 
     private void addSessionAttribute(HttpServletRequest request, String login, String url) {
+        log.traceEntry("[ login = '{}' ],   [ url = '{}' ]", login, url);
         request.setAttribute("userLogin", login);
         request.setAttribute("url", url);
 
-        if (log.isTraceEnabled()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Attributes were added to request:   ")
-                    .append("[ userLogin = '").append(login).append("' ]")
-                    .append("     ")
-                    .append("[ url = '").append(url).append("' ]");
-
-            log.trace(sb.toString());
-        }
+        log.trace("Attributes were added to request:   [ userLogin = '{}' ],   [ url = '{}'", login, url);
     }
 }

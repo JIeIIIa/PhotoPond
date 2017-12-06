@@ -33,7 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         UserInfo user = userService.getUserByLogin(login);
 
         if (user == null) {
-            log.debug("login = " + login + "   userInfo = null");
+            log.warn("Cannot load UserInfo for [ login = '{}' ]", login);
             throw new UsernameNotFoundException(login + " not found");
         }
 
@@ -45,7 +45,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
                 .roles(user.getRole().name())
                 .disabled(user.isDeactivated())
                 .build();
-        log.debug("user [login = " + login + "] was loaded");
+        log.info("User [ login = {} ] was loaded", login);
         return userDetails;
     }
 }

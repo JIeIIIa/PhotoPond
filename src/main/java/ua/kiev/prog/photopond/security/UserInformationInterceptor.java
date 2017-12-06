@@ -12,24 +12,28 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static ua.kiev.prog.photopond.Utils.Utils.urlDecode;
+
 public class UserInformationInterceptor extends HandlerInterceptorAdapter {
     private static Logger log = LogManager.getLogger(UserInformationInterceptor.class);
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        log.trace("postHandle ->  method = " + request.getMethod() + "   URI = " + request.getRequestURI());
+        log.traceEntry("[ Method = '{}' ],   [ URI = '{}' ]", request.getMethod(), urlDecode(request.getRequestURI()));
         if (isNotNeededAddAttribute(request, modelAndView)) {
-            log.trace("postHandle ->  doesn't need to add attribute");
+            log.trace("Doesn't need to add attribute");
             return;
         }
-        log.trace("postHandle ->  modelAndView not null and request uri doesn't start with 'redirect:'");
+
+        log.trace("ModelAndView not null and request uri doesn't start with 'redirect:'");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (isUserAuthorized(authentication)) {
-            log.trace("postHandle ->  userLogin attribute was added");
             String userLogin = authentication.getName();
             modelAndView.addObject("userLogin", userLogin);
+            log.debug("Attribute was added: [ userLogin = '{}' ]", userLogin);
         }
+        log.traceExit();
     }
 
     private boolean isNotNeededAddAttribute(HttpServletRequest request, ModelAndView modelAndView) {

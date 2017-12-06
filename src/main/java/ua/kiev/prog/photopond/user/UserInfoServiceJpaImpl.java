@@ -24,7 +24,7 @@ public class UserInfoServiceJpaImpl implements UserInfoService{
 
     @Override
     public UserInfo getUserByLogin(String login) {
-        log.debug("call getUserByLogin for login = '" + login + "'");
+        log.debug("Call getUserByLogin for [ login = '{}'] ", login);
         return userInfoRepository.findByLogin(login);
     }
 
@@ -39,22 +39,22 @@ public class UserInfoServiceJpaImpl implements UserInfoService{
 
     @Override
     public boolean existByLogin(String login) {
-        log.debug("Is exist user with [login = '" + login + "']");
+        log.traceEntry("Is exist user with [ login = '{}' ]", login);
         UserInfo user = userInfoRepository.findByLogin(login);
         boolean existUser = (user != null);
-        log.debug("Exists user by [login = " + login + "]  =  " + existUser);
+        log.debug("Exists user by [ login = '{}' ]   =   {}", login, existUser);
         return existUser;
     }
 
     @Override
     public List<UserInfo> getAllUsers() {
-        log.trace("Find all users");
+        log.traceEntry("Find all users");
         return userInfoRepository.findAll();
     }
 
     @Override
     public UserInfo delete(long id) {
-        log.debug("Delete user with [id = " + id + "]");
+        log.traceEntry("Delete user with [ id = '{}' ]", id);
         UserInfo deletedUser = userInfoRepository.findOne(id);
         if (deletedUser != null) {
             userInfoRepository.delete(deletedUser);
@@ -65,7 +65,7 @@ public class UserInfoServiceJpaImpl implements UserInfoService{
 
     @Override
     public UserInfo update(UserInfo userInfo) {
-        log.trace("Update user with {id = " + userInfo.getId() + "]");
+        log.traceEntry("Update user with { id = '{}' ]", userInfo.getId());
         UserInfo checkedLoginUser = userInfoRepository.findByLogin(userInfo.getLogin());
         boolean notExistsUserWithSameLogin = (checkedLoginUser == null || checkedLoginUser.getId() == userInfo.getId());
         if (notExistsUserWithSameLogin) {
@@ -74,13 +74,13 @@ public class UserInfoServiceJpaImpl implements UserInfoService{
             log.trace("Updated information:   " + updatedUser);
             return updatedUser;
         }
-        log.trace("Information for user with [id = " + userInfo.getId() + "] wasn't updated");
+        log.warn("Information for user with [ id = '{}' ] wasn't updated", userInfo.getId());
         return null;
     }
 
     @Override
     public UserInfo getUserById(long id) {
-        log.trace("Get user by [id = " + id + "]");
+        log.traceEntry("Get user by [ id = {} ]", id);
         return userInfoRepository.findOne(id);
     }
 }

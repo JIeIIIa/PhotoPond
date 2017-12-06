@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
 public class LoginController {
@@ -24,12 +26,17 @@ public class LoginController {
 
     @RequestMapping("/authorized")
     public ModelAndView authorized(Authentication authentication) {
+        log.traceEntry();
         String login = authentication.getName();
-        String redirectedUrl = "/user/" + login + "/";
-        RedirectView redirectView = new RedirectView(redirectedUrl, true, true, false);
+        UriComponents uriComponents = UriComponentsBuilder.newInstance()
+                .path("/user/{login}")
+                .build()
+                .expand(login)
+                .encode();
+        RedirectView redirectView = new RedirectView(uriComponents.toUriString(), true, true, false);
         ModelAndView modelAndView = new ModelAndView(redirectView);
         modelAndView.setStatus(HttpStatus.PERMANENT_REDIRECT);
-        log.debug("User '" + login + " is authorized and redirected to " + redirectView.getUrl());
+        log.debug("User '{}' is authorized and redirected to {}", login, redirectView.getUrl());
         return modelAndView;
     }
 
@@ -37,13 +44,12 @@ public class LoginController {
     @RequestMapping(value = "/user/{login}", method = RequestMethod.GET)
     @ResponseBody
     public String userHomePage(@PathVariable("login") String login, Authentication authentication) {
-        String authLogin = authentication.getName();
-        String answer;
-        if (authLogin.equals(login)) {
-            answer = "<html>This is '" + login + "' user. Congratulation! <a href=\"/\">Start page</a></html>";
-        } else {
-            answer = "Access denied!!!";
-        }
+        log.traceEntry("[ Method = GET ],   [ URI = 'user/{}' ]", login);
+
+        String answer = "<html><head><meta charset=\"UTF-8\"></head>" +
+                "<body>This is '" + login + "' user. Congratulation! <a href=\"/\">Start page</a></body></html>";
+
+
         return answer;
     }
 
