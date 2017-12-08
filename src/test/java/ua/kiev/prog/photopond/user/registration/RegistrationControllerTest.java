@@ -66,7 +66,7 @@ public class RegistrationControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/user/" + targetUser.getLogin()+"/"));
+                .andExpect(redirectedUrl("/user/" + targetUser.getLogin()));
 
         ArgumentCaptor<UserInfo> argument = ArgumentCaptor.forClass(UserInfo.class);
         verify(userInfoService).addUser(argument.capture());

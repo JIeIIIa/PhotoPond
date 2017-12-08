@@ -1,0 +1,20 @@
+<dataset>
+    <usersinfo
+            id="777"
+            login="someUser"
+            password="password"
+            role="1"
+    />
+    <usersinfo
+            id="1"
+            login="Administrator"
+            password="qwerty123!"
+            role="0"
+    />
+    <usersinfo
+            id="2"
+            login="disabledUser"
+            password="password"
+            role="2"
+    />
+</dataset>

@@ -27,11 +27,11 @@ public class AccessUserDirectoryInterceptor extends HandlerInterceptorAdapter {
         String authorizedUsername = getUserLoginFromSecurityContext();
         log.trace("Values:   [ loginParameter = '{}' ]   and   [ authorizedUsername = '{}']", loginParameter, authorizedUsername);
 
-        checkLogins(request, loginParameter, authorizedUsername);
+        checkLogin(request, loginParameter, authorizedUsername);
         return true;
     }
 
-    private void checkLogins(HttpServletRequest request, String loginParameter, String authorizedUsername) throws UnsupportedEncodingException,
+    private void checkLogin(HttpServletRequest request, String loginParameter, String authorizedUsername) throws UnsupportedEncodingException,
             AccessDeniedException {
         if (loginParameter == null || !loginParameter.equals(authorizedUsername)) {
             String url = urlDecode(request.getRequestURL().toString());
