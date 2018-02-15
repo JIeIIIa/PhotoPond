@@ -148,6 +148,10 @@ public class Directory implements Serializable {
         return names;
     }
 
+    public boolean isRoot() {
+        return SEPARATOR.equals(path);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

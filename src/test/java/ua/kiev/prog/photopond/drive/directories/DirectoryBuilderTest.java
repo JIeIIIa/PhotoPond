@@ -51,4 +51,22 @@ public class DirectoryBuilderTest {
         assertThat(directory).isEqualTo(expected);
     }
 
+    @Test
+    public void from() throws Exception {
+        UserInfo user = new UserInfoBuilder()
+                .id(123)
+                .login("someUser")
+                .role(UserRole.ADMIN)
+                .build();
+        Directory directory = new Directory();
+        directory.setId(777L);
+        directory.setOwner(user);
+        directory.setPath("/some/path");
+
+        Directory result = new DirectoryBuilder().from(directory).build();
+
+        assertThat(result.getId()).isEqualTo(777L);
+        assertThat(result.getOwner()).isEqualTo(user);
+        assertThat(result.getPath()).isEqualTo("/some/path");
+    }
 }

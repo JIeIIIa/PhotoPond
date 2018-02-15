@@ -20,6 +20,13 @@ public class DirectoryBuilder {
         return this;
     }
 
+    public DirectoryBuilder from(Directory source) {
+        directory.setId(source.getId());
+        directory.setOwner(source.getOwner());
+        directory.setPath(source.getPath());
+        return this;
+    }
+
     public Directory build() {
         return directory;
     }
