@@ -117,6 +117,17 @@ public class DirectoryTest {
                 .isEqualTo(expectedParentName);
     }
 
+    @Test
+    public void getParentPathForFirstLevel() throws Exception {
+        String expectedParentPath = Directory.SEPARATOR;
+        String path = Directory.SEPARATOR + "someDirectory";
+        directory.setPath(path);
+
+        assertThat(directory.getParentPath())
+                .isNotNull()
+                .isEqualTo(expectedParentPath);
+    }
+
     @Test(expected = IllegalStateException.class)
     public void getRootForNullOwner() throws Exception {
         directory = new Directory();

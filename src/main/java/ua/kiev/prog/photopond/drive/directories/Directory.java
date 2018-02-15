@@ -124,7 +124,11 @@ public class Directory implements Serializable {
         String parentDirectoryPath = "";
 
         int index = path.lastIndexOf(SEPARATOR);
-        parentDirectoryPath += path.substring(0, index);
+        if (path.length() > 1 && index == 0) {
+            parentDirectoryPath = SEPARATOR;
+        } else {
+            parentDirectoryPath += path.substring(0, index);
+        }
 
         return parentDirectoryPath;
     }
