@@ -23,4 +23,6 @@ public interface DirectoryJpaRepository extends JpaRepository<Directory, Long>{
     @Query(value = "UPDATE Directories SET path = REPLACE(path, ?1, ?2) WHERE  "
             + "owner_id = ?3", nativeQuery = true)
     int rename(@Param("oldPath") String oldPath, @Param("targetPath") String targetPath, @Param("ownerId") long ownerId);
+
+    long countByOwner(UserInfo owner);
 }

@@ -181,14 +181,35 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
     @Override
     public List<Directory> findTopSubDirectories(Directory directory) {
         log.traceEntry("Directory:   " + directory);
+        String path;
+        if (directory.isRoot()) {
+            path = directory.getPath();
+        } else {
+            path = directory.getPath() + SEPARATOR;
+        }
         List<Directory> topSubDirectories = directoryJpaRepository.findByOwnerAndPathStartingWithAndLevel(
                 directory.getOwner(),
-                directory.getPath() + SEPARATOR,
+                path,
                 directory.getLevel() + 1
         );
         log.debug("Count top-level subdirectories = {}      for {}", topSubDirectories.size(), directory);
-        return topSubDirectories;
+        return log.traceExit(topSubDirectories);
     }
+
+    @Override
+    public long countByOwner(UserInfo owner) {
+        log.traceEntry("Count by {}", owner);
+        long count = directoryJpaRepository.countByOwner(owner);
+
+        return log.traceExit(count);
+    }
+
+    @Override
+    public List<Directory> findByOwnerAndPath(UserInfo owner, String path) {
+        log.traceEntry("Find by owner = {} and path = '{}'", owner, path);
+        return directoryJpaRepository.findByOwnerAndPath(owner, path);
+    }
+
     private class OperationParameters {
 
         private final UserInfo owner;

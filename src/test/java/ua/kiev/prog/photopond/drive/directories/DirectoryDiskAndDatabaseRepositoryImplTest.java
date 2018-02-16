@@ -330,10 +330,16 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     private Directory[] createSubdirectory(Directory directory, String[] subDirectoryNames) throws IOException {
         Directory[] arr = new Directory[subDirectoryNames.length];
         for (int i = 0; i < arr.length; i++) {
+            String directoryPath;
+            if(directory.isRoot()) {
+                directoryPath = SEPARATOR + subDirectoryNames[i];
+            } else {
+                directoryPath = directory.getPath() + SEPARATOR + subDirectoryNames[i];
+            }
             arr[i] = new DirectoryBuilder()
                     .id(1001L + i)
                     .owner(user)
-                    .path(directory.getPath() + SEPARATOR + subDirectoryNames[i])
+                    .path(directoryPath)
                     .build();
             Path path = Paths.get(foldersBasedir + arr[i].getFullPath());
             if (!Files.exists(path)) {
@@ -343,4 +349,33 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         return arr;
     }
 
+    @Test
+    public void findSubDirectoriesForRoot() throws Exception {
+        Directory root = new DirectoryBuilder().owner(user).path(SEPARATOR).build();
+        String[] subDirectoryNames = {"qwerty", "New folder", "New folder (2)"};
+        Directory[] subDirectories = createSubdirectory(root, subDirectoryNames);
+        when(directoryJpaRepository
+                .findByOwnerAndPathStartingWithAndLevel(root.getOwner(), root.getPath(), root.getLevel() + 1)
+        ).thenReturn(asList(subDirectories));
+        Directory[] expectedSubDirectories = createSubdirectory(root, subDirectoryNames);
+
+        List<Directory> result = instance.findTopSubDirectories(root);
+
+        assertThat(result).containsExactlyInAnyOrder(expectedSubDirectories);
+    }
+
+    @Test
+    public void findSubDirectoriesForNonRoot() throws Exception {
+        String[] subDirectoryNames = {"qwerty", "New folder", "New folder (2)"};
+        Directory[] subDirectories = createSubdirectory(directory, subDirectoryNames);
+        when(directoryJpaRepository
+                .findByOwnerAndPathStartingWithAndLevel(directory.getOwner(), directory.getPath() + SEPARATOR, directory.getLevel() + 1)
+        ).thenReturn(asList(subDirectories));
+        Directory[] expectedSubDirectories = createSubdirectory(directory, subDirectoryNames);
+
+        List<Directory> result = instance.findTopSubDirectories(directory);
+
+        assertThat(result).containsExactlyInAnyOrder(expectedSubDirectories);
+
+    }
 }
