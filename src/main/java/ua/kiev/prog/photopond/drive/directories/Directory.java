@@ -32,15 +32,17 @@ public class Directory implements Serializable {
     private UserInfo owner;
 
     public Directory() {
+        path = "";
         level = 0;
     }
 
     public Directory(UserInfo owner) {
+        this();
         this.owner = owner;
     }
 
     public Directory(UserInfo owner, String path) {
-        this.owner = owner;
+        this(owner);
         setPath(path);
     }
 
@@ -57,6 +59,12 @@ public class Directory implements Serializable {
     }
 
     public void setPath(String path) {
+        isPathCorrect(path);
+        this.path = path;
+        updateLevel(path);
+    }
+
+    private static void isPathCorrect(String path) {
         if (path == null || path.isEmpty()) {
             throw new IllegalArgumentException("Null or empty path");
         } else if (!path.startsWith(SEPARATOR)){
@@ -69,14 +77,15 @@ public class Directory implements Serializable {
         if (matcher.find()) {
             throw new IllegalArgumentException("Two or more SEPARATORS together");
         }
-        this.path = path;
-        updateLevel(path);
     }
 
     private void updateLevel(String path) {
         level = 0;
         if (path == null) {
             return;
+        }
+        if (SEPARATOR.equals(path)) {
+            level = -1;
         }
         Pattern pattern = Pattern.compile(SEPARATOR);
         Matcher matcher = pattern.matcher(path);
@@ -120,6 +129,8 @@ public class Directory implements Serializable {
     public String getParentPath() {
         if (path == null) {
             throw new IllegalArgumentException("Path is null");
+        } else if (path.isEmpty()) {
+            throw new IllegalArgumentException("Path is empty");
         }
         String parentDirectoryPath = "";
 
@@ -184,5 +195,37 @@ public class Directory implements Serializable {
                 ", level=" + level +
                 ", owner=[" + owner.getLogin() +
                 "]}";
+    }
+
+    public static String buildPath(String firstSubDirectoryName, String ...subDirectoryNames ) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (firstSubDirectoryName == null || firstSubDirectoryName.isEmpty()) {
+            throw new IllegalArgumentException("FirstSubDirectoryName cannot be null or empty");
+        }
+        if (!SEPARATOR.equals(firstSubDirectoryName)) {
+            appendToPath(stringBuilder, firstSubDirectoryName);
+        }
+        for (String subDirectoryName : subDirectoryNames) {
+            if (subDirectoryName == null) {
+                throw new IllegalArgumentException("Found null name in subDirectoryNames. Cannot build path.");
+            }
+            if (subDirectoryName.isEmpty()) {
+                throw new IllegalArgumentException("Found null name in subDirectoryNames. Cannot build path.");
+            }
+            appendToPath(stringBuilder, subDirectoryName);
+        }
+        String path = stringBuilder.toString();
+        if (path.isEmpty()) {
+            path = SEPARATOR;
+        }
+        isPathCorrect(path);
+        return path;
+    }
+
+    private static void appendToPath(StringBuilder stringBuilder, String firstSubDirectoryName) {
+        if (!firstSubDirectoryName.startsWith(SEPARATOR)) {
+            stringBuilder.append(SEPARATOR);
+        }
+        stringBuilder.append(firstSubDirectoryName);
     }
 }
