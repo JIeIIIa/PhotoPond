@@ -89,7 +89,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
 
     @Override
     public void rename(Directory directory, String newName) throws DirectoryModificationException {
-        log.traceEntry("Rename:   {}", directory);
+        log.traceEntry("Rename:   {}   ->   {}", directory, newName);
         throwExceptionIfDirectoryNull(directory);
 
         if (directory.getName().equals(newName)) {
@@ -152,7 +152,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
     }
 
     private void moveDirectories(Directory source, OperationParameters parameters, String error) throws DirectoryModificationException {
-        log.traceEntry();
+        log.traceEntry("{}     {}", source, parameters);
         try {
             Files.move(parameters.getCurrentPathOnDisk(), parameters.getTargetPathOnDisk());
             log.trace("Moved directory on disk '{}' -> '{}'", parameters.getCurrentPathOnDisk(), parameters.getTargetPathOnDisk());
@@ -210,6 +210,27 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
         return directoryJpaRepository.findByOwnerAndPath(owner, path);
     }
 
+    @Override
+    public Directory findById(Long directoryId) throws DirectoryException {
+        Directory directory = directoryJpaRepository.findById(directoryId);
+        if (directory == null) {
+            throw new DirectoryException("Not found directory with id = " + directoryId);
+        }
+        return directory;
+    }
+
+    @Override
+    public Directory findByOwnerAndId(UserInfo owner, Long directoryId) throws DirectoryException {
+        Directory directory = directoryJpaRepository.findById(directoryId);
+        if (directory == null) {
+            throw new DirectoryException("Not found directory with id = " + directoryId + " for owner = " + owner);
+        }
+        if (!Files.exists(Paths.get(foldersBaseDir + directory.getFullPath()))) {
+            throw new DirectoryException("Not found " + directory + " on disk");
+        }
+        return directory;
+    }
+
     private class OperationParameters {
 
         private final UserInfo owner;
@@ -220,7 +241,12 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
         OperationParameters(Directory directory, String newParentPath, String newName) {
             ownerFolder = directory.getOwnerFolder();
             currentPath = directory.getPath();
-            targetPath = newParentPath + SEPARATOR + newName;
+            if (SEPARATOR.equals(newParentPath)) {
+                targetPath = SEPARATOR + newName;
+            } else {
+                targetPath = newParentPath + SEPARATOR + newName;
+            }
+
             owner = directory.getOwner();
         }
 

@@ -18,4 +18,8 @@ public interface DirectoryDiskAndDatabaseRepository {
     long countByOwner(UserInfo owner);
 
     List<Directory> findByOwnerAndPath(UserInfo owner, String path);
+
+    Directory findById(Long directoryId) throws DirectoryException;
+
+    Directory findByOwnerAndId(UserInfo owner, Long directoryId) throws DirectoryException;
 }

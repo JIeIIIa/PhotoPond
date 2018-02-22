@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import ua.kiev.prog.photopond.user.UserInfo;
@@ -22,10 +21,11 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
+import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource("classpath:application.properties")
-@ComponentScan(value = "ua.kiev.prog.photopond.drive")
+//@ComponentScan(value = "ua.kiev.prog.photopond.drive")
 public class DirectoryDiskAndDatabaseRepositoryImplTest {
 
     @MockBean
@@ -49,7 +49,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         foldersBasedirPath = Paths.get(foldersBasedir);
         user = new UserInfoBuilder().login("awesomeUser").role(UserRole.USER).build();
         directory = new DirectoryBuilder().path("/first").owner(user).build();
-        directoryPathOnDisk = Paths.get(foldersBasedir + "/" + user.getLogin() + "/first");
+        directoryPathOnDisk = Paths.get(foldersBasedir + buildPath(user.getLogin(), "first")  );
 
 
         if (Files.exists(foldersBasedirPath)) {
@@ -103,8 +103,8 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
 
     @Test(expected = DirectoryModificationException.class)
     public void saveWhenParentDirectoryNotExists() throws Exception {
-        String parentPath = SEPARATOR + "First";
-        directory.setPath(parentPath + SEPARATOR + "second");
+        String parentPath = buildPath("First");
+        directory.setPath(buildPath(parentPath, "second"));
         when(directoryJpaRepository.findByOwnerAndPath(user, parentPath)).thenReturn(Collections.<Directory>emptyList());
 
         try {
@@ -173,8 +173,8 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         }
         String currentPath = directory.getPath();
         String newName = "second";
-        String targetPath = directory.getParentPath() + SEPARATOR + newName;
-        String targetFullPath = foldersBasedirPath + directory.getOwnerFolder() + SEPARATOR + targetPath;
+        String targetPath = buildPath(newName);
+        String targetFullPath = foldersBasedirPath + buildPath(directory.getOwnerFolder(), targetPath);
         Path targetPathOnDisk = Paths.get(targetFullPath);
         when(directoryJpaRepository.findByOwnerAndPathStartingWith(user, currentPath))
                 .thenReturn(asList(directory, subDirectory, notRenameDirectory));
@@ -215,8 +215,8 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
             Files.createDirectories(directoryPathOnDisk);
         }
         String newName = "anotherDir";
-        String targetPath = directory.getParentPath() + SEPARATOR + newName;
-        String targetFullPath = foldersBasedirPath + directory.getOwnerFolder() + SEPARATOR + targetPath;
+        String targetPath = buildPath(directory.getParentPath(), newName);
+        String targetFullPath = foldersBasedirPath + buildPath(directory.getOwnerFolder(), targetPath);
         Path targetPathOnDisk = Paths.get(targetFullPath);
         if (!Files.exists(targetPathOnDisk)) {
             Files.createDirectories(targetPathOnDisk);
@@ -231,8 +231,8 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
             Files.createDirectories(directoryPathOnDisk);
         }
         String newName = "anotherDir";
-        String targetPath = directory.getParentPath() + SEPARATOR + newName;
-        String targetFullPath = foldersBasedirPath + directory.getOwnerFolder() + SEPARATOR + targetPath;
+        String targetPath = buildPath(newName);
+        String targetFullPath = foldersBasedirPath + buildPath(directory.getOwnerFolder(), targetPath);
         Path targetPathOnDisk = Paths.get(targetFullPath);
         Files.deleteIfExists(targetPathOnDisk);
         Directory targetDirectory = new DirectoryBuilder().owner(user).path(targetPath).build();
@@ -331,11 +331,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         Directory[] arr = new Directory[subDirectoryNames.length];
         for (int i = 0; i < arr.length; i++) {
             String directoryPath;
-            if(directory.isRoot()) {
-                directoryPath = SEPARATOR + subDirectoryNames[i];
-            } else {
-                directoryPath = directory.getPath() + SEPARATOR + subDirectoryNames[i];
-            }
+            directoryPath = buildPath(directory.getPath(), subDirectoryNames[i]);
             arr[i] = new DirectoryBuilder()
                     .id(1001L + i)
                     .owner(user)

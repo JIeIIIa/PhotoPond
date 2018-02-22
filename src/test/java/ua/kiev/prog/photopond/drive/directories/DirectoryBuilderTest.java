@@ -8,6 +8,7 @@ import ua.kiev.prog.photopond.user.UserInfoBuilder;
 import ua.kiev.prog.photopond.user.UserRole;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @RunWith(JUnit4.class)
 public class DirectoryBuilderTest {
@@ -35,7 +36,7 @@ public class DirectoryBuilderTest {
 
     @Test
     public void path() throws Exception {
-        String path = "/some/long/long/long/path";
+        String path = buildPath("some", "long", "long", "long", "path");
 
         Directory directory = new DirectoryBuilder().path(path).build();
 
@@ -61,7 +62,7 @@ public class DirectoryBuilderTest {
         Directory directory = new Directory();
         directory.setId(777L);
         directory.setOwner(user);
-        directory.setPath("/some/path");
+        directory.setPath(buildPath("some","path"));
 
         Directory result = new DirectoryBuilder().from(directory).build();
 
