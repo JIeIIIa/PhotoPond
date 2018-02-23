@@ -5,6 +5,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @TestConfiguration
+@Profile("securityWebAuthTestConfig")
 public class SpringSecurityWebAuthenticationTestConfiguration {
 
     @Bean
@@ -54,8 +56,13 @@ public class SpringSecurityWebAuthenticationTestConfiguration {
         roles.add(new SimpleGrantedAuthority(UserRole.ADMIN.toString()));
         User managerActiveUser = new User("adminTest", "adminTest", roles);
 
+        roles = new HashSet<>();
+        roles.add(new SimpleGrantedAuthority(UserRole.DEACTIVATED.toString()));
+        User deactivatedUser = new User("deactivatedUser", "qwerty123!",
+                false, true, true, true, roles);
+
         return new InMemoryUserDetailsManager(Arrays.<UserDetails>asList(
-                basicActiveUser, managerActiveUser
+                basicActiveUser, managerActiveUser, deactivatedUser
         ));
     }
 }

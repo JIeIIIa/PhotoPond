@@ -4,12 +4,14 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.WebApplicationContext;
-import ua.kiev.prog.photopond.annotation.ITTest;
+import ua.kiev.prog.photopond.annotation.IntegrationTest;
 
 @RunWith(SpringRunner.class)
-@ITTest
+@IntegrationTest
+@ActiveProfiles("dev")
 public class ApplicationRunnerIT {
 
     @Autowired

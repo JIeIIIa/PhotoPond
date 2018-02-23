@@ -25,7 +25,6 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource("classpath:application.properties")
-//@ComponentScan(value = "ua.kiev.prog.photopond.drive")
 public class DirectoryDiskAndDatabaseRepositoryImplTest {
 
     @MockBean

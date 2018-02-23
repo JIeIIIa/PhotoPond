@@ -1,18 +1,19 @@
 package ua.kiev.prog.photopond.user.registration;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import ua.kiev.prog.photopond.annotation.SecurityTest;
+import ua.kiev.prog.photopond.annotation.ImportSecurityConfiguration;
+import ua.kiev.prog.photopond.configuration.UserInfoServiceMockConfiguration;
+import ua.kiev.prog.photopond.security.SpringSecurityWebAuthenticationTestConfiguration;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoService;
 import ua.kiev.prog.photopond.user.UserRole;
@@ -26,8 +27,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ua.kiev.prog.photopond.user.registration.RegistrationController.REGISTRATION_FORM_NAME;
 
 @RunWith(SpringRunner.class)
-@SecurityTest
 @WebMvcTest(controllers = RegistrationController.class)
+@ImportSecurityConfiguration
+@ContextConfiguration(classes = {
+        UserInfoServiceMockConfiguration.class,
+        RegistrationControllerTestConfiguration.class,
+        SpringSecurityWebAuthenticationTestConfiguration.class
+})
+
+@ActiveProfiles({"dev", "unitTest", "securityWebAuthTestConfig"})
 public class RegistrationControllerTest {
     private static final String REGISTRATION_URL = "/registration";
     private static final String REGISTRATION_MODEL_NAME = "registration";
@@ -39,13 +47,8 @@ public class RegistrationControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private UserInfoService userInfoService;
-
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
+    @Autowired
+    UserInfoService userInfoService;
 
     @Test
     public void availableRegistrationPageTest() throws Exception {

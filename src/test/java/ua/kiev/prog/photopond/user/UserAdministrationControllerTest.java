@@ -8,14 +8,15 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import ua.kiev.prog.photopond.annotation.DefaultTest;
+import ua.kiev.prog.photopond.configuration.UserInfoServiceMockConfiguration;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,14 +30,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = UserAdministrationController.class, secure = false)
-@DefaultTest
+@ContextConfiguration(classes = {UserInfoServiceMockConfiguration.class})
+@ActiveProfiles("unitTest")
 public class UserAdministrationControllerTest {
     private static final String URL_PREFIX = "/administration/user";
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private UserInfoService userInfoService;
 
     @Test

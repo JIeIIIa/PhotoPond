@@ -5,14 +5,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import ua.kiev.prog.photopond.annotation.SecurityTest;
-import ua.kiev.prog.photopond.user.UserInfoService;
+import ua.kiev.prog.photopond.annotation.ImportSecurityConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
@@ -23,15 +23,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@SecurityTest
 @WebMvcTest(controllers = LoginController.class)
+@ImportSecurityConfiguration
+@ContextConfiguration(classes = SpringSecurityWebAuthenticationTestConfiguration.class)
+@ActiveProfiles({"dev", "securityWebAuthTestConfig"})
 public class LoginControllerTest {
     private static final String LOGIN_PROCESSING_URL = "/j_spring_security_check";
+
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private UserInfoService userInfoService;
 
     @Test
     public void loginFormTest() throws Exception {
@@ -66,7 +66,9 @@ public class LoginControllerTest {
     @Test
     public void authenticationFailed() throws Exception {
         mockMvc
-                .perform(formLogin(LOGIN_PROCESSING_URL).user("userTest").password("invalid"))
+                .perform(formLogin(LOGIN_PROCESSING_URL)
+                        .user("j_login", "userTest")
+                        .password("j_password", "invalid"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login?error=true"))
                 .andExpect(unauthenticated())
@@ -96,4 +98,17 @@ public class LoginControllerTest {
                 .andExpect(redirectedUrl("/user/userR"));
     }
 
+    @Test
+    public void authorizationDeactivatedUser() throws Exception {
+        mockMvc
+                .perform(formLogin(LOGIN_PROCESSING_URL)
+                        .user("j_login", "deactivatedUser")
+                        .password("j_password", "qwerty123!"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/login?error=true"))
+                .andExpect(unauthenticated())
+                .andDo(print());
+    }
+
 }
+

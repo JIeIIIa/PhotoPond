@@ -6,8 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
@@ -17,9 +17,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@ActiveProfiles({"dev", "testDB"})
+@ActiveProfiles({"dev", "testDB", "unitTest"})
 @DataJpaTest
-@ComponentScan(value = "ua.kiev.prog.photopond.user", resourcePattern = "/*.class")
+@ContextConfiguration(classes =  {UserInfoServiceJpaServiceImplITConfiguration.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DbUnitTestExecutionListener.class})
 @DatabaseSetup("classpath:datasets/users_dataset.xml")
