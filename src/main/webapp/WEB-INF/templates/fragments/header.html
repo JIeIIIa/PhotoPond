@@ -70,8 +70,9 @@
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle pr-0" id="navbarDropdownMenuLink" data-toggle="dropdown"
-                       aria-haspopup="true" aria-expanded="false"><i class="fa fa-language"></i>
-                        <div th:text="#{header.language}">Eng</div>
+                       aria-haspopup="true" aria-expanded="false">
+                        <div th:remove="tag"><i class="fa fa-language"></i>
+                        <div th:text="#{header.language}" th:remove="tag">Eng</div></div>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right inverse-dropdown text-center"
                          aria-labelledby="navbarDropdownMenuLink">

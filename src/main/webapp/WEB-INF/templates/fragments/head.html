@@ -1,5 +1,10 @@
-<thymeleaf xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-           th:fragment="head" th:remove="tag">
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<head
+           th:fragment="head (pageTitle)" th:remove="tag">
+    <title th:text="${pageTitle}">Template title</title>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
 
@@ -20,4 +25,8 @@
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/skins/default-skin.min.css}">
 
-</thymeleaf>
+</head>
+<body>
+
+</body>
+</html>
