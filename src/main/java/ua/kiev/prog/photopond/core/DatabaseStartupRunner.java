@@ -86,12 +86,20 @@ public class DatabaseStartupRunner {
                     .password("useruser")
                     .build();
             userInfoService.addUser(user);
+            UserInfo deactivatedUser = new UserInfoBuilder()
+                    .login("nonActiveUser")
+                    .password("useruser")
+                    .role(UserRole.DEACTIVATED)
+                    .build();
+            userInfoService.addUser(deactivatedUser);
             log.info("    =======================================");
             log.info("                Available users ");
             log.info("    =======================================");
             userInfoToLog(admin);
             log.info("    ---------------------------------------");
             userInfoToLog(user);
+            log.info("    ---------------------------------------");
+            userInfoToLog(deactivatedUser);
             log.info("    =======================================");
         }
 
