@@ -95,7 +95,7 @@ public class LoginControllerTest {
     public void redirectAfterSuccessAuthorization() throws Exception {
         mockMvc.perform(get("/authorized.html"))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/user/userR"));
+                .andExpect(redirectedUrl("/user/userR/drive"));
     }
 
     @Test

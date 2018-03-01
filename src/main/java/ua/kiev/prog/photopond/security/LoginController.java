@@ -29,7 +29,7 @@ public class LoginController {
         log.traceEntry();
         String login = authentication.getName();
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
-                .path("/user/{login}")
+                .path("/user/{login}/drive")
                 .build()
                 .expand(login)
                 .encode();
