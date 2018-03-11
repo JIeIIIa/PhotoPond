@@ -5,7 +5,7 @@ import ua.kiev.prog.photopond.user.UserInfo;
 import java.util.List;
 
 public interface DirectoryDiskAndDatabaseRepository {
-    void save(Directory directory) throws DirectoryModificationException;
+    Directory save(Directory directory) throws DirectoryModificationException;
 
     void delete(Directory directory) throws DirectoryModificationException;
 

@@ -1,0 +1,267 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head th:replace="fragments/head :: head (pageTitle = 'UserFolders')">
+    <title>PhotoPond - authorization</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <title>PhotoPond - main page</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- jQuery -->
+    <script src="../../libs/jquery/jquery-3.2.1.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <script src="../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
+    <link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap.min.css">
+    <script src="../../libs/bootstrap/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/skins/default-skin.min.css">
+
+</head>
+
+<body>
+<object th:include="fragments/header :: header" th:remove="tag"/>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">Parents:</div>
+    </div>
+
+    <div class="row">
+        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+        <div th:each="parent:${content.getParents()}">
+            <div class="col-12">
+                <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                <a href="#" th:href="@{/user/{user}/drive{path} (user=${userLogin}, path=${parent.getPath()})}" th:text="${parent.getPath()}">parent</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">SubDirectories:</div>
+    </div>
+    <div class="row">
+        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+        <div th:each="subDir:${content.getTopSubDirectories()}" th:remove="tag">
+            <div class="col-3">
+                <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                <a href="#" th:href="@{/user/{user}/drive{path} (user=${userLogin}, path=${subDir.getPath()})}" th:text="${subDir.getPath()}">subDir</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">PICTURES:</div>
+    </div>
+    <div class="row">
+        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+        <div th:each="file:${content.getFiles()}" th:remove="tag">
+            <div class="col-3 text-center">
+                <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                <img src="#" th:src="@{/user/{user}/files{path} (user=${userLogin}, path=${file.getPath()})}" alt="some picture"
+                     th:alt="${file.getPath()}"
+                     class="img-thumbnail"/>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">Create subdirectory</div>
+    </div>
+    <div class="row">
+        <div class="container-fluid">
+            <div class="form-group">
+                <div class="col-md-8 offset-md-2">
+                    <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                    <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+                    <form class="form-horizontal" th:action="@{/user/{user}/drive{path} (user=${userLogin}, path=${content.getCurrentDirectory().getPath()},
+                    directoryId=${content.getCurrentDirectory().getId()})}" method="POST">
+
+                        <div class="form-group">
+                            <label for="newDirectoryName" class="control-label">directory name</label>
+                            <input class="form-control" type="text" placeholder="new directory name" id="newDirectoryName" name="newDirectoryName">
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default form-control">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-12">Add picture</div>
+    </div>
+    <div class="row">
+        <div class="container-fluid">
+            <div class="form-group">
+                <div class="col-md-8 offset-md-2">
+                    <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                    <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+                    <form class="form-horizontal"
+                          th:action="@{/user/{user}/files{path} (user=${userLogin}, path=${content.getCurrentDirectory().getPath()} )}"
+                          method="POST" enctype="multipart/form-data">
+
+                        <div class="form-group">
+                            <label for="newDirectoryName" class="control-label">New file</label>
+                            <input class="form-control" type="file" placeholder="add picture" id="files" name="files" multiple>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default form-control">add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-default" id="pictureDel">Delete picture</button>
+
+    <div>
+
+        <input id="renamedName" type="text">
+        <button type="button" class="btn btn-default" id="pictureRename">Rename picture</button>
+
+    </div>
+
+</div>
+
+</body>
+<!--<script src="../../css/myScripts.js" th:src="@{/css/myScripts.js}"></script>-->
+<script type="text/javascript" th:inline="javascript">
+    var deletingMode = false;
+    var deletingCnt = 0;
+
+    $('body').on('click', 'img', function () {
+        if (!deletingMode) {
+            return;
+        }
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            deletingCnt--;
+        }
+        else {
+            $(this).addClass('selected');
+            deletingCnt++;
+        }
+        if (deletingCnt === 0) {
+            deletingMode = false;
+        }
+    });
+    $(document).ready(function () {
+        var timeoutId = 0;
+
+        var myFunction = function (id) {
+            deletingMode = true;
+            //$(this).addClass('selected');
+            clearTimeout(id);
+        };
+        $('img').on('mousedown', function () {
+            timeoutId = setTimeout(myFunction, 1000);
+        }).on('mouseup mouseleave', function () {
+            clearTimeout(timeoutId);
+        });
+
+
+        $("#pictureDel").click(function () {
+            var imgs = $("img.selected");
+            var imgID = [];
+            var host = location.protocol + "//" + location.host;
+//            alert(location.protocol + "//" + location.host);
+
+            $(imgs).each(function () {
+                imgID.push($(this).attr("src"));
+                var el = $(this), path = $(this).attr("src");
+                $.support.cors = true;
+                $.ajax({
+                    url: host + path,
+                    type: 'DELETE',
+
+                    success: function (data, textStatus, xhr) {
+                        console.log(xhr.status);
+                        if (xhr.status === 200) {
+                            el.remove();
+                        }
+
+                    },
+                    error: function (data) {
+                        alert("Error while deleting.");
+                        console.log(data);
+                    }
+                });
+            });
+        });
+
+        $("#pictureRename").click(function () {
+            var img = $("img.selected");
+            if (img.length !== 1) {
+                alert('Выбрано больше одного элемента');
+                return;
+            }
+
+            var host = location.protocol + "//" + location.host;
+//            alert(location.protocol + "//" + location.host);
+
+
+            var path = img.attr("src");
+            console.log("path:  " + path);
+            console.log("host + path:  " + (host + path));
+            var index = path.lastIndexOf("/");
+//            var newName = path.substr(0, index + 1) + $("#renamedName").val();
+            var directoryPath = path.substr(0, index);
+            alert(directoryPath);
+
+            var N = $("#renamedName").val();
+            console.log("name:  " + N);
+            var obj = {
+                directoryPath: directoryPath,
+                filename: N
+            };
+            console.log(obj);
+
+            $.ajax({
+                url: host + path,
+                type: 'PUT',
+                data: JSON.stringify(obj),
+                contentType: 'application/json',
+
+                success: function (data, textStatus, xhr) {
+                    console.log(xhr.status);
+                    if (xhr.status === 200) {
+                        img.attr("src", directoryPath + "/" + N);
+                        img.attr("alt", "/" + N);
+                        img.removeClass("selected");
+                        alert("success: " + data);
+                    }
+
+                },
+                error: function (data) {
+                    alert("Error while renaming.");
+                    console.log(data);
+                }
+            });
+        });
+    });
+</script>
+<style>
+    .selected {
+        border: 4px solid #0f0;
+    }
+</style>
+
+</html>

@@ -36,7 +36,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
     }
 
     @Override
-    public void save(Directory directory) throws DirectoryModificationException {
+    public Directory save(Directory directory) throws DirectoryModificationException {
         log.traceEntry("Save {}", directory);
         throwExceptionIfDirectoryNull(directory);
 
@@ -57,9 +57,8 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
             }
             log.trace("Directory was created on disk:   {}", pathOnDisk);
         }
-        directoryJpaRepository.save(directory);
-        log.trace("Directory was saved in database:   {}", directory);
-        log.traceExit();
+        directory = directoryJpaRepository.save(directory);
+        return log.traceExit("Directory was saved in database:   {}", directory);
     }
 
     private void throwExceptionIfDirectoryNull(Directory directory) {

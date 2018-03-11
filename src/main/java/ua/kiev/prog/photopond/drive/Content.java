@@ -1,7 +1,9 @@
 package ua.kiev.prog.photopond.drive;
 
 import ua.kiev.prog.photopond.drive.directories.Directory;
+import ua.kiev.prog.photopond.drive.pictures.PictureFile;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Content {
@@ -10,6 +12,8 @@ public class Content {
     private List<Directory> topSubDirectories;
 
     private List<Directory> parents;
+
+    private List<PictureFile> files;
 
     public Directory getCurrentDirectory() {
         return currentDirectory;
@@ -33,6 +37,14 @@ public class Content {
 
     public void setParents(List<Directory> parents) {
         this.parents = parents;
+    }
+
+    public List<PictureFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<PictureFile> files) {
+        this.files = files;
     }
 
     @Override
@@ -61,6 +73,62 @@ public class Content {
                 "currentDirectory=" + currentDirectory +
                 ", topSubDirectories=" + topSubDirectories +
                 ", parents=" + parents +
+                ", files=" + files +
                 '}';
+    }
+
+    public static class ContentBuilder {
+        private Directory currentDirectory;
+
+        private List<Directory> topSubDirectories;
+
+        private List<Directory> parents;
+
+        private List<PictureFile> files;
+
+        private ContentBuilder() {
+
+        }
+
+        public static ContentBuilder getInstance() {
+            return new ContentBuilder();
+        }
+
+        public ContentBuilder currentDirectory(Directory currentDirectory) {
+            this.currentDirectory = currentDirectory;
+            return this;
+        }
+
+        public ContentBuilder topSubDirectories(List<Directory> topSubDirectories) {
+            this.topSubDirectories = topSubDirectories;
+            return this;
+        }
+
+        public ContentBuilder parents(List<Directory> parents) {
+            this.parents = parents;
+            return this;
+        }
+
+        public ContentBuilder files(List<PictureFile> files) {
+            this.files = files;
+            return this;
+        }
+
+        public Content build() {
+            Content content = new Content();
+            content.setCurrentDirectory(this.currentDirectory);
+            content.setTopSubDirectories(checkList(this.topSubDirectories));
+            content.setParents(checkList(this.parents));
+            content.setFiles(checkList(this.files));
+            return content;
+        }
+
+        private <T> List<T> checkList(List<T> list) {
+            if (list == null) {
+                return new LinkedList<>();
+            } else {
+                return list;
+            }
+        }
     }
 }

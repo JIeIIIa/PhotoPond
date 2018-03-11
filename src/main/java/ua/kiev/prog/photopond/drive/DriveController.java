@@ -21,8 +21,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import java.security.Principal;
 
+import static ua.kiev.prog.photopond.Utils.Utils.getUriTail;
+
 @Controller
-@RequestMapping(value = "/drive")
+@RequestMapping(value = "/user/{login}/drive")
 public class DriveController {
     private static final Logger log = LogManager.getLogger(DriveController.class);
 
@@ -36,17 +38,13 @@ public class DriveController {
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/{userLogin}/**", method = RequestMethod.GET)
-    public ModelAndView echo(Principal principal, ModelAndView modelAndView,
-                             @PathVariable("userLogin") String userLogin, HttpServletRequest request) throws DriveException {
-        String tail = request.getRequestURI();
-        tail = tail.replaceFirst("/drive/" + userLogin, "");
-        String path = userLogin + tail;
-        if (tail.isEmpty()) {
-            tail = Directory.SEPARATOR;
-        }
-        UserInfo user = userService.getUserByLogin(principal.getName());
-        Content content = driveService.getDirectoryContent(user, tail);
+    @RequestMapping(value = "/**", method = RequestMethod.GET)
+    public ModelAndView getDirectory(ModelAndView modelAndView,
+                             @PathVariable("login") String userLogin,
+                             HttpServletRequest request) throws DriveException {
+        String tail = getUriTail(request, userLogin);
+
+        Content content = driveService.getDirectoryContent(userLogin, tail);
 
         modelAndView.setViewName("/drive/directory");
         modelAndView.addObject("content", content);
@@ -55,14 +53,14 @@ public class DriveController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "{userLogin}/**", method = RequestMethod.POST)
+    @RequestMapping(value = "/**", method = RequestMethod.POST)
     public ModelAndView createDirectory(Principal principal,
-                                        @PathVariable("userLogin") String userLogin,
+                                        @PathVariable("login") String userLogin,
                                         @NotNull @RequestParam("directoryId") Long directoryId,
                                         @NotNull @RequestParam("newDirectoryName") String newDirectoryName,
                                         HttpServletRequest request) throws DriveException {
         String tail = request.getRequestURI();
-        tail = tail.replaceFirst("/drive/" + userLogin, "");
+        tail = tail.replaceFirst("/user/" + userLogin + "/drive", "");
         if (tail.isEmpty()) {
             tail = Directory.SEPARATOR;
         }
@@ -70,9 +68,9 @@ public class DriveController {
         Directory parentDirectory = driveService.addDirectory(user, directoryId, newDirectoryName);
 
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
-                .path("/drive{fullPath}")
+                .path("/user/{login}/drive{path}")
                 .build()
-                .expand(parentDirectory.getFullPath())
+                .expand(userLogin, parentDirectory.getPath())
                 .encode();
         RedirectView redirectView = new RedirectView(uriComponents.toUriString(), true, true, false);
         ModelAndView modelAndView = new ModelAndView(redirectView);
