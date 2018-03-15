@@ -15,6 +15,10 @@ body {
 
 }
 
+.breadcrumb-item + .breadcrumb-item::before {
+	content: none;
+}
+
 .logo {	
 	font-family: "Roboto Slab";
 	font-weight: 900;

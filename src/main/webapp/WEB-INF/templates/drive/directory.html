@@ -34,28 +34,41 @@
 
         </div>
     </div>
-    <div class="row">
-        <div class="col-12">Parents:</div>
-    </div>
 
     <div class="row">
         <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-        <div th:each="parent:${content.getParents()}">
-            <div class="col-12">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item secondary-color" th:each="parent:${content.getParents()}">
                 <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                <a href="#" th:href="@{/user/{user}/drive{path} (user=${userLogin}, path=${parent.getPath()})}" th:text="${parent.getPath()}">parent</a>
-            </div>
-        </div>
+                <a href="#" th:href="@{'/user/{login}/drive'+${parent.getPath()}(login=${userLogin})}"
+                   th:text="${parent.getNameToBreadcrumb()}">parent
+                </a>
+                <i class="fa fa-angle-double-right mx-2" aria-hidden="true"></i>
+            </li>
+            <li class="breadcrumb-item primary-color active" th:text="${content.getCurrentDirectory().getNameToBreadcrumb()}">
+                current
+            </li>
+        </ol>
     </div>
+
     <div class="row">
-        <div class="col-12">SubDirectories:</div>
+        <div class="col-12">Directories</div>
     </div>
     <div class="row">
         <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
         <div th:each="subDir:${content.getTopSubDirectories()}" th:remove="tag">
             <div class="col-3">
-                <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                <a href="#" th:href="@{/user/{user}/drive{path} (user=${userLogin}, path=${subDir.getPath()})}" th:text="${subDir.getPath()}">subDir</a>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-text">
+                            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                            <i class="fa fa-folder" style="color: #f0cb58"> </i><a href="#"
+                                                                                   th:href="@{'/user/{login}/drive'+${subDir.getPath()}(login=${userLogin})}"
+                                                                                   th:text="${' ' +subDir.getName()}">subDir</a>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -63,15 +76,16 @@
     <div class="row">
         <div class="col-12">PICTURES:</div>
     </div>
-    <div class="row">
+    <div class="row text-center">
         <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
         <div th:each="file:${content.getFiles()}" th:remove="tag">
-            <div class="col-3 text-center">
-                <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                <img src="#" th:src="@{/user/{user}/files{path} (user=${userLogin}, path=${file.getPath()})}" alt="some picture"
-                     th:alt="${file.getPath()}"
-                     class="img-thumbnail"/>
-
+            <div class="col-3">
+                <div class="card h-100" style="height: 10rem;">
+                    <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                    <img src="#" th:src="@{'/user/{login}/files'+${file.getPath()}(login=${userLogin})}" alt="some picture"
+                         th:alt="${file.getPath()}" class="" style="object-fit: contain;height: 100%; width: 100%;"/>
+                    <!--<div class="caption" th:text="${file.getFilename()}" style="word-wrap: break-word">Filename</div>-->
+                </div>
             </div>
         </div>
     </div>
@@ -85,8 +99,9 @@
                 <div class="col-md-8 offset-md-2">
                     <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
                     <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                    <form class="form-horizontal" th:action="@{/user/{user}/drive{path} (user=${userLogin}, path=${content.getCurrentDirectory().getPath()},
-                    directoryId=${content.getCurrentDirectory().getId()})}" method="POST">
+                    <form class="form-horizontal"
+                          th:action="@{'/user/{login}/drive'+{path} (login=${userLogin}, path=${content.getCurrentDirectory().getPath()})}"
+                          method="POST">
 
                         <div class="form-group">
                             <label for="newDirectoryName" class="control-label">directory name</label>
@@ -113,7 +128,7 @@
                     <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
                     <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
                     <form class="form-horizontal"
-                          th:action="@{/user/{user}/files{path} (user=${userLogin}, path=${content.getCurrentDirectory().getPath()} )}"
+                          th:action="@{'/user/{login}/files'+{path} (login=${userLogin}, path=${content.getCurrentDirectory().getPath()} )}"
                           method="POST" enctype="multipart/form-data">
 
                         <div class="form-group">
@@ -142,7 +157,6 @@
 </div>
 
 </body>
-<!--<script src="../../css/myScripts.js" th:src="@{/css/myScripts.js}"></script>-->
 <script type="text/javascript" th:inline="javascript">
     var deletingMode = false;
     var deletingCnt = 0;
