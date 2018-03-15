@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
+import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @Service
 @Transactional
@@ -53,41 +54,65 @@ public class DriveServiceImpl implements DriveService {
     public Content getDirectoryContent(String ownerLogin, String path) throws DriveException {
         log.traceEntry("Content at '{}' for user = '{}'", path, ownerLogin);
 
-        FileParts fileParts;
+        FileParts fileParts = null;
         Directory directory;
         try {
             fileParts = new FileParts(ownerLogin, path + SEPARATOR);
             directory = fileParts.getDirectory();
         } catch (DriveException e) {
-            directory = createRootDirectoryIfNotExists(userInfoService.getUserByLogin(ownerLogin));
+            directory = createRootDirectoryIfNotExists(fileParts.getOwner());
         }
         Content content = getDirectoryContent(directory);
         return content;
     }
 
     @Override
-    public Directory addDirectory(UserInfo owner, Long parentDirectoryId, String newDirectoryName) throws DirectoryException {
-        Directory directory = directoryRepository.findByOwnerAndId(owner, parentDirectoryId);
-        if (directory == null) {
-            throw new DirectoryException("Not found directory with id = " + parentDirectoryId + "   and   owner = " + owner);
-        }
-        String path = directory.getPath();
-        if (!directory.isRoot()) {
-            path += SEPARATOR;
-        }
-        path += newDirectoryName;
-        List<Directory> currentDirectory = directoryRepository.findByOwnerAndPath(owner, path);
+    public Directory addDirectory(String ownerLogin, String parentDirectoryPath, String newDirectoryName) throws DriveException {
+        FileParts sourceParts = new FileParts(ownerLogin, parentDirectoryPath + SEPARATOR);
+
+        Directory directory = sourceParts.getDirectory();
+        String path = buildPath(directory.getPath(), newDirectoryName);
+
+        List<Directory> currentDirectory = directoryRepository.findByOwnerAndPath(sourceParts.getOwner(), path);
+        Directory newDirectory;
         if(currentDirectory.isEmpty()) {
-            Directory newDirectory = new DirectoryBuilder()
-                    .owner(owner)
+             newDirectory = new DirectoryBuilder()
+                    .owner(sourceParts.getOwner())
                     .path(path)
                     .build();
-            directoryRepository.save(newDirectory);
+            newDirectory = directoryRepository.save(newDirectory);
         } else {
-            throw new DirectoryException("Directory " + path + " exists");
+            throw new DirectoryException("Directory '" + path + "' already exists");
         }
-        return directory;
+        return newDirectory;
     }
+
+    @Override
+    public void moveDirectory(String ownerLogin, String source, String target) throws DriveException {
+        FileParts sourceParts = new FileParts(ownerLogin, source + SEPARATOR);
+        Directory targetDirectory = null;
+        try {
+            FileParts targetParts = new FileParts(ownerLogin, target + SEPARATOR);
+            targetDirectory = targetParts.getDirectory();
+        } catch (DriveException e) {
+            /*targetDirectory = new DirectoryBuilder()
+                    .owner(sourceParts.getOwner())
+                    .path(target)
+                    .build();*/
+        }
+
+        try {
+            if (targetDirectory == null) {
+                directoryRepository.rename(sourceParts.getDirectory(), target);
+            } else {
+                directoryRepository.move(sourceParts.getDirectory(), targetDirectory);
+            }
+        } catch (DriveException e) {
+            log.debug("Failure moving directory: {} -> {}", source, target);
+            throw new DriveException("Failure moving directory: " + source + " -> " + target);
+        }
+    }
+
 
     @Override
     public PictureFile addPictureFile(String ownerLogin, String directoryPath, MultipartFile multipartFile) throws DriveException {
@@ -203,14 +228,47 @@ public class DriveServiceImpl implements DriveService {
         return list;
     }
 
-    private class FileParts {
+    class FileParts {
+        private String ownerLogin;
+
+        private String path;
+
         private UserInfo owner;
 
         private Directory directory;
 
         private String filename;
 
-        FileParts(String ownerLogin, String path) throws DriveException {
+        private FileParts(String ownerLogin, String path) {
+            this.ownerLogin = ownerLogin;
+            this.path = path;
+            this.owner = null;
+            this.directory = null;
+            this.filename = null;
+        }
+
+        public UserInfo getOwner() {
+            if (this.owner == null) {
+                this.owner = userInfoService.getUserByLogin(ownerLogin);
+            }
+            return this.owner;
+        }
+
+        public Directory getDirectory() throws DriveException {
+            if (directory == null) {
+                extractDirectoryAndFilename();
+            }
+            return directory;
+        }
+
+        public String getFilename() throws DriveException {
+            if (filename == null) {
+                extractDirectoryAndFilename();
+            }
+            return filename;
+        }
+
+        private void extractDirectoryAndFilename() throws DriveException {
             if (path == null || path.isEmpty()) {
                 throw new PictureFileException("Path is null or empty");
             }
@@ -218,12 +276,12 @@ public class DriveServiceImpl implements DriveService {
             if (lastSeparatorIndex < 0) {
                 throw new PictureFileException("Wrong file path");
             }
+
             String directoryPath = path.substring(0, lastSeparatorIndex);
             if (directoryPath.isEmpty()) {
                 directoryPath = SEPARATOR;
             }
-            this.owner = userInfoService.getUserByLogin(ownerLogin);
-            List<Directory> directories = directoryRepository.findByOwnerAndPath(this.owner, directoryPath);
+            List<Directory> directories = directoryRepository.findByOwnerAndPath(getOwner(), directoryPath);
             if (directories.size() != 1) {
                 throw new DriveException("Not found or found more than one directory for owner = " + this.owner + "   and   directoryPath = " + directoryPath);
             }
@@ -231,20 +289,16 @@ public class DriveServiceImpl implements DriveService {
             this.filename = path.substring(lastSeparatorIndex+1);
         }
 
-        public Directory getDirectory() {
-            return directory;
-        }
-
-        public String getFilename() {
-            return filename;
-        }
-
-        public UserInfo getOwner() {
-            return owner;
-        }
-
         @Override
         public String toString() {
+            Directory directory = null;
+            String filename = null;
+            try {
+                directory = getDirectory();
+                filename = getFilename();
+            } catch (DriveException ignored) {
+                /*NOP*/
+            }
             return "FileParts{" +
                     "directory=" + directory +
                     ", filename='" + filename + '\'' +

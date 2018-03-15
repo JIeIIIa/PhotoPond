@@ -14,7 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static ua.kiev.prog.photopond.Utils.Utils.deleteDirectoryWithContents;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
+import static ua.kiev.prog.photopond.drive.directories.Directory.getParentPath;
 
 @Repository
 public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndDatabaseRepository {
@@ -73,30 +75,39 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
         log.traceEntry("Delete {}", directory);
         throwExceptionIfDirectoryNull(directory);
 
+
+        Path pathOnDisk = null;
         try {
-            Path pathOnDisk = Paths.get(foldersBaseDir + directory.getFullPath());
-            directoryJpaRepository.delete(directory);
-            log.trace("Directory was deleted from database:   {}", directory);
-            Files.deleteIfExists(pathOnDisk);
-            log.trace("Directory was deleted from disk:   {}", directory);
+            pathOnDisk = Paths.get(foldersBaseDir + directory.getFullPath());
+            List<Directory> directoriesToDelete = directoryJpaRepository.findByOwnerAndPathStartingWith(directory.getOwner(), directory.getPath());
+            directoryJpaRepository.deleteInBatch(directoriesToDelete);
+            log.trace("Directory with contents was deleted from database:   {}", directory);
+        } catch (Exception e) {
+            log.debug("Failure deleting from jpa repository for '{}'", directory);
+            throw new DirectoryModificationException("Failure deleting from jpa repository", e);
+        }
+        try {
+            deleteDirectoryWithContents(pathOnDisk);
+            log.trace("Directory with contents was deleted from disk:   {}", directory);
         } catch (IOException e) {
-            log.debug("Wrong delete operation for '{}'", directory);
-            throw new DirectoryModificationException("Wrong delete operation", e);
+            log.debug("Failure deleting from disk for '{}'", directory);
+            throw new DirectoryModificationException("Failure deleting from disk repository", e);
         }
         log.traceExit();
     }
 
     @Override
-    public void rename(Directory directory, String newName) throws DirectoryModificationException {
-        log.traceEntry("Rename:   {}   ->   {}", directory, newName);
+    public void rename(Directory directory, String newPath) throws DirectoryModificationException {
+        log.traceEntry("Rename:   {}   ->   {}", directory, newPath);
         throwExceptionIfDirectoryNull(directory);
 
+        String newName = Directory.getName(newPath);
         if (directory.getName().equals(newName)) {
             log.traceExit("New and old names are same:  {}", directory);
             return;
         }
 
-        OperationParameters parameters = new OperationParameters(directory, directory.getParentPath(), newName);
+        OperationParameters parameters = new OperationParameters(directory, getParentPath(newPath), newName);
 
         isPossibleToRename(parameters);
         moveDirectories(directory, parameters, "Rename: cannot rename directory on disk");
@@ -115,6 +126,11 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
         if (directoryJpaRepository.findByOwnerAndPath(parameters.getOwner(), parameters.getTargetPath()).size() > 0) {
             log.debug("Rename:   directory on path '{}' already exists in database", parameters.getCurrentPathOnDisk());
             throw new DirectoryModificationException("Rename - directory on path '" + parameters.getTargetPath() + "' already exists in database");
+        }
+        String parentDirectoryPath = getParentPath(parameters.getTargetPath());
+        if (directoryJpaRepository.findByOwnerAndPath(parameters.getOwner(), parentDirectoryPath).isEmpty()) {
+            log.debug("Rename:   not found parent directory '{}'", parentDirectoryPath);
+            throw new DirectoryModificationException("Rename - not found parent directory '" + parentDirectoryPath + "'");
         }
         log.traceExit();
     }
@@ -153,11 +169,11 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
     private void moveDirectories(Directory source, OperationParameters parameters, String error) throws DirectoryModificationException {
         log.traceEntry("{}     {}", source, parameters);
         try {
+            source.setPath(parameters.getTargetPath());
+            replaceRelatedDirectoryPaths(parameters);
+            log.trace("Renamed source path on entity. New path: {}", source.getPath());
             Files.move(parameters.getCurrentPathOnDisk(), parameters.getTargetPathOnDisk());
             log.trace("Moved directory on disk '{}' -> '{}'", parameters.getCurrentPathOnDisk(), parameters.getTargetPathOnDisk());
-            source.setPath(parameters.getTargetPath());
-            log.trace("Renamed source path on entity. New path: {}", source.getPath());
-            replaceRelatedDirectoryPaths(parameters);
         } catch (IOException e) {
             log.debug("Exception while moving directory", e);
             throw new DirectoryModificationException(error, e);

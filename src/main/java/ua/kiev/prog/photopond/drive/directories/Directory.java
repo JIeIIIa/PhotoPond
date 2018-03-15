@@ -118,6 +118,18 @@ public class Directory implements Serializable {
     }
 
     public String getName() {
+        return getName(this.path);
+    }
+
+    public String getNameToBreadcrumb() {
+        String name = getName();
+        if(isRoot()) {
+            name = "..";
+        }
+        return name;
+    }
+
+    public static String getName(String path) {
         if (path == null) {
             throw new IllegalArgumentException("Path is null");
         }
@@ -127,6 +139,10 @@ public class Directory implements Serializable {
     }
 
     public String getParentPath() {
+        return getParentPath(this.path);
+    }
+
+    public static String getParentPath(String path) {
         if (path == null) {
             throw new IllegalArgumentException("Path is null");
         } else if (path.isEmpty()) {
@@ -165,6 +181,10 @@ public class Directory implements Serializable {
 
     public boolean isRoot() {
         return SEPARATOR.equals(path);
+    }
+
+    public boolean isNew() {
+        return id == null;
     }
 
     @Override

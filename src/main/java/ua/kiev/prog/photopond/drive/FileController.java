@@ -12,7 +12,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import ua.kiev.prog.photopond.drive.pictures.PictureFile;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileDTO;
-import ua.kiev.prog.photopond.user.UserInfoService;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,12 +21,10 @@ import static ua.kiev.prog.photopond.Utils.Utils.getUriTail;
 @RequestMapping("/user/{login}/files")
 public class FileController {
 
-    final UserInfoService userInfoService;
     final DriveService driveService;
 
     @Autowired
-    public FileController(UserInfoService userInfoService, DriveService driveService) {
-        this.userInfoService = userInfoService;
+    public FileController(DriveService driveService) {
         this.driveService = driveService;
     }
 

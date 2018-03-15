@@ -4,22 +4,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import ua.kiev.prog.photopond.drive.directories.Directory;
-import ua.kiev.prog.photopond.user.UserInfo;
-import ua.kiev.prog.photopond.user.UserInfoService;
+import ua.kiev.prog.photopond.drive.directories.DirectoryDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
-import java.security.Principal;
 
 import static ua.kiev.prog.photopond.Utils.Utils.getUriTail;
 
@@ -30,12 +26,9 @@ public class DriveController {
 
     private final DriveService driveService;
 
-    private final UserInfoService userService;
-
     @Autowired
-    public DriveController(DriveService driveService, UserInfoService userService) {
+    public DriveController(DriveService driveService) {
         this.driveService = driveService;
-        this.userService = userService;
     }
 
     @RequestMapping(value = "/**", method = RequestMethod.GET)
@@ -54,29 +47,42 @@ public class DriveController {
     }
 
     @RequestMapping(value = "/**", method = RequestMethod.POST)
-    public ModelAndView createDirectory(Principal principal,
+    public ModelAndView createDirectory(
                                         @PathVariable("login") String userLogin,
-                                        @NotNull @RequestParam("directoryId") Long directoryId,
                                         @NotNull @RequestParam("newDirectoryName") String newDirectoryName,
                                         HttpServletRequest request) throws DriveException {
-        String tail = request.getRequestURI();
-        tail = tail.replaceFirst("/user/" + userLogin + "/drive", "");
-        if (tail.isEmpty()) {
-            tail = Directory.SEPARATOR;
-        }
-        UserInfo user = userService.getUserByLogin(principal.getName());
-        Directory parentDirectory = driveService.addDirectory(user, directoryId, newDirectoryName);
+
+        Directory createdDirectory = driveService.addDirectory(userLogin, getUriTail(request, userLogin), newDirectoryName);
 
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .path("/user/{login}/drive{path}")
                 .build()
-                .expand(userLogin, parentDirectory.getPath())
+                .expand(userLogin, createdDirectory.getParentPath())
                 .encode();
         RedirectView redirectView = new RedirectView(uriComponents.toUriString(), true, true, false);
         ModelAndView modelAndView = new ModelAndView(redirectView);
         modelAndView.setStatus(HttpStatus.PERMANENT_REDIRECT);
 
-        log.debug("created:   " + tail);
+        log.debug("created:   " + createdDirectory);
         return modelAndView;
+    }
+
+    @RequestMapping(value = "/**", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResponseEntity move(@PathVariable("login") String userLogin,
+                                             @NotNull @RequestBody DirectoryDTO targetDirectoryDTO,
+                                             HttpServletRequest request) throws DriveException {
+
+        try {
+            driveService.moveDirectory(
+                    userLogin,
+                    getUriTail(request, userLogin),
+                    getUriTail(targetDirectoryDTO.getPath(), userLogin)
+            );
+        } catch (DriveException e) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok().build();
     }
 }
