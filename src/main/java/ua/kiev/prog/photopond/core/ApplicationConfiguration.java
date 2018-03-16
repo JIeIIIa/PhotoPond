@@ -42,5 +42,6 @@ public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements
         super.addResourceHandlers(registry);
         registry.addResourceHandler("/libs/**").addResourceLocations("/libs/");
         registry.addResourceHandler("/css/**").addResourceLocations("/css/");
+        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
     }
 }

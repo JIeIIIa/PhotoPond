@@ -28,43 +28,145 @@
 
 <body>
 <object th:include="fragments/header :: header" th:remove="tag"/>
-<div class="container">
+<script src="../../js/userDirectory.js" th:src="@{/js/userDirectory.js}"></script>
+<div class="container-fluid">
     <div class="row">
-        <div class="col-12">
+        <div class="col-2">
+            <div class="row">
+                <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+                <form style="display: none"
+                      th:action="@{'/user/{login}/files'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}"
+                      method="POST" enctype="multipart/form-data">
 
+                    <input type="file" placeholder="add picture" id="files" name="files" multiple style="display: none;">
+                    <button type="submit" id="uploadFilesButton">Create</button>
+                </form>
+
+
+                <div class="modal fade" id="renameElementForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Rename</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="nameAfterRename" class="col-form-label">New name:</label>
+                                        <input type="text" class="form-control" id="nameAfterRename">
+                                    </div>
+
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="renameFilesButton">Rename</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-12">
+                    <button class="btn-primary btn-block" id="uploadFiles">Add file</button>
+                </div>
+                <div class="col-12">
+                    <button class="btn-primary btn-block" id="deleteElement">Delete</button>
+                </div>
+                <div class="col-12">
+                    <button class="btn-primary btn-block" id="renameElement">Rename</button>
+                </div>
+            </div>
+            <!--<input type="file" placeholder="add picture" id="uploadFiles" multiple>-->
         </div>
-    </div>
+        <div class="col-10">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <!--Path to breadcrumb-->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="container-fluid">
+                                    <div class="row align-items-start">
+                                        <div class="col-12">
+                                            <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+                                            <ol class="breadcrumb">
+                                                <li class="breadcrumb-item secondary-color" th:each="parent:${content.getParents()}">
+                                                    <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                                                    <a href="#" th:href="@{'/user/{login}/drive'+${parent.getPath()}(login=${userLogin})}"
+                                                       th:text="${parent.getNameToBreadcrumb()}">parent
+                                                    </a>
+                                                    <i class="fa fa-angle-double-right mx-2" aria-hidden="true"></i>
+                                                </li>
+                                                <li class="breadcrumb-item primary-color active"
+                                                    th:text="${content.getCurrentDirectory().getNameToBreadcrumb()}">
+                                                    current
+                                                </li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-    <div class="row">
-        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item secondary-color" th:each="parent:${content.getParents()}">
-                <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                <a href="#" th:href="@{'/user/{login}/drive'+${parent.getPath()}(login=${userLogin})}"
-                   th:text="${parent.getNameToBreadcrumb()}">parent
-                </a>
-                <i class="fa fa-angle-double-right mx-2" aria-hidden="true"></i>
-            </li>
-            <li class="breadcrumb-item primary-color active" th:text="${content.getCurrentDirectory().getNameToBreadcrumb()}">
-                current
-            </li>
-        </ol>
-    </div>
 
-    <div class="row">
-        <div class="col-12">Directories</div>
-    </div>
-    <div class="row">
-        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-        <div th:each="subDir:${content.getTopSubDirectories()}" th:remove="tag">
-            <div class="col-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="card-text">
-                            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                            <i class="fa fa-folder" style="color: #f0cb58"> </i><a href="#"
-                                                                                   th:href="@{'/user/{login}/drive'+${subDir.getPath()}(login=${userLogin})}"
-                                                                                   th:text="${' ' +subDir.getName()}">subDir</a>
+                        <!--Print subdirectories-->
+                        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+                        <div class="row" th:if="${not content.getTopSubDirectories().isEmpty()}">
+                            <div class="col-12">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-12"><h3>Directories:</h3></div>
+                                    </div>
+                                    <div class="row">
+                                        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+                                        <div th:each="subDir:${content.getTopSubDirectories()}" th:remove="tag">
+                                            <div class="col-3 userElementCard">
+                                                <div class="card userElement">
+                                                    <div class="card-body">
+                                                        <div class="card-text">
+                                                            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                                                            <i class="fa fa-folder" style="color: #f0cb58"> </i>
+                                                            <a href="#"
+                                                               th:href="@{'/user/{login}/drive'+${subDir.getPath()}(login=${userLogin})}"
+                                                               th:text="${' ' +subDir.getName()}"  th:data-name="${subDir.getName()}" class="contentSrc">subDir</a>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Print Pictures-->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-12"><h3>Pictures:</h3></div>
+                                    </div>
+                                    <div class="row text-center">
+                                        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+                                        <div th:each="file:${content.getFiles()}" th:remove="tag">
+                                            <div class="col-12 col-sm-6 col-md-3 userElementCard">
+                                                <div class="card userElement h-100" style="height: 10rem;">
+                                                    <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                                                    <img src="#" th:src="@{'/user/{login}/files'+${file.getPath()}(login=${userLogin})}" alt="some picture"
+                                                         th:alt="${file.getPath()}" class="contentSrc"
+                                                         style="object-fit: contain;height: 100%; width: 100%;"/>
+                                                    <!--<div class="caption" th:text="${file.getFilename()}" style="word-wrap: break-word">Filename</div>-->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -73,34 +175,16 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">PICTURES:</div>
-    </div>
-    <div class="row text-center">
-        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-        <div th:each="file:${content.getFiles()}" th:remove="tag">
-            <div class="col-3">
-                <div class="card h-100" style="height: 10rem;">
-                    <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                    <img src="#" th:src="@{'/user/{login}/files'+${file.getPath()}(login=${userLogin})}" alt="some picture"
-                         th:alt="${file.getPath()}" class="" style="object-fit: contain;height: 100%; width: 100%;"/>
-                    <!--<div class="caption" th:text="${file.getFilename()}" style="word-wrap: break-word">Filename</div>-->
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="row">
         <div class="col-12">Create subdirectory</div>
-    </div>
-    <div class="row">
-        <div class="container-fluid">
+        <div class="col-12">
             <div class="form-group">
                 <div class="col-md-8 offset-md-2">
                     <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
                     <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
                     <form class="form-horizontal"
-                          th:action="@{'/user/{login}/drive'+{path} (login=${userLogin}, path=${content.getCurrentDirectory().getPath()})}"
+                          th:action="@{'/user/{login}/drive'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}"
                           method="POST">
 
                         <div class="form-group">
@@ -119,40 +203,51 @@
 
 
     <div class="row">
-        <div class="col-12">Add picture</div>
-    </div>
-    <div class="row">
-        <div class="container-fluid">
-            <div class="form-group">
-                <div class="col-md-8 offset-md-2">
-                    <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                    <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                    <form class="form-horizontal"
-                          th:action="@{'/user/{login}/files'+{path} (login=${userLogin}, path=${content.getCurrentDirectory().getPath()} )}"
-                          method="POST" enctype="multipart/form-data">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12">Add picture</div>
+                <div class="col-12">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-8 offset-md-2">
+                                <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                                <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+                                <form class="form-horizontal"
+                                      th:action="@{'/user/{login}/files'+${content.getCurrentDirectory().getPath()}(login=${userLogin} )}"
+                                      method="POST" enctype="multipart/form-data">
 
-                        <div class="form-group">
-                            <label for="newDirectoryName" class="control-label">New file</label>
-                            <input class="form-control" type="file" placeholder="add picture" id="files" name="files" multiple>
-                        </div>
+                                    <div class="form-group">
+                                        <label for="newDirectoryName" class="control-label">New file</label>
+                                        <input class="form-control" type="file" placeholder="add picture" id="files" name="files" multiple>
+                                    </div>
 
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-default form-control">add</button>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-default form-control">add</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="row">
+                <div class="col-3 offset-2">
+                    <button type="button" class="btn btn-default" id="pictureDel">Delete picture</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12 offset-2">
+                    <input id="renamedName" type="text">
+                    <button type="button" class="btn btn-default" id="pictureRename">Rename picture</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <button type="button" class="btn btn-default" id="pictureDel">Delete picture</button>
-
-    <div>
-
-        <input id="renamedName" type="text">
-        <button type="button" class="btn btn-default" id="pictureRename">Rename picture</button>
-
-    </div>
 
 </div>
 
