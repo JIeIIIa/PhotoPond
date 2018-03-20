@@ -68,6 +68,7 @@ $(document).ready(function () {
                 }
             });
         });
+        $("#deleteElement").blur();
     });
 
 
@@ -92,13 +93,14 @@ $(document).ready(function () {
 
         var parts = parseUrl(url);
         var elName = parts.name;
-        $("#nameAfterRename").val(elName);
-        $("#nameAfterRename").attr("data-url", url);
-        $("#nameAfterRename").attr("data-parent-url", parts.path);
+        var nameAfterRename = $("#nameAfterRename");
+        nameAfterRename.val(elName);
+        nameAfterRename.data("url", url);
+        nameAfterRename.data("parent-url", parts.path);
         $('#renameElementForm').modal('show');
     });
 
-    $("#renameFilesButton").click(function () {
+    $("#renameButton").click(function () {
         var input = $("#nameAfterRename");
         if(jQuery.isEmptyObject(input.val().trim())) {
             alert('Error! Empty name!');
@@ -107,12 +109,14 @@ $(document).ready(function () {
 
 
         var obj = {
-            directoryPath: input.data("parent-url"),
-            filename: input.val()
+            parentURI: input.data("parent-url"),
+            elementName: input.val()
         };
         console.log(obj);
+        console.log("url:   " + input.data("url"));
         var baseElement = $(".userElement.selected");
 
+        baseElement.removeClass("selected");
         $('#renameElementForm').modal('hide');
         $.ajax({
             url: input.data("url"),
@@ -125,14 +129,14 @@ $(document).ready(function () {
                 if (xhr.status === 200) {
                     var el = baseElement.find(".contentSrc");
                     if(el.is('img')) {
-                        el.attr("src", obj.directoryPath + "/" + obj.filename);
+                        el.attr("src", obj.parentURI + "/" + obj.elementName);
                         el.attr("alt", el.attr("src"));
-                        baseElement.removeClass("selected");
                         alert("success: " + data);
                     } else if(el.is('a')) {
-                        //url = el.attr("href");
+                        el.attr("href", obj.parentURI + "/" + obj.elementName);
+                        el.attr("data-name", obj.elementName);
+                        el.text(obj.elementName);
                     }
-
                 }
 
             },
@@ -142,7 +146,11 @@ $(document).ready(function () {
             }
         });
 
-    })
+    });
 
+    $('#addDirectory').click(function () {
+        $('#addDirectoryName').val("");
+        $('#addDirectoryForm').modal('show');
+    });
 
 });

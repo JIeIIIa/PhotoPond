@@ -12,12 +12,12 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import ua.kiev.prog.photopond.drive.directories.Directory;
-import ua.kiev.prog.photopond.drive.directories.DirectoryDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 import static ua.kiev.prog.photopond.Utils.Utils.getUriTail;
+import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @Controller
 @RequestMapping(value = "/user/{login}/drive")
@@ -70,15 +70,31 @@ public class DriveController {
     @RequestMapping(value = "/**", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity move(@PathVariable("login") String userLogin,
-                                             @NotNull @RequestBody DirectoryDTO targetDirectoryDTO,
+                                             @NotNull @RequestBody DriveElementDTO elementDTO,
                                              HttpServletRequest request) throws DriveException {
 
         try {
+            String targetParentPath = getUriTail(elementDTO.parentURI, userLogin);
+            String sourcePath = getUriTail(request, userLogin);
             driveService.moveDirectory(
                     userLogin,
-                    getUriTail(request, userLogin),
-                    getUriTail(targetDirectoryDTO.getPath(), userLogin)
+                    sourcePath,
+                    buildPath(targetParentPath, elementDTO.elementName)
             );
+        } catch (DriveException e) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @RequestMapping(value = "/**", method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity deleteDirectory(@PathVariable("login") String ownerLogin,
+                                     HttpServletRequest request) throws DriveException {
+        try {
+            driveService.deleteDirectory(ownerLogin, getUriTail(request, ownerLogin));
         } catch (DriveException e) {
             return ResponseEntity.noContent().build();
         }

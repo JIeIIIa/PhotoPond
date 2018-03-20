@@ -170,6 +170,16 @@ public class DriveServiceImpl implements DriveService {
         }
     }
 
+    @Override
+    public void deleteDirectory(String ownerLogin, String path) throws DriveException {
+        FileParts source = new FileParts(ownerLogin, buildPath(path, "mock.name"));
+        try {
+            directoryRepository.delete(source.getDirectory());
+        } catch (DriveException e) {
+            throw new DriveException("b", e);
+        }
+    }
+
     private Content getDirectoryContent(Directory current) throws DriveException {
         log.traceEntry("Get content for {}", current);
         Content content = new Content();

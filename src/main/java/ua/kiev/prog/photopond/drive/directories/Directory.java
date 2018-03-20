@@ -1,5 +1,7 @@
 package ua.kiev.prog.photopond.drive.directories;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 import javax.persistence.*;
@@ -28,7 +30,8 @@ public class Directory implements Serializable {
     private Integer level;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserInfo owner;
 
     public Directory() {

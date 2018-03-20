@@ -1,11 +1,11 @@
 body {
 	color: #0f100b;
-	background-color: #1a2b1e;
+	background-color: #1b5460;
 
 }
 
 h1, h2, h3, h4, h5, h6 {
-	color: #1b5460;
+	/*color: #1a2b1e;*/
 }
 
 .navbar-inverse {

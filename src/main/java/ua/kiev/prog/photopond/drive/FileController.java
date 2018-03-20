@@ -10,18 +10,19 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.pictures.PictureFile;
-import ua.kiev.prog.photopond.drive.pictures.PictureFileDTO;
 
 import javax.servlet.http.HttpServletRequest;
 
 import static ua.kiev.prog.photopond.Utils.Utils.getUriTail;
+import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @Controller
 @RequestMapping("/user/{login}/files")
 public class FileController {
 
-    final DriveService driveService;
+    private final DriveService driveService;
 
     @Autowired
     public FileController(DriveService driveService) {
@@ -54,10 +55,14 @@ public class FileController {
         } catch (DriveException e) {
             throw new DriveException("Cannot create file in directory = " + getUriTail(request, ownerLogin));
         }
+        Directory targetDirectory = lastCreatedFile.getDirectory();
+        if (targetDirectory == null) {
+            throw new DriveException("Temporary mock");
+        }
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .path("/user/{login}/drive{fullPath}")
                 .build()
-                .expand(ownerLogin, lastCreatedFile.getDirectory().getPath())
+                .expand(ownerLogin, targetDirectory.getPath())
                 .encode();
         RedirectView redirectView = new RedirectView(uriComponents.toUriString(), true, true, false);
         ModelAndView modelAndView = new ModelAndView(redirectView);
@@ -82,10 +87,12 @@ public class FileController {
     @RequestMapping(value = "/**", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity renameFile(@PathVariable("login") String ownerLogin,
-                                     @RequestBody PictureFileDTO fileDTO,
+                                     @RequestBody DriveElementDTO elementDTO,
                                      HttpServletRequest request) {
         try {
-            driveService.movePictureFile(ownerLogin, getUriTail(request, ownerLogin), getUriTail(fileDTO.getPath(), ownerLogin));
+            String oldPath = getUriTail(request, ownerLogin);
+            String newPath = getUriTail(buildPath(elementDTO.parentURI, elementDTO.elementName), ownerLogin);
+            driveService.movePictureFile(ownerLogin, oldPath, newPath);
         } catch (Exception e) {
             return ResponseEntity.noContent().build();
         }

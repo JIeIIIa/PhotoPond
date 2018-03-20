@@ -80,7 +80,8 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
         try {
             pathOnDisk = Paths.get(foldersBaseDir + directory.getFullPath());
             List<Directory> directoriesToDelete = directoryJpaRepository.findByOwnerAndPathStartingWith(directory.getOwner(), directory.getPath());
-            directoryJpaRepository.deleteInBatch(directoriesToDelete);
+            //directoryJpaRepository.deleteInBatch(directoriesToDelete);
+            directoryJpaRepository.delete(directoriesToDelete);
             log.trace("Directory with contents was deleted from database:   {}", directory);
         } catch (Exception e) {
             log.debug("Failure deleting from jpa repository for '{}'", directory);

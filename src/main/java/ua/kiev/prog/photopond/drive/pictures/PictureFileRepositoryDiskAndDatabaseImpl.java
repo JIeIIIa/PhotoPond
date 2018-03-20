@@ -87,7 +87,10 @@ public class PictureFileRepositoryDiskAndDatabaseImpl implements PictureFileRepo
     @Override
     public void deleteByDirectoryAndFilename(Directory directory, String filename) throws PictureFileException {
         try {
-            pictureFileJpaRepository.removeByDirectoryAndFilename(directory, filename);
+            long cnt = pictureFileJpaRepository.removeByDirectoryAndFilename(directory, filename);
+            if (cnt == 0) {
+                throw new PictureFileException("Failure delete file " + filename + " in " + directory);
+            }
             Files.deleteIfExists(Paths.get(foldersBaseDir + directory.getFullPath()
                     + SEPARATOR + filename));
         } catch (IOException e) {

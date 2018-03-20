@@ -19,6 +19,15 @@ body {
 	content: none;
 }
 
+.scroll-area{
+	width:100%;
+	/*height:100%;*/
+	/*margin-top:100px;*/
+	background-color:green;
+	float:left;
+	overflow-y:scroll;
+}
+
 .logo {	
 	font-family: "Roboto Slab";
 	font-weight: 900;

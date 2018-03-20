@@ -9,7 +9,7 @@ public interface DirectoryDiskAndDatabaseRepository {
 
     void delete(Directory directory) throws DirectoryModificationException;
 
-    void rename(Directory directory, String newName) throws DirectoryModificationException;
+    void rename(Directory directory, String newPath) throws DirectoryModificationException;
 
     void move(Directory source, Directory target) throws DirectoryModificationException;
 

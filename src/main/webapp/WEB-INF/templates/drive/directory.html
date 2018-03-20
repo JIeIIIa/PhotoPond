@@ -31,18 +31,55 @@
 <script src="../../js/userDirectory.js" th:src="@{/js/userDirectory.js}"></script>
 <div class="container-fluid">
     <div class="row">
+        <div class="col-12">
+            <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+            <form style="display: none;"
+                    th:action="@{'/user/{login}/files'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}"
+                    method="POST" enctype="multipart/form-data">
+
+                <input type="file" placeholder="add picture" id="files" name="files" multiple>
+                <button type="submit" id="uploadFilesButton">Create</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-2">
             <div class="row">
-                <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                <form style="display: none"
-                      th:action="@{'/user/{login}/files'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}"
-                      method="POST" enctype="multipart/form-data">
 
-                    <input type="file" placeholder="add picture" id="files" name="files" multiple style="display: none;">
-                    <button type="submit" id="uploadFilesButton">Create</button>
-                </form>
+                <!-- ADD DIRECTORY FORM -->
+                <div class="modal fade" id="addDirectoryForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+                            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                            <form th:action="@{'/user/{login}/drive'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}"
+                                  method="POST">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addDirectoryModalLabel">New directory</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+
+                                        <div class="form-group">
+                                            <label for="addDirectoryName" class="col-form-label">New name:</label>
+                                            <input type="text" class="form-control" id="addDirectoryName" name = "newDirectoryName">
+                                        </div>
 
 
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" id="addDirectoryButton">Add</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RENAME ELEMENT FORM -->
                 <div class="modal fade" id="renameElementForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -63,7 +100,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" id="renameFilesButton">Rename</button>
+                                <button type="button" class="btn btn-primary" id="renameButton">Rename</button>
                             </div>
                         </div>
                     </div>
@@ -72,6 +109,9 @@
 
                 <div class="col-12">
                     <button class="btn-primary btn-block" id="uploadFiles">Add file</button>
+                </div>
+                <div class="col-12">
+                    <button class="btn-primary btn-block" id="addDirectory">Add directory</button>
                 </div>
                 <div class="col-12">
                     <button class="btn-primary btn-block" id="deleteElement">Delete</button>
@@ -132,7 +172,8 @@
                                                             <i class="fa fa-folder" style="color: #f0cb58"> </i>
                                                             <a href="#"
                                                                th:href="@{'/user/{login}/drive'+${subDir.getPath()}(login=${userLogin})}"
-                                                               th:text="${' ' +subDir.getName()}"  th:data-name="${subDir.getName()}" class="contentSrc">subDir</a>
+                                                               th:text="${' ' +subDir.getName()}" th:data-name="${subDir.getName()}"
+                                                               class="contentSrc">subDir</a>
                                                         </div>
 
                                                     </div>
@@ -176,197 +217,9 @@
     </div>
 
 
-    <div class="row">
-        <div class="col-12">Create subdirectory</div>
-        <div class="col-12">
-            <div class="form-group">
-                <div class="col-md-8 offset-md-2">
-                    <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                    <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                    <form class="form-horizontal"
-                          th:action="@{'/user/{login}/drive'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}"
-                          method="POST">
-
-                        <div class="form-group">
-                            <label for="newDirectoryName" class="control-label">directory name</label>
-                            <input class="form-control" type="text" placeholder="new directory name" id="newDirectoryName" name="newDirectoryName">
-                        </div>
-
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-default form-control">Create</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="row">
-        <div class="col-12">
-            <div class="row">
-                <div class="col-12">Add picture</div>
-                <div class="col-12">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-md-8 offset-md-2">
-                                <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                                <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                                <form class="form-horizontal"
-                                      th:action="@{'/user/{login}/files'+${content.getCurrentDirectory().getPath()}(login=${userLogin} )}"
-                                      method="POST" enctype="multipart/form-data">
-
-                                    <div class="form-group">
-                                        <label for="newDirectoryName" class="control-label">New file</label>
-                                        <input class="form-control" type="file" placeholder="add picture" id="files" name="files" multiple>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <button type="submit" class="btn btn-default form-control">add</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="row">
-                <div class="col-3 offset-2">
-                    <button type="button" class="btn btn-default" id="pictureDel">Delete picture</button>
-                </div>
-            </div>
-        </div>
-        <div class="col-12">
-            <div class="row">
-                <div class="col-12 offset-2">
-                    <input id="renamedName" type="text">
-                    <button type="button" class="btn btn-default" id="pictureRename">Rename picture</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 </div>
 
 </body>
-<script type="text/javascript" th:inline="javascript">
-    var deletingMode = false;
-    var deletingCnt = 0;
-
-    $('body').on('click', 'img', function () {
-        if (!deletingMode) {
-            return;
-        }
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-            deletingCnt--;
-        }
-        else {
-            $(this).addClass('selected');
-            deletingCnt++;
-        }
-        if (deletingCnt === 0) {
-            deletingMode = false;
-        }
-    });
-    $(document).ready(function () {
-        var timeoutId = 0;
-
-        var myFunction = function (id) {
-            deletingMode = true;
-            //$(this).addClass('selected');
-            clearTimeout(id);
-        };
-        $('img').on('mousedown', function () {
-            timeoutId = setTimeout(myFunction, 1000);
-        }).on('mouseup mouseleave', function () {
-            clearTimeout(timeoutId);
-        });
-
-
-        $("#pictureDel").click(function () {
-            var imgs = $("img.selected");
-            var imgID = [];
-            var host = location.protocol + "//" + location.host;
-//            alert(location.protocol + "//" + location.host);
-
-            $(imgs).each(function () {
-                imgID.push($(this).attr("src"));
-                var el = $(this), path = $(this).attr("src");
-                $.support.cors = true;
-                $.ajax({
-                    url: host + path,
-                    type: 'DELETE',
-
-                    success: function (data, textStatus, xhr) {
-                        console.log(xhr.status);
-                        if (xhr.status === 200) {
-                            el.remove();
-                        }
-
-                    },
-                    error: function (data) {
-                        alert("Error while deleting.");
-                        console.log(data);
-                    }
-                });
-            });
-        });
-
-        $("#pictureRename").click(function () {
-            var img = $("img.selected");
-            if (img.length !== 1) {
-                alert('Выбрано больше одного элемента');
-                return;
-            }
-
-            var host = location.protocol + "//" + location.host;
-//            alert(location.protocol + "//" + location.host);
-
-
-            var path = img.attr("src");
-            console.log("path:  " + path);
-            console.log("host + path:  " + (host + path));
-            var index = path.lastIndexOf("/");
-//            var newName = path.substr(0, index + 1) + $("#renamedName").val();
-            var directoryPath = path.substr(0, index);
-            alert(directoryPath);
-
-            var N = $("#renamedName").val();
-            console.log("name:  " + N);
-            var obj = {
-                directoryPath: directoryPath,
-                filename: N
-            };
-            console.log(obj);
-
-            $.ajax({
-                url: host + path,
-                type: 'PUT',
-                data: JSON.stringify(obj),
-                contentType: 'application/json',
-
-                success: function (data, textStatus, xhr) {
-                    console.log(xhr.status);
-                    if (xhr.status === 200) {
-                        img.attr("src", directoryPath + "/" + N);
-                        img.attr("alt", "/" + N);
-                        img.removeClass("selected");
-                        alert("success: " + data);
-                    }
-
-                },
-                error: function (data) {
-                    alert("Error while renaming.");
-                    console.log(data);
-                }
-            });
-        });
-    });
-</script>
 <style>
     .selected {
         border: 4px solid #0f0;
