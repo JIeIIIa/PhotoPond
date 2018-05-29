@@ -154,7 +154,7 @@ public class Directory implements Serializable {
         String parentDirectoryPath = "";
 
         int index = path.lastIndexOf(SEPARATOR);
-        if (path.length() > 1 && index == 0) {
+        if (path.length() > 1 && index <= 0) {
             parentDirectoryPath = SEPARATOR;
         } else {
             parentDirectoryPath += path.substring(0, index);
