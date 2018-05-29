@@ -92,7 +92,7 @@ public class DriveServiceImpl implements DriveService {
         FileParts sourceParts = new FileParts(ownerLogin, source + SEPARATOR);
         Directory targetDirectory = null;
         try {
-            FileParts targetParts = new FileParts(ownerLogin, target + SEPARATOR);
+            FileParts targetParts = new FileParts(ownerLogin, target /*+ SEPARATOR*/);
             targetDirectory = targetParts.getDirectory();
         } catch (DriveException e) {
             /*targetDirectory = new DirectoryBuilder()

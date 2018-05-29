@@ -42,7 +42,7 @@ public class Utils {
     }
 
     public static String getUriTail(String uri, String login) {
-        String tail = uri.replaceFirst("/user/" + login + "/((files)|(drive))", "");
+        String tail = uri.replaceFirst("/(\\w|\\s)+/" + login + "/(\\w|\\s)+", "");
         if (tail.isEmpty()) {
             tail = SEPARATOR;
         }

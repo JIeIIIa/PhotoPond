@@ -137,11 +137,17 @@
             <version>4.1.3.RELEASE</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
     </dependencies>
 
 
     <build>
         <finalName>photo-pond</finalName>
+<!--
 
         <resources>
             <resource>
@@ -159,6 +165,7 @@
                 <filtering>true</filtering>
             </testResource>
         </testResources>
+-->
 
         <plugins>
             <plugin>

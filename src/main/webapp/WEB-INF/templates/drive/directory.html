@@ -35,8 +35,8 @@
             <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
             <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
             <form style="display: none;"
-                    th:action="@{'/user/{login}/files'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}"
-                    method="POST" enctype="multipart/form-data">
+                  th:action="@{'/user/{login}/files'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}"
+                  method="POST" enctype="multipart/form-data">
 
                 <input type="file" placeholder="add picture" id="files" name="files" multiple>
                 <button type="submit" id="uploadFilesButton">Create</button>
@@ -46,6 +46,41 @@
     <div class="row">
         <div class="col-2">
             <div class="row">
+
+                <!-- REMOVE_TO FORM -->
+                <div class="modal fade" id="moveToForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
+                            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="moveToModalLabel">Move to</h5>
+                                <h5 class="modal-title" id="moveToLabel" data-url="#"
+                                    th:attr="data-url=@{'/api/{login}/directories'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}">
+                                    path to remove
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+
+                                <div class="form-group">
+                                    <div id="subDirNames">
+                                        <div class="subDir" data-url="#">sub directory</div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" id="moveToButton">Move to</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
                 <!-- ADD DIRECTORY FORM -->
                 <div class="modal fade" id="addDirectoryForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -63,10 +98,10 @@
                                 </div>
                                 <div class="modal-body">
 
-                                        <div class="form-group">
-                                            <label for="addDirectoryName" class="col-form-label">New name:</label>
-                                            <input type="text" class="form-control" id="addDirectoryName" name = "newDirectoryName">
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="addDirectoryName" class="col-form-label">New name:</label>
+                                        <input type="text" class="form-control" id="addDirectoryName" name="newDirectoryName">
+                                    </div>
 
 
                                 </div>
@@ -108,16 +143,19 @@
 
 
                 <div class="col-12">
-                    <button class="btn-primary btn-block" id="uploadFiles">Add file</button>
+                    <button class="btn-primary btn-block" id="openUploadFilesForm">Add file</button>
                 </div>
                 <div class="col-12">
-                    <button class="btn-primary btn-block" id="addDirectory">Add directory</button>
+                    <button class="btn-primary btn-block" id="openAddDirectoryForm">Add directory</button>
                 </div>
                 <div class="col-12">
-                    <button class="btn-primary btn-block" id="deleteElement">Delete</button>
+                    <button class="btn-primary btn-block" id="deleteBtn">Delete</button>
                 </div>
                 <div class="col-12">
-                    <button class="btn-primary btn-block" id="renameElement">Rename</button>
+                    <button class="btn-primary btn-block" id="openRenameForm">Rename</button>
+                </div>
+                <div class="col-12">
+                    <button class="btn-primary btn-block" id="openMoveForm">Move to</button>
                 </div>
             </div>
             <!--<input type="file" placeholder="add picture" id="uploadFiles" multiple>-->
@@ -171,9 +209,13 @@
                                                             <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
                                                             <i class="fa fa-folder" style="color: #f0cb58"> </i>
                                                             <a href="#"
+                                                               class="contentSrc"
                                                                th:href="@{'/user/{login}/drive'+${subDir.getPath()}(login=${userLogin})}"
-                                                               th:text="${' ' +subDir.getName()}" th:data-name="${subDir.getName()}"
-                                                               class="contentSrc">subDir</a>
+                                                               th:attr="data-url=@{'/user/{login}/drive'+${subDir.getPath()}(login=${userLogin})}"
+                                                               th:data-name="${subDir.getName()}"
+                                                               th:text="${' '+subDir.getName()}">
+                                                                subDir
+                                                            </a>
                                                         </div>
 
                                                     </div>
@@ -198,8 +240,12 @@
                                             <div class="col-12 col-sm-6 col-md-3 userElementCard">
                                                 <div class="card userElement h-100" style="height: 10rem;">
                                                     <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                                                    <img src="#" th:src="@{'/user/{login}/files'+${file.getPath()}(login=${userLogin})}" alt="some picture"
-                                                         th:alt="${file.getPath()}" class="contentSrc"
+                                                    <img src="#"
+                                                         class="contentSrc"
+                                                         th:src="@{'/user/{login}/files'+${file.getPath()}(login=${userLogin})}"
+                                                         th:attr="data-url=@{'/user/{login}/files'+${file.getPath()}(login=${userLogin})}"
+                                                         alt="some picture"
+                                                         th:alt="${file.getPath()}"
                                                          style="object-fit: contain;height: 100%; width: 100%;"/>
                                                     <!--<div class="caption" th:text="${file.getFilename()}" style="word-wrap: break-word">Filename</div>-->
                                                 </div>
