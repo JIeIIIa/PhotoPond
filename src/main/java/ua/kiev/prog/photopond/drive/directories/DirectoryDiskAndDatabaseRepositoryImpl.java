@@ -22,7 +22,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.getParentPath;
 public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndDatabaseRepository {
     private static final Logger log = LogManager.getLogger(DirectoryDiskAndDatabaseRepositoryImpl.class);
 
-    @Value("${folders.basedir}")
+    @Value("${folders.basedir.location}")
     private String foldersBaseDir;
 
     private final DirectoryJpaRepository directoryJpaRepository;

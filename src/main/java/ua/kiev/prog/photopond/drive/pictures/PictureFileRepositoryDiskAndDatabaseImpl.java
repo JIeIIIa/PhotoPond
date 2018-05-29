@@ -20,7 +20,7 @@ public class PictureFileRepositoryDiskAndDatabaseImpl implements PictureFileRepo
 
     private static Logger log = LogManager.getLogger(PictureFileRepositoryDiskAndDatabaseImpl.class);
 
-    @Value("${folders.basedir}")
+    @Value("${folders.basedir.location}")
     private String foldersBaseDir;
 
     private final PictureFileJpaRepository pictureFileJpaRepository;
