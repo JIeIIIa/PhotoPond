@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,7 +54,7 @@ public class UserInfoServiceJpaServiceImplIT {
                 .role(UserRole.USER)
                 .build();
 
-        UserInfo foundUser = userInfoServiceJpaImpl.getUserById(777);
+        UserInfo foundUser = userInfoServiceJpaImpl.getUserById(777).get();
 
         assertThat(foundUser)
                 .isNotNull()
@@ -62,9 +63,9 @@ public class UserInfoServiceJpaServiceImplIT {
 
     @Test
     public void failureGetUserById() throws Exception {
-        UserInfo foundUser = userInfoServiceJpaImpl.getUserById(123);
+        Optional<UserInfo> foundUser = userInfoServiceJpaImpl.getUserById(123);
 
-        assertThat(foundUser).isNull();
+        assertThat(foundUser.isPresent()).isFalse();
     }
 
 
@@ -139,7 +140,7 @@ public class UserInfoServiceJpaServiceImplIT {
                 .build();
 
         UserInfo afterUpdate = userInfoServiceJpaImpl.update(updatedUser);
-        UserInfo userInDB = userInfoJpaRepository.findOne(777L);
+        UserInfo userInDB = userInfoJpaRepository.findById(777L).get();
 
         assertThat(afterUpdate).isEqualToComparingFieldByField(updatedUser);
         assertThat(userInDB)
@@ -149,7 +150,7 @@ public class UserInfoServiceJpaServiceImplIT {
 
     @Test
     public void updateToExistsLogin() throws Exception {
-        UserInfo user = userInfoJpaRepository.findOne(777L);
+        UserInfo user = userInfoJpaRepository.findById(777L).get();
         UserInfo newInformation = new UserInfoBuilder()
                 .id(777)
                 .login("Administrator")
@@ -157,7 +158,7 @@ public class UserInfoServiceJpaServiceImplIT {
                 .role(UserRole.ADMIN).build();
 
         UserInfo userAfterUpdate = userInfoServiceJpaImpl.update(newInformation);
-        UserInfo userCheck = userInfoJpaRepository.findOne(777L);
+        UserInfo userCheck = userInfoJpaRepository.findById(777L).get();
 
         assertThat(userAfterUpdate).isNull();
         assertThat(userCheck)
@@ -185,15 +186,15 @@ public class UserInfoServiceJpaServiceImplIT {
 
     @Test
     public void deleteExistsUser() throws Exception {
-        UserInfo user = userInfoJpaRepository.findOne(777L);
+        UserInfo user = userInfoJpaRepository.findById(777L).get();
 
         UserInfo deletedUser = userInfoServiceJpaImpl.delete(777);
-        UserInfo afterDeleteUser = userInfoJpaRepository.findOne(777L);
+        Optional<UserInfo> afterDeleteUser = userInfoJpaRepository.findById(777L);
 
         assertThat(deletedUser)
                 .isNotNull()
                 .isEqualToComparingFieldByField(user);
-        assertThat(afterDeleteUser).isNull();
+        assertThat(afterDeleteUser.isPresent()).isFalse();
     }
 
     @Test

@@ -4,15 +4,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.web.ErrorAttributes;
-import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
@@ -31,7 +29,7 @@ public class CustomErrorController implements ErrorController {
     private ErrorAttributes errorAttributes;
 
     @RequestMapping(value = ERROR_PATH)
-    public ModelAndView error(HttpServletRequest request, HttpServletResponse response, ModelAndView modelAndView) {
+    public ModelAndView error(WebRequest request, HttpServletResponse response, ModelAndView modelAndView) {
 
         Map<String, Object> errorAttributes = getErrorAttributes(request, includeStackTrace);
         if (includeStackTrace) {
@@ -50,9 +48,9 @@ public class CustomErrorController implements ErrorController {
         return ERROR_PATH;
     }
 
-    private Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
-        RequestAttributes requestAttributes = new ServletRequestAttributes(request);
-        return errorAttributes.getErrorAttributes(requestAttributes, includeStackTrace);
+    private Map<String, Object> getErrorAttributes(WebRequest request, boolean includeStackTrace) {
+//        RequestAttributes requestAttributes = new ServletRequestAttributes(request);
+        return errorAttributes.getErrorAttributes(request, includeStackTrace);
     }
 
 

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS usersinfo
   id       BIGINT AUTO_INCREMENT
     PRIMARY KEY,
   login    VARCHAR(30) NOT NULL,
-  password VARCHAR(30) NOT NULL,
+  password VARCHAR(65) NOT NULL,
   role     INT         NULL
 );
 

@@ -20,7 +20,7 @@ public class UserInfo implements Serializable {
     private String login;
 
     @NotNull
-    @Size(min = 6, max = 30)
+//    @Size(min = 6, max = 30)
     private String password;
 
     @Enumerated(EnumType.ORDINAL)

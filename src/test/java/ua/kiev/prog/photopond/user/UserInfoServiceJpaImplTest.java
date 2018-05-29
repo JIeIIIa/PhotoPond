@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.eq;
@@ -17,6 +19,9 @@ public class UserInfoServiceJpaImplTest {
     @Mock
     private UserInfoJpaRepository userRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     private UserInfoServiceJpaImpl instance;
 
     private final String USER_LOGIN = "user";
@@ -25,7 +30,7 @@ public class UserInfoServiceJpaImplTest {
 
     @Before
     public void setUp() throws Exception {
-        instance = new UserInfoServiceJpaImpl(userRepository);
+        instance = new UserInfoServiceJpaImpl(userRepository, passwordEncoder);
         mockUser = new UserInfoBuilder().id(777).login("mockUser").password("password").role(UserRole.USER).build();
     }
 

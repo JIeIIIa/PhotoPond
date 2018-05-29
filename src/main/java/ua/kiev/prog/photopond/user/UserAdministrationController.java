@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/administration")
@@ -71,14 +72,14 @@ public class UserAdministrationController {
     public ResponseEntity<UserInfo> updateUser(@PathVariable("id") long id) {
         log.trace("Get user by [id = " + id + "]");
 
-        UserInfo userInfo = userInfoService.getUserById(id);
-        if (userInfo == null) {
+        Optional<UserInfo> userInfo = userInfoService.getUserById(id);
+        if (!userInfo.isPresent()) {
             log.debug("User with [id = " + id + "] not found");
             return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
         }
 
         log.debug("User with [id = " + id + "] was found");
-        return new ResponseEntity<>(userInfo, getHttpJsonHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(userInfo.get(), getHttpJsonHeaders(), HttpStatus.OK);
     }
 
     private HttpHeaders getHttpJsonHeaders() {

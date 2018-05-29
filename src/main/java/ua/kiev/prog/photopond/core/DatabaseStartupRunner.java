@@ -36,7 +36,7 @@ public class DatabaseStartupRunner {
             UserInfo admin = userInfoService.getUserByLogin("SuperPhotoPondAdmin");
             if (admin == null) {
                 admin = new UserInfoBuilder()
-                        .login("admin")
+                        .login("aSuperPhotoPondAdmin")
                         .password(generatePassword())
                         .role(UserRole.ADMIN)
                         .build();
@@ -75,23 +75,32 @@ public class DatabaseStartupRunner {
         }
 
         private void createUsers() {
-            UserInfo admin = new UserInfoBuilder()
-                    .login("admin")
-                    .password("password")
-                    .role(UserRole.ADMIN)
-                    .build();
-            userInfoService.addUser(admin);
-            UserInfo user = new UserInfoBuilder()
-                    .login("user")
-                    .password("useruser")
-                    .build();
-            userInfoService.addUser(user);
-            UserInfo deactivatedUser = new UserInfoBuilder()
-                    .login("nonActiveUser")
-                    .password("useruser")
-                    .role(UserRole.DEACTIVATED)
-                    .build();
-            userInfoService.addUser(deactivatedUser);
+            UserInfo admin = userInfoService.getUserByLogin("admin");
+            if (admin == null) {
+                admin = new UserInfoBuilder()
+                        .login("admin")
+                        .password("password")
+                        .role(UserRole.ADMIN)
+                        .build();
+                userInfoService.addUser(admin);
+            }
+            UserInfo user = userInfoService.getUserByLogin("user");
+            if (user == null) {
+                user = new UserInfoBuilder()
+                        .login("user")
+                        .password("useruser")
+                        .build();
+                userInfoService.addUser(user);
+            }
+            UserInfo deactivatedUser = userInfoService.getUserByLogin("nonActiveUser");
+            if (deactivatedUser == null) {
+                deactivatedUser = new UserInfoBuilder()
+                        .login("nonActiveUser")
+                        .password("useruser")
+                        .role(UserRole.DEACTIVATED)
+                        .build();
+                userInfoService.addUser(deactivatedUser);
+            }
             log.info("    =======================================");
             log.info("                Available users ");
             log.info("    =======================================");

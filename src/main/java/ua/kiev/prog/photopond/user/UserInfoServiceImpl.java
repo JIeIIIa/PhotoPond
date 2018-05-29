@@ -4,10 +4,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @ConditionalOnMissingBean(UserInfoService.class)
@@ -16,9 +18,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     private final UserInfoSimpleRepository userInfoRepository;
 
+    private final BCryptPasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserInfoServiceImpl(UserInfoSimpleRepository userInfoRepository) {
+    public UserInfoServiceImpl(UserInfoSimpleRepository userInfoRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userInfoRepository = userInfoRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -31,6 +36,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     public void addUser(UserInfo user) {
         log.debug("Add user:  " + user);
         try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userInfoRepository.addUser(user);
         } catch (AddToRepositoryException e) {
             /*NOP*/
@@ -69,7 +75,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public UserInfo getUserById(long id) {
+    public Optional<UserInfo> getUserById(long id) {
         log.trace("Get user by [id = " + id + "]");
         return userInfoRepository.getUserById(id);
     }

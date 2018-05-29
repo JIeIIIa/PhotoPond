@@ -2,32 +2,20 @@ package ua.kiev.prog.photopond.core;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 @Configuration
 @EnableWebMvc
-public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+public class ApplicationConfiguration implements WebMvcConfigurer {
     private static Logger log = LogManager.getLogger(ApplicationConfiguration.class);
 
-    private ApplicationContext applicationContext;
-
     public ApplicationConfiguration() {
-        super();
         log.debug("Create instance of " + this.getClass().getName());
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        log.trace("Set application context in " + this.getClass().getName());
-        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -39,7 +27,6 @@ public class ApplicationConfiguration extends WebMvcConfigurerAdapter implements
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        super.addResourceHandlers(registry);
         registry.addResourceHandler("/libs/**").addResourceLocations("/libs/");
         registry.addResourceHandler("/css/**").addResourceLocations("/css/");
         registry.addResourceHandler("/js/**").addResourceLocations("/js/");

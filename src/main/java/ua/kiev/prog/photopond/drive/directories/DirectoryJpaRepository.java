@@ -7,9 +7,10 @@ import org.springframework.data.repository.query.Param;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DirectoryJpaRepository extends JpaRepository<Directory, Long>{
-    Directory findById(Long id);
+    Optional<Directory> findById(Long id);
 
     List<Directory> findAll();
 

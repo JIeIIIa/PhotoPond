@@ -13,6 +13,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 import static ua.kiev.prog.photopond.Utils.Utils.deleteDirectoryWithContents;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
@@ -81,7 +82,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
             pathOnDisk = Paths.get(foldersBaseDir + directory.getFullPath());
             List<Directory> directoriesToDelete = directoryJpaRepository.findByOwnerAndPathStartingWith(directory.getOwner(), directory.getPath());
             //directoryJpaRepository.deleteInBatch(directoriesToDelete);
-            directoryJpaRepository.delete(directoriesToDelete);
+            directoryJpaRepository.deleteAll(directoriesToDelete);
             log.trace("Directory with contents was deleted from database:   {}", directory);
         } catch (Exception e) {
             log.debug("Failure deleting from jpa repository for '{}'", directory);
@@ -228,23 +229,23 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
 
     @Override
     public Directory findById(Long directoryId) throws DirectoryException {
-        Directory directory = directoryJpaRepository.findById(directoryId);
-        if (directory == null) {
+        Optional<Directory> directory = directoryJpaRepository.findById(directoryId);
+        if (!directory.isPresent()) {
             throw new DirectoryException("Not found directory with id = " + directoryId);
         }
-        return directory;
+        return directory.get();
     }
 
     @Override
     public Directory findByOwnerAndId(UserInfo owner, Long directoryId) throws DirectoryException {
-        Directory directory = directoryJpaRepository.findById(directoryId);
-        if (directory == null) {
+        Optional<Directory> directory = directoryJpaRepository.findById(directoryId);
+        if (!directory.isPresent()) {
             throw new DirectoryException("Not found directory with id = " + directoryId + " for owner = " + owner);
         }
-        if (!Files.exists(Paths.get(foldersBaseDir + directory.getFullPath()))) {
-            throw new DirectoryException("Not found " + directory + " on disk");
+        if (!Files.exists(Paths.get(foldersBaseDir + directory.get().getFullPath()))) {
+            throw new DirectoryException("Not found " + directory.get() + " on disk");
         }
-        return directory;
+        return directory.get();
     }
 
     private class OperationParameters {

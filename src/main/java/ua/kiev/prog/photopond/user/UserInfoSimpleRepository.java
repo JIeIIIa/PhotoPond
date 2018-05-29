@@ -3,6 +3,7 @@ package ua.kiev.prog.photopond.user;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserInfoSimpleRepository {
     UserInfo findByLogin(String login);
@@ -19,5 +20,5 @@ public interface UserInfoSimpleRepository {
 
     UserInfo update(UserInfo userInfo);
 
-    UserInfo getUserById(long id);
+    Optional<UserInfo> getUserById(long id);
 }

@@ -68,7 +68,7 @@ public class LoginControllerTest {
         mockMvc
                 .perform(formLogin(LOGIN_PROCESSING_URL)
                         .user("j_login", "userTest")
-                        .password("j_password", "invalid"))
+                        .password("j_password", "invalid")  )
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login?error=true"))
                 .andExpect(unauthenticated())

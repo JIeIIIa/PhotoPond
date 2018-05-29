@@ -24,6 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 
     @Autowired
     public UserDetailsServiceImpl(UserInfoService userService) {
+        log.traceEntry("Create UserDetailsServiceImpl");
         this.userService = userService;
     }
 

@@ -6,6 +6,7 @@ import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
@@ -90,13 +91,13 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     }
 
     @Override
-    public UserInfo getUserById(long id) {
+    public Optional<UserInfo> getUserById(long id) {
         for (UserInfo user : users) {
             if (user.getId() == id) {
-                return user;
+                return Optional.of(user);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
 }

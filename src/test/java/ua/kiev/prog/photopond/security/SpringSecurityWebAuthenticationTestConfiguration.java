@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import ua.kiev.prog.photopond.user.UserRole;
 
@@ -46,23 +47,29 @@ public class SpringSecurityWebAuthenticationTestConfiguration {
     @Bean
     @Primary
     public UserDetailsService userDetailsService() {
+        BCryptPasswordEncoder encoder = encoder();
 
         Set<GrantedAuthority> roles = new HashSet<>();
         roles.add(new SimpleGrantedAuthority(UserRole.USER.toString()));
-        User basicActiveUser = new User("userTest", "passwordTest", roles);
+        User basicActiveUser = new User("userTest", encoder.encode("passwordTest"), roles);
 
         roles = new HashSet<>();
         roles.add(new SimpleGrantedAuthority(UserRole.USER.toString()));
         roles.add(new SimpleGrantedAuthority(UserRole.ADMIN.toString()));
-        User managerActiveUser = new User("adminTest", "adminTest", roles);
+        User managerActiveUser = new User("adminTest", encoder.encode("adminTest"), roles);
 
         roles = new HashSet<>();
         roles.add(new SimpleGrantedAuthority(UserRole.DEACTIVATED.toString()));
-        User deactivatedUser = new User("deactivatedUser", "qwerty123!",
+        User deactivatedUser = new User("deactivatedUser", encoder.encode("qwerty123!"),
                 false, true, true, true, roles);
 
         return new InMemoryUserDetailsManager(Arrays.<UserDetails>asList(
                 basicActiveUser, managerActiveUser, deactivatedUser
         ));
+    }
+
+    @Bean
+    public BCryptPasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
     }
 }

@@ -32,7 +32,7 @@ public class DirectoryJpaRepositoryTest {
     @Test
     public void rename() throws Exception {
         printAllDirectories(repository.findAll());
-        UserInfo owner = userInfoJpaRepository.findOne(1L);
+        UserInfo owner = userInfoJpaRepository.findById(1L).get();
         List<Directory> directories = repository.findByOwnerAndPathStartingWith(owner, "/first");
 
 

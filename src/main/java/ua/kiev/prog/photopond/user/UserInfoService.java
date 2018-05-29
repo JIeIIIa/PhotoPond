@@ -1,6 +1,7 @@
 package ua.kiev.prog.photopond.user;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserInfoService {
     UserInfo getUserByLogin(String login);
@@ -15,5 +16,5 @@ public interface UserInfoService {
 
     UserInfo update(UserInfo userInfo);
 
-    UserInfo getUserById(long id);
+    Optional<UserInfo> getUserById(long id);
 }

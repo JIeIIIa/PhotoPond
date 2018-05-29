@@ -7,6 +7,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +21,9 @@ public class UserInfoServiceImplTest {
     @Mock
     private UserInfoSimpleRepository userRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     private UserInfoServiceImpl instance;
 
     private final String USER_LOGIN = "user";
@@ -26,7 +31,7 @@ public class UserInfoServiceImplTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        instance = new UserInfoServiceImpl(userRepository);
+        instance = new UserInfoServiceImpl(userRepository, passwordEncoder);
     }
 
     @Test
