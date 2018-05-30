@@ -39,10 +39,16 @@ public class UserInfoServiceImpl implements UserInfoService {
             return;
         }
         try {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            cryptPassword(user, user.getPassword());
             userInfoRepository.addUser(user);
         } catch (AddToRepositoryException e) {
             /*NOP*/
+        }
+    }
+
+    private void cryptPassword(UserInfo user, String password) {
+        if (user != null) {
+            user.setPassword(passwordEncoder.encode(password));
         }
     }
 
@@ -86,5 +92,15 @@ public class UserInfoServiceImpl implements UserInfoService {
     public Optional<UserInfo> getUserById(long id) {
         log.trace("Get user by [id = " + id + "]");
         return userInfoRepository.getUserById(id);
+    }
+
+    @Override
+    public Optional<UserInfo> setNewPassword(String login, String newPassword) {
+        if (login == null) {
+            return Optional.empty();
+        }
+        Optional<UserInfo> user = userInfoRepository.findByLogin(login);
+        user.ifPresent(u -> cryptPassword(u, newPassword));
+        return user;
     }
 }

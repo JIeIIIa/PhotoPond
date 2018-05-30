@@ -98,4 +98,24 @@ public class UserInfoServiceJpaImplTest {
                 .isNotPresent();
         verify(userRepository).findByLogin(USER_LOGIN);
     }
+
+    @Test
+    public void updatePasswordSuccess() {
+        UserInfo user = new UserInfo(USER_LOGIN, "password", UserRole.USER);
+        when(userRepository.findByLogin(USER_LOGIN))
+                .thenReturn(Optional.of(user));
+
+
+        String newPassword = "awesomePassword";
+        assertThat(instance.setNewPassword(USER_LOGIN, newPassword))
+                .isNotNull()
+                .isPresent()
+                .hasValue(user)
+                .map(UserInfo::getPassword)
+                .get()
+                .isNotNull()
+                .matches(p -> passwordEncoder.matches(newPassword, p), "Password and encrypted password are mismatch");
+
+        verify(userRepository).findByLogin(USER_LOGIN);
+    }
 }

@@ -43,8 +43,14 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
         if (user == null) {
             return;
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        cryptPassword(user, user.getPassword());
         userInfoRepository.save(user);
+    }
+
+    private void cryptPassword(UserInfo user, String password) {
+        if (user != null) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
     }
 
     @Override
@@ -97,5 +103,18 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
     public Optional<UserInfo> getUserById(long id) {
         log.traceEntry("Get user by [ id = {} ]", id);
         return userInfoRepository.findById(id);
+    }
+
+    @Override
+    public Optional<UserInfo> setNewPassword(String login, String newPassword) {
+        if (login == null) {
+            return Optional.empty();
+        }
+        Optional<UserInfo> user = userInfoRepository.findByLogin(login);
+        user.ifPresent(u -> {
+            cryptPassword(u, newPassword);
+            userInfoRepository.save(u);
+        });
+        return user;
     }
 }

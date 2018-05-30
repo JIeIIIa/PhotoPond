@@ -89,10 +89,31 @@ public class UserInfoServiceImplTest {
     public void findNotExistUserByLogin() {
 
         when(userRepository.findByLogin(USER_LOGIN))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
 
         assertThat(instance.getUserByLogin(USER_LOGIN))
                 .isNull();
+        verify(userRepository).findByLogin(USER_LOGIN);
+    }
+
+
+    @Test
+    public void updatePasswordSuccess() {
+        UserInfo user = new UserInfo(USER_LOGIN, "somePassword", UserRole.USER);
+        when(userRepository.findByLogin(USER_LOGIN))
+                .thenReturn(Optional.of(user));
+
+
+        String newPassword = "awesomePassword";
+        assertThat(instance.setNewPassword(USER_LOGIN, newPassword))
+                .isNotNull()
+                .isPresent()
+                .hasValue(user)
+                .map(UserInfo::getPassword)
+                .get()
+                .isNotNull()
+                .matches(p -> passwordEncoder.matches(newPassword, p), "Password and encrypted password are mismatch");
+
         verify(userRepository).findByLogin(USER_LOGIN);
     }
 }

@@ -17,4 +17,6 @@ public interface UserInfoService {
     UserInfo update(UserInfo userInfo);
 
     Optional<UserInfo> getUserById(long id);
+
+    Optional<UserInfo> setNewPassword(String login, String newPassword);
 }
