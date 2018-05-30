@@ -27,7 +27,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public UserInfo getUserByLogin(String login) {
+    public Optional<UserInfo> getUserByLogin(String login) {
         log.debug("call getUserByLogin for login = '" + login + "'");
         return userInfoRepository.findByLogin(login);
     }
@@ -35,6 +35,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public void addUser(UserInfo user) {
         log.debug("Add user:  " + user);
+        if (user == null) {
+            return;
+        }
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userInfoRepository.addUser(user);
@@ -60,7 +63,12 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public UserInfo delete(long id) {
         log.debug("Delete user with [id = " + id + "]");
-        return userInfoRepository.delete(id);
+        Optional<UserInfo> deletedUser = userInfoRepository.getUserById(id);
+        if (deletedUser.isPresent()) {
+            userInfoRepository.delete(id);
+            return deletedUser.get();
+        }
+        return null;
     }
 
     @Override

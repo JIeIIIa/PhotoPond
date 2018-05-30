@@ -23,10 +23,12 @@ public class CustomErrorController implements ErrorController {
     @Value("${includeStackTrace}")
     private boolean includeStackTrace;
 
-
+    private final ErrorAttributes errorAttributes;
 
     @Autowired
-    private ErrorAttributes errorAttributes;
+    public CustomErrorController(ErrorAttributes errorAttributes) {
+        this.errorAttributes = errorAttributes;
+    }
 
     @RequestMapping(value = ERROR_PATH)
     public ModelAndView error(WebRequest request, HttpServletResponse response, ModelAndView modelAndView) {

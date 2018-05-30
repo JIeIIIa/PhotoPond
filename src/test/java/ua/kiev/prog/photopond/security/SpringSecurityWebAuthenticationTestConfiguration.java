@@ -1,6 +1,5 @@
 package ua.kiev.prog.photopond.security;
 
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -21,7 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,12 +32,7 @@ public class SpringSecurityWebAuthenticationTestConfiguration {
     public AuthenticationManager createAuthenticationManager() {
         AuthenticationManager am = mock(AuthenticationManager.class);
         when(am.authenticate(any(Authentication.class))).thenAnswer(
-                new Answer<Authentication>() {
-                    public Authentication answer(InvocationOnMock invocation)
-                            throws Throwable {
-                        return (Authentication) invocation.getArguments()[0];
-                    }
-                });
+                (Answer<Authentication>) invocation -> (Authentication) invocation.getArguments()[0]);
 
         return am;
     }
@@ -63,7 +56,7 @@ public class SpringSecurityWebAuthenticationTestConfiguration {
         User deactivatedUser = new User("deactivatedUser", encoder.encode("qwerty123!"),
                 false, true, true, true, roles);
 
-        return new InMemoryUserDetailsManager(Arrays.<UserDetails>asList(
+        return new InMemoryUserDetailsManager(Arrays.asList(
                 basicActiveUser, managerActiveUser, deactivatedUser
         ));
     }

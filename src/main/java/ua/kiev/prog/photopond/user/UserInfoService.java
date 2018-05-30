@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserInfoService {
-    UserInfo getUserByLogin(String login);
+    Optional<UserInfo> getUserByLogin(String login);
 
     void addUser(UserInfo user);
 

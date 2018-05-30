@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserInfoSimpleRepository {
-    UserInfo findByLogin(String login);
+    Optional<UserInfo> findByLogin(String login);
 
     boolean existByLogin(String login);
 
@@ -16,7 +16,7 @@ public interface UserInfoSimpleRepository {
 
     List<UserInfo> getAllUsers();
 
-    UserInfo delete(long id);
+    void delete(long id);
 
     UserInfo update(UserInfo userInfo);
 

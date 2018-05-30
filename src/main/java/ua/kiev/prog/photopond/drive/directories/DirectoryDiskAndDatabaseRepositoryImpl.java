@@ -77,7 +77,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
         throwExceptionIfDirectoryNull(directory);
 
 
-        Path pathOnDisk = null;
+        Path pathOnDisk;
         try {
             pathOnDisk = Paths.get(foldersBaseDir + directory.getFullPath());
             List<Directory> directoriesToDelete = directoryJpaRepository.findByOwnerAndPathStartingWith(directory.getOwner(), directory.getPath());

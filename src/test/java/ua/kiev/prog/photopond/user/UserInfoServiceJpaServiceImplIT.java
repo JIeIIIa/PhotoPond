@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @ActiveProfiles({"dev", "testDB", "unitTest"})
 @DataJpaTest
-@ContextConfiguration(classes =  {UserInfoServiceJpaServiceImplITConfiguration.class})
+@ContextConfiguration(classes = {UserInfoServiceJpaServiceImplITConfiguration.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DbUnitTestExecutionListener.class})
 @DatabaseSetup("classpath:datasets/users_dataset.xml")
@@ -32,21 +32,21 @@ public class UserInfoServiceJpaServiceImplIT {
     private UserInfoServiceJpaImpl userInfoServiceJpaImpl;
 
     @Test
-    public void successExistsUserByLogin() throws Exception {
+    public void successExistsUserByLogin() {
         boolean isExistsUser = userInfoServiceJpaImpl.existByLogin("someUser");
 
         assertThat(isExistsUser).isTrue();
     }
 
     @Test
-    public void failureExistsUserByLogin() throws Exception {
+    public void failureExistsUserByLogin() {
         boolean isExistsUser = userInfoServiceJpaImpl.existByLogin("unknownUser");
 
         assertThat(isExistsUser).isFalse();
     }
 
     @Test
-    public void successGetUserById() throws Exception {
+    public void successGetUserById() {
         UserInfo user = new UserInfoBuilder()
                 .id(777)
                 .login("someUser")
@@ -54,15 +54,17 @@ public class UserInfoServiceJpaServiceImplIT {
                 .role(UserRole.USER)
                 .build();
 
-        UserInfo foundUser = userInfoServiceJpaImpl.getUserById(777).get();
+        Optional<UserInfo> foundUser = userInfoServiceJpaImpl.getUserById(777);
 
         assertThat(foundUser)
                 .isNotNull()
-                .isEqualToComparingFieldByFieldRecursively(user);
+                .isPresent()
+                .usingFieldByFieldValueComparator()
+                .hasValue(user);
     }
 
     @Test
-    public void failureGetUserById() throws Exception {
+    public void failureGetUserById() {
         Optional<UserInfo> foundUser = userInfoServiceJpaImpl.getUserById(123);
 
         assertThat(foundUser.isPresent()).isFalse();
@@ -70,7 +72,7 @@ public class UserInfoServiceJpaServiceImplIT {
 
 
     @Test
-    public void getAllUsers() throws Exception {
+    public void getAllUsers() {
         List<UserInfo> allUsersFromRepository = userInfoJpaRepository.findAll();
         int size = allUsersFromRepository.size();
         UserInfo[] allUsers = allUsersFromRepository.toArray(new UserInfo[size]);
@@ -84,7 +86,7 @@ public class UserInfoServiceJpaServiceImplIT {
     }
 
     @Test
-    public void successGetUserByLogin() throws Exception {
+    public void successGetUserByLogin() {
         UserInfo user = new UserInfoBuilder()
                 .id(777)
                 .login("someUser")
@@ -92,7 +94,7 @@ public class UserInfoServiceJpaServiceImplIT {
                 .role(UserRole.USER)
                 .build();
 
-        UserInfo foundUser = userInfoServiceJpaImpl.getUserByLogin(user.getLogin());
+        UserInfo foundUser = userInfoServiceJpaImpl.getUserByLogin(user.getLogin()).get();
 
         assertThat(foundUser)
                 .isNotNull()
@@ -100,18 +102,20 @@ public class UserInfoServiceJpaServiceImplIT {
     }
 
     @Test
-    public void failureGetUserByLogin() throws Exception {
-        UserInfo foundUser = userInfoServiceJpaImpl.getUserByLogin("unknownUser");
+    public void failureGetUserByLogin() {
+        Optional<UserInfo> foundUser = userInfoServiceJpaImpl.getUserByLogin("unknownUser");
 
-        assertThat(foundUser).isNull();
+        assertThat(foundUser)
+                .isNotNull()
+                .isNotPresent();
     }
 
     @Test
-    public void addUser() throws Exception {
+    public void addUser() {
         UserInfo user = new UserInfoBuilder().login("newUser").password("strongPassword").role(UserRole.USER).build();
 
         userInfoServiceJpaImpl.addUser(user);
-        user.setId(userInfoJpaRepository.findByLogin("newUser").getId());
+        user.setId(userInfoJpaRepository.findByLogin("newUser").get().getId());
         List<UserInfo> allUsers = userInfoJpaRepository.findAll();
 
         assertThat(allUsers)
@@ -120,7 +124,7 @@ public class UserInfoServiceJpaServiceImplIT {
     }
 
     @Test
-    public void addNullAsUser() throws Exception {
+    public void addNullAsUser() {
         userInfoServiceJpaImpl.addUser(null);
         List<UserInfo> allUsers = userInfoJpaRepository.findAll();
 
@@ -129,9 +133,8 @@ public class UserInfoServiceJpaServiceImplIT {
     }
 
 
-
     @Test
-    public void update() throws Exception {
+    public void update() {
         UserInfo updatedUser = new UserInfoBuilder()
                 .id(777)
                 .login("someUser123")
@@ -149,7 +152,7 @@ public class UserInfoServiceJpaServiceImplIT {
     }
 
     @Test
-    public void updateToExistsLogin() throws Exception {
+    public void updateToExistsLogin() {
         UserInfo user = userInfoJpaRepository.findById(777L).get();
         UserInfo newInformation = new UserInfoBuilder()
                 .id(777)
@@ -167,7 +170,7 @@ public class UserInfoServiceJpaServiceImplIT {
     }
 
     @Test
-    public void updateWithFailureId() throws Exception {
+    public void updateWithFailureId() {
         UserInfo newInformation = new UserInfoBuilder()
                 .id(101010)
                 .login("newUser")
@@ -185,7 +188,7 @@ public class UserInfoServiceJpaServiceImplIT {
     }
 
     @Test
-    public void deleteExistsUser() throws Exception {
+    public void deleteExistsUser() {
         UserInfo user = userInfoJpaRepository.findById(777L).get();
 
         UserInfo deletedUser = userInfoServiceJpaImpl.delete(777);
@@ -198,7 +201,7 @@ public class UserInfoServiceJpaServiceImplIT {
     }
 
     @Test
-    public void deleteWithFailureId() throws Exception {
+    public void deleteWithFailureId() {
         UserInfo user = userInfoServiceJpaImpl.delete(101010);
 
         assertThat(user).isNull();

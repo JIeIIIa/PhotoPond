@@ -14,6 +14,7 @@ import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoService;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -31,20 +32,20 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         log.debug("try load user by login: " + login);
-        UserInfo user = userService.getUserByLogin(login);
+        Optional<UserInfo> user = userService.getUserByLogin(login);
 
-        if (user == null) {
+        if (!user.isPresent()) {
             log.warn("Cannot load UserInfo for [ login = '{}' ]", login);
             throw new UsernameNotFoundException(login + " not found");
         }
 
         Set<GrantedAuthority> roles = new HashSet<>();
-        roles.add(new SimpleGrantedAuthority(user.getRole().toString()));
+        roles.add(new SimpleGrantedAuthority(user.get().getRole().toString()));
 
-        UserDetails userDetails = User.withUsername(user.getLogin())
-                .password(user.getPassword())
-                .roles(user.getRole().name())
-                .disabled(user.isDeactivated())
+        UserDetails userDetails = User.withUsername(user.get().getLogin())
+                .password(user.get().getPassword())
+                .roles(user.get().getRole().name())
+                .disabled(user.get().isDeactivated())
                 .build();
         log.info("User [ login = {} ] was loaded", login);
         return userDetails;

@@ -3,7 +3,7 @@ package ua.kiev.prog.photopond.user;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 import java.util.Arrays;
@@ -17,7 +17,7 @@ public class EmbeddedUserInfoRepositoryTest {
     private UserInfo testUser = null;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         testUser = new UserInfo(USER_LOGIN, "user", UserRole.USER);
         UserInfo first = new UserInfo("someUser", "password", UserRole.USER);
         UserInfo second = new UserInfo("admin", "admin", UserRole.USER);
@@ -41,19 +41,22 @@ public class EmbeddedUserInfoRepositoryTest {
     public void findUserSuccessTest() {
         assertThat(embeddedUserInfoRepository.findByLogin(USER_LOGIN))
                 .isNotNull()
-                .isEqualTo(testUser);
+                .isPresent()
+                .hasValue(testUser);
     }
 
     @Test
     public void findUserWithNullLoginTest() {
         assertThat(embeddedUserInfoRepository.findByLogin(null))
-                .isNull();
+                .isNotNull()
+                .isNotPresent();
     }
 
     @Test
     public void findUserFailureTest() {
         assertThat(embeddedUserInfoRepository.findByLogin("UnknownUser"))
-                .isNull();
+                .isNotNull()
+                .isNotPresent();
     }
 
     @Test
@@ -67,7 +70,8 @@ public class EmbeddedUserInfoRepositoryTest {
                 .isTrue();
         assertThat(embeddedUserInfoRepository.findByLogin(anotherUserLogin))
                 .isNotNull()
-                .isEqualTo(anotherUser);
+                .isPresent()
+                .hasValue(anotherUser);
     }
 
     @Test(expected = AddToRepositoryException.class)

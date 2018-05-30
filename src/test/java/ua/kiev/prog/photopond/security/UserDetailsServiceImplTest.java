@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,9 +15,10 @@ import ua.kiev.prog.photopond.user.UserInfoService;
 import ua.kiev.prog.photopond.user.UserRole;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,7 +30,7 @@ public class UserDetailsServiceImplTest {
     private UserDetailsService userDetailsService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         userDetailsService = new UserDetailsServiceImpl(userInfoService);
     }
 
@@ -43,10 +44,10 @@ public class UserDetailsServiceImplTest {
     }
 
     @Test
-    public void successAuthenticate() throws Exception {
+    public void successAuthenticate() {
         UserInfo user = new UserInfo("user", "password", UserRole.USER);
         when(userInfoService.getUserByLogin(user.getLogin()))
-                .thenReturn(user);
+                .thenReturn(Optional.of(user));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getLogin());
 
@@ -61,18 +62,18 @@ public class UserDetailsServiceImplTest {
     }
 
     @Test(expected = UsernameNotFoundException.class)
-    public void userNotFound() throws Exception {
+    public void userNotFound() {
         when(userInfoService.getUserByLogin("someLogin"))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
 
         userDetailsService.loadUserByUsername("someLogin");
     }
 
     @Test
-    public void disabledUser() throws Exception {
+    public void disabledUser() {
         UserInfo user = new UserInfo("disabledUser", "password", UserRole.DEACTIVATED);
         when(userInfoService.getUserByLogin(user.getLogin()))
-                .thenReturn(user);
+                .thenReturn(Optional.of(user));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getLogin());
 

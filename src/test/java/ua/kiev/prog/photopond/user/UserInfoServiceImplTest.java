@@ -6,13 +6,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import ua.kiev.prog.photopond.exception.AddToRepositoryException;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -21,7 +20,6 @@ public class UserInfoServiceImplTest {
     @Mock
     private UserInfoSimpleRepository userRepository;
 
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     private UserInfoServiceImpl instance;
@@ -29,8 +27,9 @@ public class UserInfoServiceImplTest {
     private final String USER_LOGIN = "user";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
+        passwordEncoder = new BCryptPasswordEncoder();
         instance = new UserInfoServiceImpl(userRepository, passwordEncoder);
     }
 
@@ -45,7 +44,7 @@ public class UserInfoServiceImplTest {
     }
 
     @Test
-    public void failureExistUserByLogin() throws Exception {
+    public void failureExistUserByLogin() {
         Mockito.when(userRepository.existByLogin(USER_LOGIN))
                 .thenReturn(false);
 
@@ -66,28 +65,28 @@ public class UserInfoServiceImplTest {
     @Test
     public void AddNullAsUserTest() throws Exception {
         UserInfo nullUser = null;
-        doThrow(new AddToRepositoryException()).when(userRepository).addUser(eq(nullUser));
 
         instance.addUser(null);
 
-        verify(userRepository).addUser(eq(nullUser));
+        verify(userRepository, never()).addUser(eq(nullUser));
     }
 
     @Test
-    public void findExistUserByLogin() throws Exception {
+    public void findExistUserByLogin() {
         UserInfo user = new UserInfo(USER_LOGIN, "password", UserRole.USER);
         when(userRepository.findByLogin(USER_LOGIN))
-                .thenReturn(user);
+                .thenReturn(Optional.of(user));
 
         assertThat(instance.getUserByLogin(USER_LOGIN))
                 .isNotNull()
-                .isEqualTo(user);
+                .isPresent()
+                .hasValue(user);
         verify(userRepository).findByLogin(USER_LOGIN);
     }
 
 
     @Test
-    public void findNotExistUserByLogin() throws Exception {
+    public void findNotExistUserByLogin() {
 
         when(userRepository.findByLogin(USER_LOGIN))
                 .thenReturn(null);

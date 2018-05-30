@@ -28,7 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         log.debug("Configure WebSecurity: add ignoring paths");
         web.ignoring()
                 .antMatchers("/css/**")

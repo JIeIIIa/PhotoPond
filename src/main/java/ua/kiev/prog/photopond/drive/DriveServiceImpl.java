@@ -259,7 +259,7 @@ public class DriveServiceImpl implements DriveService {
 
         public UserInfo getOwner() {
             if (this.owner == null) {
-                this.owner = userInfoService.getUserByLogin(ownerLogin);
+                this.owner = userInfoService.getUserByLogin(ownerLogin).get();
             }
             return this.owner;
         }

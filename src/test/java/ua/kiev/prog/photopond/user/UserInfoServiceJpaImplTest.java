@@ -4,13 +4,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -19,7 +20,6 @@ public class UserInfoServiceJpaImplTest {
     @Mock
     private UserInfoJpaRepository userRepository;
 
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     private UserInfoServiceJpaImpl instance;
@@ -28,16 +28,20 @@ public class UserInfoServiceJpaImplTest {
 
     private UserInfo mockUser;
 
+    public UserInfoServiceJpaImplTest() {
+        passwordEncoder = new BCryptPasswordEncoder();
+    }
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         instance = new UserInfoServiceJpaImpl(userRepository, passwordEncoder);
         mockUser = new UserInfoBuilder().id(777).login("mockUser").password("password").role(UserRole.USER).build();
     }
 
     @Test
     public void successExistUserByLogin() {
-        Mockito.when(userRepository.findByLogin(mockUser.getLogin()))
-                .thenReturn(mockUser);
+        when(userRepository.findByLogin(mockUser.getLogin()))
+                .thenReturn(Optional.of(mockUser));
 
         assertThat(instance.existByLogin(mockUser.getLogin()))
                 .isTrue();
@@ -45,9 +49,9 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void failureExistUserByLogin() throws Exception {
-        Mockito.when(userRepository.findByLogin(USER_LOGIN))
-                .thenReturn(null);
+    public void failureExistUserByLogin() {
+        when(userRepository.findByLogin(USER_LOGIN))
+                .thenReturn(Optional.empty());
 
         assertThat(instance.existByLogin(USER_LOGIN))
                 .isFalse();
@@ -55,7 +59,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void successAddUserTest() throws Exception {
+    public void successAddUserTest() {
         UserInfo user = new UserInfo(USER_LOGIN, "password", UserRole.USER);
 
         instance.addUser(user);
@@ -64,35 +68,34 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void AddNullAsUserTest() throws Exception {
-        UserInfo nullUser = null;
-
-        instance.addUser(nullUser);
+    public void AddNullAsUserTest() {
+        instance.addUser(null);
 
         verify(userRepository, never()).save(any(UserInfo.class));
     }
 
     @Test
-    public void findExistUserByLogin() throws Exception {
+    public void findExistUserByLogin() {
         UserInfo user = new UserInfo(USER_LOGIN, "password", UserRole.USER);
         when(userRepository.findByLogin(USER_LOGIN))
-                .thenReturn(user);
+                .thenReturn(Optional.of(user));
 
         assertThat(instance.getUserByLogin(USER_LOGIN))
                 .isNotNull()
-                .isEqualTo(user);
+                .isPresent()
+                .hasValue(user);
         verify(userRepository).findByLogin(USER_LOGIN);
     }
 
 
     @Test
-    public void findNotExistUserByLogin() throws Exception {
-
+    public void findNotExistUserByLogin() {
         when(userRepository.findByLogin(USER_LOGIN))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
 
         assertThat(instance.getUserByLogin(USER_LOGIN))
-                .isNull();
+                .isNotNull()
+                .isNotPresent();
         verify(userRepository).findByLogin(USER_LOGIN);
     }
 }

@@ -3,10 +3,7 @@ package ua.kiev.prog.photopond.user;
 import org.springframework.stereotype.Repository;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
@@ -23,38 +20,35 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     private int getAndIncID() {
         return idIndex++;
     }
+
     @Override
-    synchronized public UserInfo findByLogin(String login) {
-        for (UserInfo user : users) {
-            if (user.getLogin().equals(login)) {
-                return user;
-            }
-        }
-        return null;
+    synchronized public Optional<UserInfo> findByLogin(String login) {
+        return users.stream()
+                .filter(Objects::nonNull)
+                .filter(u -> Objects.nonNull(u.getLogin()))
+                .filter(u -> u.getLogin().equals(login))
+                .findFirst();
     }
 
     @Override
     synchronized public boolean existByLogin(String login) {
-        for (UserInfo user : users) {
-            if (user.getLogin().equals(login)) {
-                return true;
-            }
-        }
-        return false;
+        return users.stream()
+                .filter(Objects::nonNull)
+                .filter(u -> Objects.nonNull(u.getLogin()))
+                .anyMatch(u -> u.getLogin().equals(login));
     }
 
     @Override
     public boolean existByLogin(String login, long exceptId) {
-        for (UserInfo user : users) {
-            if (user.getId() != exceptId && user.getLogin().equals(login)) {
-                return true;
-            }
-        }
-        return false;
+        return users.stream()
+                .filter(Objects::nonNull)
+                .filter(u -> Objects.nonNull(u.getLogin()))
+                .filter(user -> user.getId() != exceptId)
+                .anyMatch(user -> user.getLogin().equals(login));
     }
 
     @Override
-    synchronized public void addUser(UserInfo user) throws AddToRepositoryException{
+    synchronized public void addUser(UserInfo user) throws AddToRepositoryException {
         if (user == null) {
             throw new AddToRepositoryException("Can't add NULL-value as user in Repository");
         }
@@ -68,13 +62,12 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     }
 
     @Override
-    public UserInfo delete(long id) {
-        for (UserInfo user : users) {
-            if (user.getId() == id) {
-                return user;
-            }
-        }
-        return null;
+    public void delete(long id) {
+        users.stream()
+                .filter(user -> user.getId() == id)
+                .limit(1)
+                .forEach(users::remove);
+
     }
 
     @Override
@@ -92,12 +85,10 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
 
     @Override
     public Optional<UserInfo> getUserById(long id) {
-        for (UserInfo user : users) {
-            if (user.getId() == id) {
-                return Optional.of(user);
-            }
-        }
-        return Optional.empty();
+        return users.stream()
+                .filter(Objects::nonNull)
+                .filter(u -> id == u.getId())
+                .findFirst();
     }
 
 }

@@ -27,24 +27,22 @@ public class DatabaseStartupRunner {
         }
 
         @Override
-        public void run(String... strings) throws Exception {
+        public void run(String... strings) {
             log.debug("Production database init");
             createUsers();
         }
 
         private void createUsers() {
-            UserInfo admin = userInfoService.getUserByLogin("SuperPhotoPondAdmin");
-            if (admin == null) {
+            UserInfo admin;
+            if (!userInfoService.existByLogin("SuperPhotoPondAdmin")) {
                 admin = new UserInfoBuilder()
-                        .login("aSuperPhotoPondAdmin")
+                        .login("SuperPhotoPondAdmin")
                         .password(generatePassword())
                         .role(UserRole.ADMIN)
                         .build();
                 userInfoService.addUser(admin);
-            } else if (!admin.getRole().equals(UserRole.ADMIN)) {
-                log.info("!!! Default ADMIN was disabled !!!");
-                return;
             }
+            admin = userInfoService.getUserByLogin("SuperPhotoPondAdmin").get();
             log.info("    =======================================");
             log.info("                Available users ");
             log.info("    =======================================");
@@ -69,14 +67,14 @@ public class DatabaseStartupRunner {
         }
 
         @Override
-        public void run(String... strings) throws Exception {
+        public void run(String... strings) {
             log.debug("Dev database init");
             createUsers();
         }
 
         private void createUsers() {
-            UserInfo admin = userInfoService.getUserByLogin("admin");
-            if (admin == null) {
+            UserInfo admin;
+            if (!userInfoService.existByLogin("admin")) {
                 admin = new UserInfoBuilder()
                         .login("admin")
                         .password("password")
@@ -84,23 +82,28 @@ public class DatabaseStartupRunner {
                         .build();
                 userInfoService.addUser(admin);
             }
-            UserInfo user = userInfoService.getUserByLogin("user");
-            if (user == null) {
+            admin = userInfoService.getUserByLogin("admin").get();
+
+            UserInfo user;
+            if (!userInfoService.existByLogin("user")) {
                 user = new UserInfoBuilder()
                         .login("user")
                         .password("useruser")
                         .build();
                 userInfoService.addUser(user);
             }
-            UserInfo deactivatedUser = userInfoService.getUserByLogin("nonActiveUser");
-            if (deactivatedUser == null) {
+            user = userInfoService.getUserByLogin("user").get();
+
+            UserInfo deactivatedUser;
+            if (!userInfoService.existByLogin("nonActiveUser")) {
                 deactivatedUser = new UserInfoBuilder()
                         .login("nonActiveUser")
                         .password("useruser")
-                        .role(UserRole.DEACTIVATED)
                         .build();
                 userInfoService.addUser(deactivatedUser);
             }
+            deactivatedUser = userInfoService.getUserByLogin("nonActiveUser").get();
+
             log.info("    =======================================");
             log.info("                Available users ");
             log.info("    =======================================");
@@ -111,7 +114,6 @@ public class DatabaseStartupRunner {
             userInfoToLog(deactivatedUser);
             log.info("    =======================================");
         }
-
     }
 
     private static void userInfoToLog(UserInfo userInfo) {

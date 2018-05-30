@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 @DevOrProd
 @Transactional(readOnly = true)
-public class UserInfoServiceJpaImpl implements UserInfoService{
+public class UserInfoServiceJpaImpl implements UserInfoService {
     private static Logger log = LogManager.getLogger(UserInfoServiceJpaImpl.class);
 
     private final UserInfoJpaRepository userInfoRepository;
@@ -30,9 +30,9 @@ public class UserInfoServiceJpaImpl implements UserInfoService{
 
 
     @Override
-    public UserInfo getUserByLogin(String login) {
+    public Optional<UserInfo> getUserByLogin(String login) {
         log.debug("Call getUserByLogin for [ login = '{}'] ", login);
-        UserInfo user = userInfoRepository.findByLogin(login);
+        Optional<UserInfo> user = userInfoRepository.findByLogin(login);
         return user;
     }
 
@@ -50,10 +50,9 @@ public class UserInfoServiceJpaImpl implements UserInfoService{
     @Override
     public boolean existByLogin(String login) {
         log.traceEntry("Is exist user with [ login = '{}' ]", login);
-        UserInfo user = userInfoRepository.findByLogin(login);
-        boolean existUser = (user != null);
-        log.debug("Exists user by [ login = '{}' ]   =   {}", login, existUser);
-        return existUser;
+        Optional<UserInfo> user = userInfoRepository.findByLogin(login);
+        log.debug("Exists user by [ login = '{}' ]   =   {}", login, user.isPresent());
+        return user.isPresent();
     }
 
     @Override
