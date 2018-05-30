@@ -139,6 +139,7 @@ public class DirectoryTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void getParentPathForNullPath() {
+        directory = new Directory();
         directory.parentPath();
     }
 

@@ -13,7 +13,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 @RunWith(JUnit4.class)
 public class DirectoryBuilderTest {
     @Test
-    public void id() throws Exception {
+    public void id() {
         Long id = 777L;
 
         Directory directory = new DirectoryBuilder().id(id).build();
@@ -22,7 +22,7 @@ public class DirectoryBuilderTest {
     }
 
     @Test
-    public void owner() throws Exception {
+    public void owner() {
         UserInfo user = new UserInfoBuilder()
                 .id(123)
                 .login("someUser")
@@ -35,7 +35,7 @@ public class DirectoryBuilderTest {
     }
 
     @Test
-    public void path() throws Exception {
+    public void path() {
         String path = buildPath("some", "long", "long", "long", "path");
 
         Directory directory = new DirectoryBuilder().path(path).build();
@@ -44,16 +44,19 @@ public class DirectoryBuilderTest {
     }
 
     @Test
-    public void defaultBuild() throws Exception {
+    public void defaultBuild() {
         Directory directory = new DirectoryBuilder().build();
 
         Directory expected = new Directory();
+        expected.setId(Long.MIN_VALUE);
+        expected.setOwner(new UserInfo());
+        expected.setPath(Directory.SEPARATOR);
 
         assertThat(directory).isEqualTo(expected);
     }
 
     @Test
-    public void from() throws Exception {
+    public void from() {
         UserInfo user = new UserInfoBuilder()
                 .id(123)
                 .login("someUser")
