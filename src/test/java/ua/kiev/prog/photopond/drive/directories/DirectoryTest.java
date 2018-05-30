@@ -3,7 +3,7 @@ package ua.kiev.prog.photopond.drive.directories;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoBuilder;
 
@@ -20,29 +20,29 @@ public class DirectoryTest {
     private Directory directory;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         UserInfo owner = new UserInfoBuilder().id(123).login(OWNER_NAME).build();
         directory = new DirectoryBuilder().owner(owner).build();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void nullPath() throws Exception {
+    public void nullPath() {
         directory.setPath(null);
     }
 
     @Test
-    public void rootDirectory() throws Exception {
+    public void rootDirectory() {
         directory.setPath(SEPARATOR);
 
         String expectedName = SEPARATOR;
 
         assertThat(directory.getLevel())
+                .isNotNull()
                 .isEqualTo(0);
         assertThat(directory.getPath())
                 .isNotNull()
-                .isNotEmpty()
                 .isEqualTo(expectedName);
-        assertThat(directory.getParentPath())
+        assertThat(directory.parentPath())
                 .isNotNull()
                 .isEqualTo("");
         assertThat(directory.getOwnerFolder())
@@ -54,7 +54,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void rootDirectoryName() throws Exception {
+    public void rootDirectoryName() {
         directory.setPath(SEPARATOR);
 
         assertThat(directory.getName())
@@ -62,7 +62,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void firstLevelDirectoryName() throws Exception {
+    public void firstLevelDirectoryName() {
         String directoryName = "awesomeDirectory";
         directory.setPath(SEPARATOR + directoryName);
 
@@ -71,7 +71,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void moreThanOneLevelDirectoryName() throws Exception {
+    public void moreThanOneLevelDirectoryName() {
         String directoryName = "awesomeDirectory";
         directory.setPath(buildPath("first", "Second", directoryName));
 
@@ -80,18 +80,17 @@ public class DirectoryTest {
     }
 
     @Test
-    public void pathWithSubdirectories() throws Exception {
+    public void pathWithSubdirectories() {
         String expectedParentName = buildPath("first", "second");
         String path = buildPath(expectedParentName, "third");
-        directory.setPath(path);
 
+        directory.setPath(path);
 
         assertThat(directory.getLevel()).isEqualTo(3);
         assertThat(directory.getPath())
                 .isNotNull()
-                .isNotEmpty()
                 .isEqualTo(path);
-        assertThat(directory.getParentPath())
+        assertThat(directory.parentPath())
                 .isNotNull()
                 .isEqualTo(expectedParentName);
         assertThat(directory.getOwnerFolder())
@@ -103,53 +102,53 @@ public class DirectoryTest {
     }
 
     @Test
-    public void getParentPath() throws Exception {
+    public void getParentPath() {
         String expectedParentName = buildPath("first", "second");
         String path = buildPath(expectedParentName, "third");
         directory.setPath(path);
 
-        assertThat(directory.getParentPath())
+        assertThat(directory.parentPath())
                 .isNotNull()
                 .isEqualTo(expectedParentName);
     }
 
     @Test
-    public void getParentPathForFirstLevel() throws Exception {
+    public void getParentPathForFirstLevel() {
         String expectedParentPath = SEPARATOR;
         String path = SEPARATOR + "someDirectory";
         directory.setPath(path);
 
-        assertThat(directory.getParentPath())
+        assertThat(directory.parentPath())
                 .isNotNull()
                 .isEqualTo(expectedParentPath);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void getRootForNullOwner() throws Exception {
+    public void getRootForNullOwner() {
         directory = new Directory();
 
         directory.getOwnerFolder();
     }
 
     @Test(expected = IllegalStateException.class)
-    public void getParentPathForNullOwner() throws Exception {
+    public void getParentPathForNullOwner() {
         directory = new Directory();
 
         directory.getOwnerFolder();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getParentPathForNullPath() throws Exception {
-        directory.getParentPath();
+    public void getParentPathForNullPath() {
+        directory.parentPath();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setNullAsOwner() throws Exception {
+    public void setNullAsOwner() {
         directory.setOwner(null);
     }
 
     @Test
-    public void parentDirectoryNamesWithoutSubdirectories() throws Exception {
+    public void parentDirectoryNamesWithoutSubdirectories() {
         directory.setPath(SEPARATOR);
 
         assertThat(directory.getDirectoryNames())
@@ -159,7 +158,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void parentDirectoryNamesWithSubdirectories() throws Exception {
+    public void parentDirectoryNamesWithSubdirectories() {
         directory.setPath(buildPath("first", "second", "third", "etc"));
 
         assertThat(directory.getDirectoryNames())
@@ -169,24 +168,29 @@ public class DirectoryTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setPathEndsOnSeparator() throws Exception {
+    public void setPathEndsOnSeparator() {
         directory.setPath(SEPARATOR + "someDirectory" + SEPARATOR);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setPathWithSeveralSeparatorTogether() throws Exception {
+    public void setPathWithTwoSeparatorTogether() {
+        directory.setPath(SEPARATOR + SEPARATOR);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setPathWithSeveralSeparatorTogether() {
         directory.setPath(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + "someNameDirectory");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void setPathNotStartsWithSeparator() throws Exception {
+    public void setPathNotStartsWithSeparator() {
         String path = "somePath";
 
         directory.setPath(path);
     }
 
     @Test
-    public void buildPathFromOneDirectoryName() throws Exception {
+    public void buildPathFromOneDirectoryName() {
         String firstName = "first";
         String expectedPath = SEPARATOR + firstName;
 
@@ -198,7 +202,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void buildPathFromSeveralDirectoryName() throws Exception {
+    public void buildPathFromSeveralDirectoryName() {
         String firstName = "first";
         String[] names = {"second", "third"};
         String expectedPath = SEPARATOR + firstName
@@ -213,7 +217,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void buildPathFromPathAndName() throws Exception {
+    public void buildPathFromPathAndName() {
         String firstName = SEPARATOR + "first" + SEPARATOR + "second";
         String[] names = {"third"};
         String expectedPath = SEPARATOR + "first"
@@ -228,7 +232,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void buildPathFromPaths() throws Exception {
+    public void buildPathFromPaths() {
         String firstName = SEPARATOR + "first" + SEPARATOR + "second";
         String[] names = {SEPARATOR + "third"};
         String expectedPath = SEPARATOR + "first"
@@ -243,7 +247,7 @@ public class DirectoryTest {
     }
 
     @Test
-    public void buildPathFromFirstRootPath() throws Exception {
+    public void buildPathFromFirstRootPath() {
         String firstName = SEPARATOR;
         String[] names = {SEPARATOR + "second", SEPARATOR + "third"};
         String expectedPath = SEPARATOR + "second"
@@ -257,24 +261,22 @@ public class DirectoryTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void buildPathFromNullName() throws Exception {
+    public void buildPathFromNullName() {
         buildPath("first", null, "second");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void buildPathFromEmptyName() throws Exception {
+    public void buildPathFromEmptyName() {
         buildPath("first", "", "second");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void buildPathWhenRootDirectoryNotFirst() throws Exception {
+    public void buildPathWhenRootDirectoryNotFirst() {
         buildPath("first", SEPARATOR, "third");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void buildPathWhenDirectoryContentsTwoSeparator() throws Exception {
+    public void buildPathWhenDirectoryContentsTwoSeparator() {
         buildPath("first", SEPARATOR + SEPARATOR + "third");
     }
-
-
 }

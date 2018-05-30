@@ -110,7 +110,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         try {
             instance.save(directory);
         } catch (DirectoryModificationException e) {
-            verify(directoryJpaRepository).findByOwnerAndPath(user, directory.getParentPath());
+            verify(directoryJpaRepository).findByOwnerAndPath(user, directory.parentPath());
             throw new DirectoryModificationException();
         }
     }
@@ -218,7 +218,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
             Files.createDirectories(directoryPathOnDisk);
         }
         String newName = "anotherDir";
-        String targetPath = buildPath(directory.getParentPath(), newName);
+        String targetPath = buildPath(directory.parentPath(), newName);
         String targetFullPath = foldersBasedirPath + buildPath(directory.getOwnerFolder(), targetPath);
         Path targetPathOnDisk = Paths.get(targetFullPath);
         if (!Files.exists(targetPathOnDisk)) {

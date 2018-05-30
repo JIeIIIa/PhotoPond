@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import static ua.kiev.prog.photopond.Utils.Utils.deleteDirectoryWithContents;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
-import static ua.kiev.prog.photopond.drive.directories.Directory.getParentPath;
+import static ua.kiev.prog.photopond.drive.directories.Directory.retrieveParentPath;
 
 @Repository
 public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndDatabaseRepository {
@@ -44,7 +44,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
         throwExceptionIfDirectoryNull(directory);
 
         if (directory.getLevel() > 1 &&
-                directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.getParentPath()).size() != 1) {
+                directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.parentPath()).size() != 1) {
             log.debug("Not exists parent directory for current saved directory {}", directory);
             throw new DirectoryModificationException("Not exists parent directory for current saved directory");
         }
@@ -109,7 +109,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
             return;
         }
 
-        OperationParameters parameters = new OperationParameters(directory, getParentPath(newPath), newName);
+        OperationParameters parameters = new OperationParameters(directory, retrieveParentPath(newPath), newName);
 
         isPossibleToRename(parameters);
         moveDirectories(directory, parameters, "Rename: cannot rename directory on disk");
@@ -129,7 +129,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
             log.debug("Rename:   directory on path '{}' already exists in database", parameters.getCurrentPathOnDisk());
             throw new DirectoryModificationException("Rename - directory on path '" + parameters.getTargetPath() + "' already exists in database");
         }
-        String parentDirectoryPath = getParentPath(parameters.getTargetPath());
+        String parentDirectoryPath = retrieveParentPath(parameters.getTargetPath());
         if (directoryJpaRepository.findByOwnerAndPath(parameters.getOwner(), parentDirectoryPath).isEmpty()) {
             log.debug("Rename:   not found parent directory '{}'", parentDirectoryPath);
             throw new DirectoryModificationException("Rename - not found parent directory '" + parentDirectoryPath + "'");

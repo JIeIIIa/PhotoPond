@@ -226,9 +226,9 @@ public class DriveServiceImpl implements DriveService {
         }
         Directory current = directory;
         do {
-            List<Directory> parents = directoryRepository.findByOwnerAndPath(current.getOwner(), current.getParentPath());
+            List<Directory> parents = directoryRepository.findByOwnerAndPath(current.getOwner(), current.parentPath());
             if (parents.size() != 1) {
-                log.debug("Failed to get parent directory for '{}'", current.getParentPath());
+                log.debug("Failed to get parent directory for '{}'", current.parentPath());
                 throw new DriveException("Not found or found more than one parent directory for " + current);
             }
             current = parents.get(0);

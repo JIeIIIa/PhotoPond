@@ -92,6 +92,7 @@ public class Directory implements Serializable {
         }
         Pattern pattern = Pattern.compile(SEPARATOR);
         Matcher matcher = pattern.matcher(path);
+
         while (matcher.find()) {
             level++;
         }
@@ -141,11 +142,11 @@ public class Directory implements Serializable {
         return directoryName;
     }
 
-    public String getParentPath() {
-        return getParentPath(this.path);
+    public String parentPath() {
+        return retrieveParentPath(this.path);
     }
 
-    public static String getParentPath(String path) {
+    public static String retrieveParentPath(String path) {
         if (path == null) {
             throw new IllegalArgumentException("Path is null");
         } else if (path.isEmpty()) {

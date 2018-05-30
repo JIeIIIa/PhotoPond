@@ -57,7 +57,7 @@ public class DriveController {
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .path("/user/{login}/drive{path}")
                 .build()
-                .expand(userLogin, createdDirectory.getParentPath())
+                .expand(userLogin, createdDirectory.parentPath())
                 .encode();
         RedirectView redirectView = new RedirectView(uriComponents.toUriString(), true, true, false);
         ModelAndView modelAndView = new ModelAndView(redirectView);
