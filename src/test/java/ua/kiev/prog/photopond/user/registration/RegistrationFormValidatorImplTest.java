@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -13,7 +13,6 @@ import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoService;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -28,7 +27,7 @@ public class RegistrationFormValidatorImplTest {
     private Errors errors;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(userInfoService.existByLogin(any(String.class))).thenReturn(false);
         validatorUnderTest = new RegistrationFormValidatorImpl(userInfoService);
         initRegistrationForm();
@@ -44,7 +43,7 @@ public class RegistrationFormValidatorImplTest {
     }
 
     @Test
-    public void successValidation() throws Exception {
+    public void successValidation() {
         ValidationUtils.invokeValidator(validatorUnderTest, form, errors);
 
         verify(userInfoService).existByLogin(userInfo.getLogin());
@@ -52,7 +51,7 @@ public class RegistrationFormValidatorImplTest {
     }
 
     @Test
-    public void nullRegistrationForm() throws Exception {
+    public void nullRegistrationForm() {
         ValidationUtils.invokeValidator(validatorUnderTest, null, errors);
 
         verifyZeroInteractions(userInfoService);
@@ -61,7 +60,7 @@ public class RegistrationFormValidatorImplTest {
     }
 
     @Test
-    public void userInfoIsNull() throws Exception {
+    public void userInfoIsNull() {
         form.setUserInfo(null);
 
         ValidationUtils.invokeValidator(validatorUnderTest, form, errors);
@@ -74,7 +73,7 @@ public class RegistrationFormValidatorImplTest {
     }
 
     @Test
-    public void loginAlreadyExists() throws Exception {
+    public void loginAlreadyExists() {
         when(userInfoService.existByLogin(userInfo.getLogin()))
                 .thenReturn(true);
 
@@ -88,7 +87,7 @@ public class RegistrationFormValidatorImplTest {
     }
 
     @Test
-    public void wrongPasswordConfirmation() throws Exception {
+    public void wrongPasswordConfirmation() {
         form.setPasswordConfirmation("!" + userInfo.getPassword());
 
         ValidationUtils.invokeValidator(validatorUnderTest, form, errors);
@@ -99,14 +98,14 @@ public class RegistrationFormValidatorImplTest {
     }
 
     @Test
-    public void testSupportedClass() throws Exception {
+    public void testSupportedClass() {
         boolean support = validatorUnderTest.supports(form.getClass());
 
         assertThat(support).isTrue();
     }
 
     @Test
-    public void testNotSupportedClass() throws Exception {
+    public void testNotSupportedClass() {
         boolean support = validatorUnderTest.supports(Object.class);
 
         assertThat(support).isFalse();

@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +20,8 @@ public class Directory implements Serializable {
     private static final long serialVersionUID = 5004333612018429325L;
 
     public static final String SEPARATOR = "/";
+
+    private static final String REGEX_MORE_THAN_ONE_SEPARATOR = ".*" + SEPARATOR + "{2}.*";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,12 +73,12 @@ public class Directory implements Serializable {
     private static void isPathCorrect(String path) {
         if (path == null || path.isEmpty()) {
             throw new IllegalArgumentException("Null or empty path");
-        } else if (!path.startsWith(SEPARATOR)){
+        } else if (!path.startsWith(SEPARATOR)) {
             throw new IllegalArgumentException("Path must start with SEPARATOR");
-        } else if (path.length() >= 2*SEPARATOR.length() && path.endsWith(SEPARATOR)) {
+        } else if (path.length() >= 2 * SEPARATOR.length() && path.endsWith(SEPARATOR)) {
             throw new IllegalArgumentException("Path cannot end with SEPARATOR");
         }
-        Pattern pattern = Pattern.compile(".*" + SEPARATOR + "{2}.*");
+        Pattern pattern = Pattern.compile(REGEX_MORE_THAN_ONE_SEPARATOR);
         Matcher matcher = pattern.matcher(path);
         if (matcher.find()) {
             throw new IllegalArgumentException("Two or more SEPARATORS together");
@@ -117,8 +120,7 @@ public class Directory implements Serializable {
         if (owner == null || owner.getLogin() == null || owner.getLogin().isEmpty()) {
             throw new IllegalStateException("Illegal directory owner");
         }
-        String ownerFolder = SEPARATOR + owner.getLogin();
-        return ownerFolder;
+        return SEPARATOR + owner.getLogin();
     }
 
     public String getName() {
@@ -127,7 +129,7 @@ public class Directory implements Serializable {
 
     public String getNameToBreadcrumb() {
         String name = getName();
-        if(isRoot()) {
+        if (isRoot()) {
             name = "..";
         }
         return name;
@@ -137,9 +139,8 @@ public class Directory implements Serializable {
         if (path == null) {
             throw new IllegalArgumentException("Path is null");
         }
-        String directoryName = path.substring(path.lastIndexOf(SEPARATOR) + 1, path.length());
 
-        return directoryName;
+        return path.substring(path.lastIndexOf(SEPARATOR) + 1, path.length());
     }
 
     public String parentPath() {
@@ -178,37 +179,27 @@ public class Directory implements Serializable {
         }
         String path = owner.getLogin() + getPath();
         String[] namesArray = path.split(SEPARATOR);
-        List<String> names = Arrays.asList(namesArray);
 
-        return names;
+        return Arrays.asList(namesArray);
     }
 
     public boolean isRoot() {
         return SEPARATOR.equals(path);
     }
 
-    public boolean isNew() {
-        return id == null;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Directory directory = (Directory) o;
-
-        if (!path.equals(directory.path)) return false;
-        if (!level.equals(directory.level)) return false;
-        return owner != null ? owner.equals(directory.owner) : directory.owner == null;
+        return Objects.equals(path, directory.path) &&
+                Objects.equals(level, directory.level) &&
+                Objects.equals(owner, directory.owner);
     }
 
     @Override
     public int hashCode() {
-        int result = path.hashCode();
-        result = 31 * result + level.hashCode();
-        result = 31 * result + (owner != null ? owner.hashCode() : 0);
-        return result;
+        return Objects.hash(path, level, owner);
     }
 
     @Override
@@ -221,7 +212,7 @@ public class Directory implements Serializable {
                 "]}";
     }
 
-    public static String buildPath(String firstSubDirectoryName, String ...subDirectoryNames ) {
+    public static String buildPath(String firstSubDirectoryName, String... subDirectoryNames) {
         StringBuilder stringBuilder = new StringBuilder();
         if (firstSubDirectoryName == null || firstSubDirectoryName.isEmpty()) {
             throw new IllegalArgumentException("FirstSubDirectoryName cannot be null or empty");
@@ -246,10 +237,10 @@ public class Directory implements Serializable {
         return path;
     }
 
-    private static void appendToPath(StringBuilder stringBuilder, String firstSubDirectoryName) {
-        if (!firstSubDirectoryName.startsWith(SEPARATOR)) {
+    private static void appendToPath(StringBuilder stringBuilder, String subDirectoryName) {
+        if (!subDirectoryName.startsWith(SEPARATOR)) {
             stringBuilder.append(SEPARATOR);
         }
-        stringBuilder.append(firstSubDirectoryName);
+        stringBuilder.append(subDirectoryName);
     }
 }

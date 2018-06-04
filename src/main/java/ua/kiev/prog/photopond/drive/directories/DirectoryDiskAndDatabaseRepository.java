@@ -3,6 +3,7 @@ package ua.kiev.prog.photopond.drive.directories;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DirectoryDiskAndDatabaseRepository {
     Directory save(Directory directory) throws DirectoryModificationException;
@@ -19,7 +20,7 @@ public interface DirectoryDiskAndDatabaseRepository {
 
     List<Directory> findByOwnerAndPath(UserInfo owner, String path);
 
-    Directory findById(Long directoryId) throws DirectoryException;
+    Optional<Directory> findById(Long directoryId);
 
-    Directory findByOwnerAndId(UserInfo owner, Long directoryId) throws DirectoryException;
+    Optional<Directory> findByOwnerAndId(UserInfo owner, Long directoryId);
 }

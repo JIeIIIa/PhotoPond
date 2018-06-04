@@ -3,7 +3,7 @@ package ua.kiev.prog.photopond.drive.directories;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 public class DirectoryBuilder {
-    private Long id = Long.MIN_VALUE;
+    private Long id = null;//Long.MIN_VALUE;
 
     private UserInfo owner = new UserInfo();
 

@@ -96,7 +96,7 @@ public class DriveServiceImpl implements DriveService {
             targetDirectory = targetParts.getDirectory();
         } catch (DriveException e) {
             /*targetDirectory = new DirectoryBuilder()
-                    .owner(sourceParts.getOwner())
+                    .owner(sourceParts.owner())
                     .path(target)
                     .build();*/
         }
@@ -249,7 +249,7 @@ public class DriveServiceImpl implements DriveService {
 
         private String filename;
 
-        private FileParts(String ownerLogin, String path) {
+        FileParts(String ownerLogin, String path) {
             this.ownerLogin = ownerLogin;
             this.path = path;
             this.owner = null;
@@ -259,7 +259,8 @@ public class DriveServiceImpl implements DriveService {
 
         public UserInfo getOwner() {
             if (this.owner == null) {
-                this.owner = userInfoService.getUserByLogin(ownerLogin).get();
+                this.owner = userInfoService.getUserByLogin(this.ownerLogin)
+                        .orElseThrow(() -> new IllegalArgumentException("User with login '" + this.owner + "' not found"));
             }
             return this.owner;
         }

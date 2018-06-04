@@ -62,6 +62,7 @@ public class SpringSecurityWebAuthenticationTestConfiguration {
     }
 
     @Bean
+    @Primary
     public BCryptPasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }

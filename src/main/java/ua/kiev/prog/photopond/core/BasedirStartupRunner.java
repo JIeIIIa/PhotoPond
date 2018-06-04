@@ -1,17 +1,16 @@
 package ua.kiev.prog.photopond.core;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static ua.kiev.prog.photopond.Utils.Utils.deleteDirectoryWithContents;
 
 @Configuration
 public class BasedirStartupRunner implements CommandLineRunner {
@@ -24,7 +23,7 @@ public class BasedirStartupRunner implements CommandLineRunner {
     private boolean refreshBasedir;
 
     @Override
-    public void run(String... strings) throws Exception {
+    public void run(String... strings) {
         log.traceEntry("BasedirStartupRunner");
         if (refreshBasedir) {
             log.debug("Refresh base folder: {}", foldersBaseDir);
@@ -41,9 +40,8 @@ public class BasedirStartupRunner implements CommandLineRunner {
             return;
         }
         try {
-            Path directory = Paths.get(foldersBaseDir);
-            deleteDirectoryWithContents(directory);
-        } catch (IOException e) {
+            FileUtils.deleteDirectory(new File(foldersBaseDir));
+        } catch (IOException | IllegalArgumentException e) {
             log.error("Failed to delete directory: {}", foldersBaseDir);
             throw new ExceptionInInitializerError("Failed refresh BaseFolder");
         }

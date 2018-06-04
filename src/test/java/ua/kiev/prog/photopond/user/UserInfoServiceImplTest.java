@@ -92,7 +92,8 @@ public class UserInfoServiceImplTest {
                 .thenReturn(Optional.empty());
 
         assertThat(instance.getUserByLogin(USER_LOGIN))
-                .isNull();
+                .isNotNull()
+                .isNotPresent();
         verify(userRepository).findByLogin(USER_LOGIN);
     }
 
