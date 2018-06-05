@@ -14,7 +14,7 @@ import ua.kiev.prog.photopond.user.UserRole;
 
 @Configuration
 public class DatabaseStartupRunner {
-    private static Logger log = LogManager.getLogger(DatabaseStartupRunner.class);
+    private static final Logger LOG = LogManager.getLogger(DatabaseStartupRunner.class);
 
     @Configuration
     @Prod
@@ -28,26 +28,34 @@ public class DatabaseStartupRunner {
 
         @Override
         public void run(String... strings) {
-            log.debug("Production database init");
+            LOG.info("Production database init");
             createUsers();
         }
 
         private void createUsers() {
+            String password = generatePassword();
+            String adminLogin = "PhotoPondSuperAdmin";
             UserInfo admin;
-            if (!userInfoService.existByLogin("SuperPhotoPondAdmin")) {
+
+            if (!userInfoService.existsByLogin(adminLogin)) {
+                LOG.debug("Create user with UserRole.ADMIN");
                 admin = new UserInfoBuilder()
-                        .login("SuperPhotoPondAdmin")
-                        .password(generatePassword())
+                        .login(adminLogin)
+                        .password(password)
                         .role(UserRole.ADMIN)
                         .build();
                 userInfoService.addUser(admin);
+            } else {
+                userInfoService.setNewPassword(adminLogin, password);
             }
-            admin = userInfoService.getUserByLogin("SuperPhotoPondAdmin").get();
-            log.info("    =======================================");
-            log.info("                Available users ");
-            log.info("    =======================================");
-            userInfoToLog(admin);
-            log.info("    =======================================");
+            admin = userInfoService.findUserByLogin(adminLogin)
+                    .orElseThrow(() -> new ExceptionInInitializerError("Failure retrieve 'SuperPhotoPondAdmin' user"));
+            LOG.info("    =======================================");
+            LOG.info("              Default administrators ");
+            LOG.info("    =======================================");
+            LOG.info("         login   : " + admin.getLogin());
+            LOG.info("         password: " + password);
+            LOG.info("    =======================================");
         }
 
         private String generatePassword() {
@@ -68,13 +76,13 @@ public class DatabaseStartupRunner {
 
         @Override
         public void run(String... strings) {
-            log.debug("Dev database init");
+            LOG.info("Dev database init");
             createUsers();
         }
 
         private void createUsers() {
             UserInfo admin;
-            if (!userInfoService.existByLogin("admin")) {
+            if (!userInfoService.existsByLogin("admin")) {
                 admin = new UserInfoBuilder()
                         .login("admin")
                         .password("password")
@@ -82,43 +90,46 @@ public class DatabaseStartupRunner {
                         .build();
                 userInfoService.addUser(admin);
             }
-            admin = userInfoService.getUserByLogin("admin").get();
+            admin = userInfoService.findUserByLogin("admin")
+                    .orElseThrow(() -> new ExceptionInInitializerError("Failure retrieve 'admin' user"));
 
             UserInfo user;
-            if (!userInfoService.existByLogin("user")) {
+            if (!userInfoService.existsByLogin("user")) {
                 user = new UserInfoBuilder()
                         .login("user")
                         .password("useruser")
                         .build();
                 userInfoService.addUser(user);
             }
-            user = userInfoService.getUserByLogin("user").get();
+            user = userInfoService.findUserByLogin("user")
+                    .orElseThrow(() -> new ExceptionInInitializerError("Failure retrieve 'user' user"));
 
             UserInfo deactivatedUser;
-            if (!userInfoService.existByLogin("nonActiveUser")) {
+            if (!userInfoService.existsByLogin("nonActiveUser")) {
                 deactivatedUser = new UserInfoBuilder()
                         .login("nonActiveUser")
                         .password("useruser")
                         .build();
                 userInfoService.addUser(deactivatedUser);
             }
-            deactivatedUser = userInfoService.getUserByLogin("nonActiveUser").get();
+            deactivatedUser = userInfoService.findUserByLogin("nonActiveUser")
+                    .orElseThrow(() -> new ExceptionInInitializerError("Failure retrieve 'nonActiveUser' user"));
 
-            log.info("    =======================================");
-            log.info("                Available users ");
-            log.info("    =======================================");
+            LOG.info("    =======================================");
+            LOG.info("                Available users ");
+            LOG.info("    =======================================");
             userInfoToLog(admin);
-            log.info("    ---------------------------------------");
+            LOG.info("    ---------------------------------------");
             userInfoToLog(user);
-            log.info("    ---------------------------------------");
+            LOG.info("    ---------------------------------------");
             userInfoToLog(deactivatedUser);
-            log.info("    =======================================");
+            LOG.info("    =======================================");
         }
     }
 
     private static void userInfoToLog(UserInfo userInfo) {
-        log.info("         login   : " + userInfo.getLogin());
-        log.info("         password: " + userInfo.getPassword());
-        log.info("         role    : " + userInfo.getRole().name());
+        LOG.info("         login   : " + userInfo.getLogin());
+        LOG.info("         password: " + userInfo.getPassword());
+        LOG.info("         role    : " + userInfo.getRole().name());
     }
 }

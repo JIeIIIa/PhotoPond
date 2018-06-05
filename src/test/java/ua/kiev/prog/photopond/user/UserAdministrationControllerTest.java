@@ -2,9 +2,7 @@ package ua.kiev.prog.photopond.user;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,8 +18,9 @@ import ua.kiev.prog.photopond.configuration.UserInfoServiceMockConfiguration;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -46,7 +45,7 @@ public class UserAdministrationControllerTest {
         UserInfo userOne = new UserInfo("One", "qwerty", UserRole.USER);
         UserInfo userTwo = new UserInfo("Two", "asdfgh", UserRole.ADMIN);
         List<UserInfo> usersList = Arrays.asList(userOne, userTwo);
-        Mockito.when(userInfoService.getAllUsers()).thenReturn(usersList);
+        when(userInfoService.findAllUsers()).thenReturn(usersList);
 
         MockHttpServletRequestBuilder get = get(URL_PREFIX);
 
@@ -54,7 +53,7 @@ public class UserAdministrationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("usersList", usersList))
                 .andExpect(MockMvcResultMatchers.view().name("/users/allUsers"));
-        Mockito.verify(userInfoService, times(1)).getAllUsers();
+        Mockito.verify(userInfoService, times(1)).findAllUsers();
     }
 
     @Test
@@ -73,13 +72,10 @@ public class UserAdministrationControllerTest {
     }
 
     private void updateUserSuccess(int pathId, UserInfo user) throws Exception {
-        Mockito.when(userInfoService.update(Matchers.<UserInfo>any()))
-                .thenAnswer(new Answer<UserInfo>() {
-                    @Override
-                    public UserInfo answer(InvocationOnMock invocationOnMock) throws Throwable {
-                        return (UserInfo) invocationOnMock.getArguments()[0];
-                    }
-                });
+        when(userInfoService.update(any()))
+                .thenAnswer(
+                        (Answer<Optional<UserInfo>>) invocationOnMock -> Optional.ofNullable((UserInfo) invocationOnMock.getArguments()[0])
+                );
         String jsonContent = "{\"id\":" + pathId + ",\"login\":\"someUser\",\"password\":\"password\",\"role\":\"USER\"}";
 
         MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post(URL_PREFIX + "/" + pathId)
@@ -101,7 +97,7 @@ public class UserAdministrationControllerTest {
     @Test
     public void updateNotExistsUser() throws Exception {
         when(userInfoService.update(any(UserInfo.class)))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
         MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post(URL_PREFIX + "/77")
                 .param("login", "user")
                 .param("password", "password")
@@ -117,7 +113,7 @@ public class UserAdministrationControllerTest {
         UserInfo user = new UserInfo("someUser", "password");
         user.setId(77);
         when(userInfoService.delete(user.getId()))
-                .thenReturn(user);
+                .thenReturn(Optional.of(user));
         String jsonContent = "{\"id\":77,\"login\":\"someUser\",\"password\":\"password\",\"role\":\"USER\"}";
 
         MockHttpServletRequestBuilder delete = MockMvcRequestBuilders.delete(URL_PREFIX + "/77");

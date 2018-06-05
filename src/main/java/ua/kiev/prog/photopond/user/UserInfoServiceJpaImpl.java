@@ -15,7 +15,7 @@ import java.util.Optional;
 @DevOrProd
 @Transactional(readOnly = true)
 public class UserInfoServiceJpaImpl implements UserInfoService {
-    private static Logger log = LogManager.getLogger(UserInfoServiceJpaImpl.class);
+    private static final Logger LOG = LogManager.getLogger(UserInfoServiceJpaImpl.class);
 
     private final UserInfoJpaRepository userInfoRepository;
 
@@ -23,91 +23,93 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
     @Autowired
     public UserInfoServiceJpaImpl(UserInfoJpaRepository userInfoJpaRepository, BCryptPasswordEncoder passwordEncoder) {
-        log.debug("Create instance of " + UserInfoServiceJpaImpl.class);
+        LOG.info("Create instance of " + UserInfoServiceJpaImpl.class);
         this.userInfoRepository = userInfoJpaRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
 
     @Override
-    public Optional<UserInfo> getUserByLogin(String login) {
-        log.debug("Call getUserByLogin for [ login = '{}'] ", login);
-        Optional<UserInfo> user = userInfoRepository.findByLogin(login);
-        return user;
+    public Optional<UserInfo> findUserByLogin(String login) {
+        LOG.debug("login = '{}'", login);
+        return LOG.traceExit(userInfoRepository.findByLogin(login));
     }
 
     @Override
     @Transactional
     public void addUser(UserInfo user) {
-        log.debug("Add user:  " + user);
+        LOG.debug("Add user:  " + user);
         if (user == null) {
+            LOG.warn("Try to add null as user");
             return;
         }
         cryptPassword(user, user.getPassword());
         userInfoRepository.save(user);
+        LOG.traceExit("User {} was saved", user);
     }
 
     private void cryptPassword(UserInfo user, String password) {
+        LOG.debug("Crypt password for user {}", user.getLogin());
         if (user != null) {
             user.setPassword(passwordEncoder.encode(password));
         }
     }
 
     @Override
-    public boolean existByLogin(String login) {
-        log.traceEntry("Is exist user with [ login = '{}' ]", login);
+    public boolean existsByLogin(String login) {
+        LOG.traceEntry("Is exist user with [ login = '{}' ]", login);
         Optional<UserInfo> user = userInfoRepository.findByLogin(login);
-        log.debug("Exists user by [ login = '{}' ]   =   {}", login, user.isPresent());
+        LOG.debug("Exists user by [ login = '{}' ]   =   {}", login, user.isPresent());
         return user.isPresent();
     }
 
     @Override
-    public List<UserInfo> getAllUsers() {
-        log.traceEntry("Find all users");
+    public List<UserInfo> findAllUsers() {
+        LOG.traceEntry("Find all users");
         return userInfoRepository.findAll();
     }
 
     @Override
     @Transactional
-    public UserInfo delete(long id) {
-        log.traceEntry("Delete user with [ id = '{}' ]", id);
+    public Optional<UserInfo> delete(long id) {
+        LOG.traceEntry("Delete user with [ id = '{}' ]", id);
         Optional<UserInfo> deletedUser = userInfoRepository.findById(id);
-        if (deletedUser.isPresent()) {
-            userInfoRepository.delete(deletedUser.get());
-            return deletedUser.get();
-        }
-        return null;
+        deletedUser.ifPresent(userInfoRepository::delete);
+
+        return LOG.traceExit(deletedUser);
     }
 
     @Override
     @Transactional
-    public UserInfo update(UserInfo userInfo) {
-        log.traceEntry("Update user with { id = '{}' ]", userInfo.getId());
+    public Optional<UserInfo> update(UserInfo userInfo) {
+        LOG.traceEntry("Update user with { id = '{}' ]", userInfo.getId());
         Optional<UserInfo> updatedUser = userInfoRepository.findById(userInfo.getId());
         if (!updatedUser.isPresent()) {
-            log.debug("Cannot find user with [ id = {} ] in Repository", userInfo.getId());
-            return null;
+            LOG.debug("Cannot find user with [ id = {} ] in Repository", userInfo.getId());
+            return Optional.empty();
         }
-        long usersWithSameLogin = userInfoRepository.countByLoginAndIdNot(userInfo.getLogin(), userInfo.getId());
-        log.trace("[ usersWithSameLogin = {} ]", usersWithSameLogin);
-        if (usersWithSameLogin == 0) {
-            updatedUser.get().copyFrom(userInfo);
-            log.trace("Updated information:   " + updatedUser);
-            return updatedUser.get();
+        long countUsersWithSameLogin = userInfoRepository.countByLoginAndIdNot(userInfo.getLogin(), userInfo.getId());
+        LOG.trace("[ countUsersWithSameLogin = {} ]", countUsersWithSameLogin);
+        if (countUsersWithSameLogin > 0) {
+            LOG.debug("User with login = '{}' is already exists", userInfo.getLogin());
+            return Optional.empty();
         }
-        log.warn("Information for user with [ id = '{}' ] wasn't updated", userInfo.getId());
-        return null;
+        updatedUser.get().copyFrom(userInfo);
+        LOG.trace("Information after update:   {}", updatedUser);
+        return updatedUser;
+
     }
 
     @Override
-    public Optional<UserInfo> getUserById(long id) {
-        log.traceEntry("Get user by [ id = {} ]", id);
+    public Optional<UserInfo> findById(long id) {
+        LOG.traceEntry("Get user by [ id = {} ]", id);
         return userInfoRepository.findById(id);
     }
 
     @Override
     public Optional<UserInfo> setNewPassword(String login, String newPassword) {
         if (login == null) {
+            LOG.warn("Try to change password for user with null login");
             return Optional.empty();
         }
         Optional<UserInfo> user = userInfoRepository.findByLogin(login);
@@ -115,6 +117,17 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
             cryptPassword(u, newPassword);
             userInfoRepository.save(u);
         });
+        LOG.debug("Password was changed");
         return user;
+    }
+
+    @Override
+    public boolean existsWithAdminRole() {
+        return LOG.traceExit(userInfoRepository.countByRole(UserRole.ADMIN) > 0);
+    }
+
+    @Override
+    public List<UserInfo> findAllByRole(UserRole role) {
+        return LOG.traceExit(userInfoRepository.findAllByRole(role));
     }
 }

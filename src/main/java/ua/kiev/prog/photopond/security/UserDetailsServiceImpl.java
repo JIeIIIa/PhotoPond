@@ -32,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         log.debug("try load user by login: " + login);
-        Optional<UserInfo> user = userService.getUserByLogin(login);
+        Optional<UserInfo> user = userService.findUserByLogin(login);
 
         if (!user.isPresent()) {
             log.warn("Cannot load UserInfo for [ login = '{}' ]", login);

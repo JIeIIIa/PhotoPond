@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
@@ -22,7 +23,7 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     }
 
     @Override
-    synchronized public Optional<UserInfo> findByLogin(String login) {
+    synchronized public Optional<UserInfo> findUserByLogin(String login) {
         return users.stream()
                 .filter(Objects::nonNull)
                 .filter(u -> Objects.nonNull(u.getLogin()))
@@ -31,7 +32,7 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     }
 
     @Override
-    synchronized public boolean existByLogin(String login) {
+    synchronized public boolean existsByLogin(String login) {
         return users.stream()
                 .filter(Objects::nonNull)
                 .filter(u -> Objects.nonNull(u.getLogin()))
@@ -39,7 +40,7 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     }
 
     @Override
-    public boolean existByLogin(String login, long exceptId) {
+    public boolean existsByLogin(String login, long exceptId) {
         return users.stream()
                 .filter(Objects::nonNull)
                 .filter(u -> Objects.nonNull(u.getLogin()))
@@ -57,17 +58,13 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     }
 
     @Override
-    public List<UserInfo> getAllUsers() {
+    public List<UserInfo> findAllUsers() {
         return Collections.unmodifiableList(users);
     }
 
     @Override
     public void delete(long id) {
-        users.stream()
-                .filter(user -> user.getId() == id)
-                .limit(1)
-                .forEach(users::remove);
-
+        users.removeIf(user -> user.getId() == id);
     }
 
     @Override
@@ -84,11 +81,25 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     }
 
     @Override
-    public Optional<UserInfo> getUserById(long id) {
+    public Optional<UserInfo> findById(long id) {
         return users.stream()
                 .filter(Objects::nonNull)
                 .filter(u -> id == u.getId())
                 .findFirst();
+    }
+
+    @Override
+    public List<UserInfo> findAllByRole(UserRole role) {
+        return users.stream()
+                .filter(u -> Objects.equals(role, u.getRole()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Long countByRole(UserRole role) {
+        return users.stream()
+                .filter(u -> Objects.equals(role, u.getRole()))
+                .count();
     }
 
 }

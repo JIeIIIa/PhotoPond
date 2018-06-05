@@ -46,7 +46,7 @@ public class UserDetailsServiceImplTest {
     @Test
     public void successAuthenticate() {
         UserInfo user = new UserInfo("user", "password", UserRole.USER);
-        when(userInfoService.getUserByLogin(user.getLogin()))
+        when(userInfoService.findUserByLogin(user.getLogin()))
                 .thenReturn(Optional.of(user));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getLogin());
@@ -54,7 +54,7 @@ public class UserDetailsServiceImplTest {
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
         SimpleGrantedAuthority checkedAuthority = new SimpleGrantedAuthority(user.getRole().toString().toUpperCase());
 
-        verify(userInfoService).getUserByLogin(eq(user.getLogin()));
+        verify(userInfoService).findUserByLogin(eq(user.getLogin()));
         assertThat(compare(user, userDetails)).isTrue();
         assertThat(authorities.size()).isEqualTo(1);
         assertThat(authorities.contains(checkedAuthority)).isTrue();
@@ -63,7 +63,7 @@ public class UserDetailsServiceImplTest {
 
     @Test(expected = UsernameNotFoundException.class)
     public void userNotFound() {
-        when(userInfoService.getUserByLogin("someLogin"))
+        when(userInfoService.findUserByLogin("someLogin"))
                 .thenReturn(Optional.empty());
 
         userDetailsService.loadUserByUsername("someLogin");
@@ -72,7 +72,7 @@ public class UserDetailsServiceImplTest {
     @Test
     public void disabledUser() {
         UserInfo user = new UserInfo("disabledUser", "password", UserRole.DEACTIVATED);
-        when(userInfoService.getUserByLogin(user.getLogin()))
+        when(userInfoService.findUserByLogin(user.getLogin()))
                 .thenReturn(Optional.of(user));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getLogin());

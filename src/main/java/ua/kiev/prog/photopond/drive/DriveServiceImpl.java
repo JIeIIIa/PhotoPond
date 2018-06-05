@@ -259,7 +259,7 @@ public class DriveServiceImpl implements DriveService {
 
         public UserInfo getOwner() {
             if (this.owner == null) {
-                this.owner = userInfoService.getUserByLogin(this.ownerLogin)
+                this.owner = userInfoService.findUserByLogin(this.ownerLogin)
                         .orElseThrow(() -> new IllegalArgumentException("User with login '" + this.owner + "' not found"));
             }
             return this.owner;

@@ -46,7 +46,7 @@ public class RegistrationFormValidatorImpl implements RegistrationFormValidator{
         }
         String passwordConfirmation = form.getPasswordConfirmation();
 
-        if (login != null && userInfoService.existByLogin(login)) {
+        if (login != null && userInfoService.existsByLogin(login)) {
             errors.rejectValue("userInfo.login", "RegistrationForm.loginExists", "This login exists. Please, choose another login.");
         }
 

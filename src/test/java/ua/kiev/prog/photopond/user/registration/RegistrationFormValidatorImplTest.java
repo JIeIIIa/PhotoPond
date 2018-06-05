@@ -28,7 +28,7 @@ public class RegistrationFormValidatorImplTest {
 
     @Before
     public void setUp() {
-        when(userInfoService.existByLogin(any(String.class))).thenReturn(false);
+        when(userInfoService.existsByLogin(any(String.class))).thenReturn(false);
         validatorUnderTest = new RegistrationFormValidatorImpl(userInfoService);
         initRegistrationForm();
 
@@ -46,7 +46,7 @@ public class RegistrationFormValidatorImplTest {
     public void successValidation() {
         ValidationUtils.invokeValidator(validatorUnderTest, form, errors);
 
-        verify(userInfoService).existByLogin(userInfo.getLogin());
+        verify(userInfoService).existsByLogin(userInfo.getLogin());
         assertThat(errors.hasErrors()).isFalse();
     }
 
@@ -74,12 +74,12 @@ public class RegistrationFormValidatorImplTest {
 
     @Test
     public void loginAlreadyExists() {
-        when(userInfoService.existByLogin(userInfo.getLogin()))
+        when(userInfoService.existsByLogin(userInfo.getLogin()))
                 .thenReturn(true);
 
         ValidationUtils.invokeValidator(validatorUnderTest, form, errors);
 
-        verify(userInfoService).existByLogin(userInfo.getLogin());
+        verify(userInfoService).existsByLogin(userInfo.getLogin());
         verifyNoMoreInteractions(userInfoService);
         assertThat(errors.hasErrors()).isTrue();
         assertThat(errors.getErrorCount()).isEqualTo(1);

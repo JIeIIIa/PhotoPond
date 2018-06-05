@@ -21,7 +21,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/administration")
 public class UserAdministrationController {
-    private static Logger log = LogManager.getLogger(UserAdministrationController.class);
+    private static final Logger LOG = LogManager.getLogger(UserAdministrationController.class);
 
     private final UserInfoService userInfoService;
 
@@ -32,9 +32,9 @@ public class UserAdministrationController {
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public ModelAndView viewAllUsers(ModelAndView modelAndView) {
-        log.trace("Get list of users");
-        List<UserInfo> users = userInfoService.getAllUsers();
-        log.debug("Add list of users in modelAndView");
+        LOG.trace("Retrieve list of users");
+        List<UserInfo> users = userInfoService.findAllUsers();
+        LOG.debug("Add list of users in modelAndView");
         modelAndView.addObject("usersList", users);
         modelAndView.setViewName("/users/allUsers");
 
@@ -43,42 +43,43 @@ public class UserAdministrationController {
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<UserInfo> deleteUser(@PathVariable("id") long id) {
-        log.trace("Delete user by [id = " + id + "]");
-        UserInfo userInfo = userInfoService.delete(id);
+        LOG.trace("Delete user by [id = " + id + "]");
 
-        if (userInfo == null) {
-            log.debug("Error: User with [id = " + id + "] not deleted");
+        Optional<UserInfo> userInfo = userInfoService.delete(id);
+
+        if (!userInfo.isPresent()) {
+            LOG.debug("Error: User with [id = " + id + "] not deleted");
             return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
         }
-        log.debug("User with [id = " + id + "] was deleted");
-        return new ResponseEntity<>(userInfo, getHttpJsonHeaders(), HttpStatus.OK);
+        LOG.debug("User with [id = " + id + "] was deleted");
+        return new ResponseEntity<>(userInfo.get(), getHttpJsonHeaders(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.POST)
     public ResponseEntity<UserInfo> updateUser(@PathVariable("id") long id, @Valid @ModelAttribute UserInfo userInfo) {
-        log.trace("Update user information for: " + userInfo);
+        LOG.trace("Update user information for: " + userInfo);
         userInfo.setId(id);
-        userInfo = userInfoService.update(userInfo);
+        Optional<UserInfo> updated = userInfoService.update(userInfo);
 
-        if (userInfo == null) {
-            log.debug("Error: User with [id = " + id + "] not modified");
+        if (!updated.isPresent()) {
+            LOG.debug("Error: User with [id = " + id + "] not modified");
             return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
         }
-        log.debug("User with [id = " + id + "] was modified");
-        return new ResponseEntity<>(userInfo, getHttpJsonHeaders(), HttpStatus.OK);
+        LOG.debug("User with [id = " + id + "] was modified");
+        return new ResponseEntity<>(updated.get(), getHttpJsonHeaders(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     public ResponseEntity<UserInfo> updateUser(@PathVariable("id") long id) {
-        log.trace("Get user by [id = " + id + "]");
+        LOG.trace("Get user by [id = " + id + "]");
 
-        Optional<UserInfo> userInfo = userInfoService.getUserById(id);
+        Optional<UserInfo> userInfo = userInfoService.findById(id);
         if (!userInfo.isPresent()) {
-            log.debug("User with [id = " + id + "] not found");
+            LOG.debug("User with [id = " + id + "] not found");
             return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
         }
 
-        log.debug("User with [id = " + id + "] was found");
+        LOG.debug("User with [id = " + id + "] was found");
         return new ResponseEntity<>(userInfo.get(), getHttpJsonHeaders(), HttpStatus.OK);
     }
 

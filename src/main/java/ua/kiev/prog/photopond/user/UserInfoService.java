@@ -4,19 +4,23 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserInfoService {
-    Optional<UserInfo> getUserByLogin(String login);
-
     void addUser(UserInfo user);
 
-    boolean existByLogin(String login);
+    Optional<UserInfo> findUserByLogin(String login);
 
-    List<UserInfo> getAllUsers();
+    List<UserInfo> findAllUsers();
 
-    UserInfo delete(long id);
+    Optional<UserInfo> findById(long id);
 
-    UserInfo update(UserInfo userInfo);
+    List<UserInfo> findAllByRole(UserRole role);
 
-    Optional<UserInfo> getUserById(long id);
+    boolean existsByLogin(String login);
+
+    boolean existsWithAdminRole();
+
+    Optional<UserInfo> delete(long id);
+
+    Optional<UserInfo> update(UserInfo userInfo);
 
     Optional<UserInfo> setNewPassword(String login, String newPassword);
 }
