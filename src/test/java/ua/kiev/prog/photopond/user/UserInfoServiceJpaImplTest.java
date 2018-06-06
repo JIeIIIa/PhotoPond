@@ -121,6 +121,21 @@ public class UserInfoServiceJpaImplTest {
                 .isNotNull()
                 .isNotPresent();
         verify(userRepository).findByLogin(USER_LOGIN);
+        verify(userRepository, never()).save(any(UserInfo.class));
+    }
+
+    @Test
+    public void findByLoginWhenLoginIsNull() {
+        //Given
+        when(userRepository.findByLogin(null)).thenReturn(Optional.empty());
+
+        //When
+        Optional<UserInfo> user = instance.findUserByLogin(null);
+
+        //Then
+        assertThat(user)
+                .isNotNull()
+                .isNotPresent();
     }
 
     @Test
@@ -208,17 +223,11 @@ public class UserInfoServiceJpaImplTest {
         //Given
         String userLogin = "user";
         long id = 777L;
-        UserInfo user = new UserInfoBuilder()
-                .id(id)
-                .login("oldUser")
-                .password("oldPassword")
-                .role(UserRole.USER).build();
         UserInfo newInformation = new UserInfoBuilder()
                 .id(id)
                 .login(userLogin)
                 .password("newPassword")
                 .role(UserRole.ADMIN).build();
-        when(userRepository.findById(id)).thenReturn(Optional.ofNullable(user));
         when(userRepository.countByLoginAndIdNot(userLogin, id)).thenReturn(1L);
 
         //When

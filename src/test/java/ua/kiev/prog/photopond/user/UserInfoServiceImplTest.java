@@ -121,6 +121,20 @@ public class UserInfoServiceImplTest {
     }
 
     @Test
+    public void findByLoginWhenLoginIsNull() {
+        //Given
+        when(userRepository.findUserByLogin(null)).thenReturn(Optional.empty());
+
+        //When
+        Optional<UserInfo> user = instance.findUserByLogin(null);
+
+        //Then
+        assertThat(user)
+                .isNotNull()
+                .isNotPresent();
+    }
+
+    @Test
     public void findByIdExistUser() {
         //Given
         final Long id = 123L;

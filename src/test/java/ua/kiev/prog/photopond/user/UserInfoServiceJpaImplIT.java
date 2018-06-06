@@ -122,6 +122,17 @@ public class UserInfoServiceJpaImplIT {
     }
 
     @Test
+    public void findByLoginWhenLoginIsNull() {
+        //When
+        Optional<UserInfo> user = userInfoServiceJpaImpl.findUserByLogin(null);
+
+        //Then
+        assertThat(user)
+        .isNotNull()
+        .isNotPresent();
+    }
+
+    @Test
     public void findByIdExistUser() {
         //Given
         UserInfo expectedUser = new UserInfoBuilder()

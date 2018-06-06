@@ -23,7 +23,7 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
     @Autowired
     public UserInfoServiceJpaImpl(UserInfoJpaRepository userInfoJpaRepository, BCryptPasswordEncoder passwordEncoder) {
-        LOG.info("Create instance of " + UserInfoServiceJpaImpl.class);
+        LOG.info("Create instance of {}", UserInfoServiceJpaImpl.class);
         this.userInfoRepository = userInfoJpaRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -83,21 +83,29 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
     @Transactional
     public Optional<UserInfo> update(UserInfo userInfo) {
         LOG.traceEntry("Update user with { id = '{}' ]", userInfo.getId());
-        Optional<UserInfo> updatedUser = userInfoRepository.findById(userInfo.getId());
-        if (!updatedUser.isPresent()) {
-            LOG.debug("Cannot find user with [ id = {} ] in Repository", userInfo.getId());
-            return Optional.empty();
-        }
+
         long countUsersWithSameLogin = userInfoRepository.countByLoginAndIdNot(userInfo.getLogin(), userInfo.getId());
         LOG.trace("[ countUsersWithSameLogin = {} ]", countUsersWithSameLogin);
         if (countUsersWithSameLogin > 0) {
-            LOG.debug("User with login = '{}' is already exists", userInfo.getLogin());
+            LOG.debug("There is {} user(-s) with login = '{}' already exists",
+                    countUsersWithSameLogin,
+                    userInfo.getLogin());
             return Optional.empty();
         }
-        updatedUser.get().copyFrom(userInfo);
-        LOG.trace("Information after update:   {}", updatedUser);
-        return updatedUser;
 
+        return Optional.ofNullable(
+                userInfoRepository.findById(userInfo.getId())
+                        .map(u -> {
+                            u.copyFrom(userInfo);
+                            userInfoRepository.save(u);
+                            LOG.trace("Information after update:   {}", u);
+                            return u;
+                        })
+                        .orElseGet(() -> {
+                            LOG.debug("Cannot find user with [ id = {} ] in Repository", userInfo.getId());
+                            return null;
+                        })
+        );
     }
 
     @Override
@@ -107,18 +115,20 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
     }
 
     @Override
+    @Transactional
     public Optional<UserInfo> setNewPassword(String login, String newPassword) {
-        if (login == null) {
-            LOG.warn("Try to change password for user with null login");
-            return Optional.empty();
-        }
-        Optional<UserInfo> user = userInfoRepository.findByLogin(login);
-        user.ifPresent(u -> {
-            cryptPassword(u, newPassword);
-            userInfoRepository.save(u);
-        });
-        LOG.debug("Password was changed");
-        return user;
+        return Optional.ofNullable(
+                userInfoRepository.findByLogin(login)
+                        .map(u -> {
+                            cryptPassword(u, newPassword);
+                            userInfoRepository.save(u);
+                            LOG.debug("Password was changed");
+                            return u;
+                        })
+                        .orElseGet(() -> {
+                            LOG.warn("User with login = '{}' not found. Password wasn't changed.", login);
+                            return null;
+                        }));
     }
 
     @Override
