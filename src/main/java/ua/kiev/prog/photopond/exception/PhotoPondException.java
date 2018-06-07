@@ -1,6 +1,6 @@
 package ua.kiev.prog.photopond.exception;
 
-public class PhotoPondException extends Exception {
+public class PhotoPondException extends RuntimeException {
     public PhotoPondException() {
         super();
     }

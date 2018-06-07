@@ -175,12 +175,12 @@
                                                 <li class="breadcrumb-item secondary-color" th:each="parent:${content.getParents()}">
                                                     <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
                                                     <a href="#" th:href="@{'/user/{login}/drive'+${parent.getPath()}(login=${userLogin})}"
-                                                       th:text="${parent.getNameToBreadcrumb()}">parent
+                                                       th:text="${parent.nameForBreadcrumb()}">parent
                                                     </a>
                                                     <i class="fa fa-angle-double-right mx-2" aria-hidden="true"></i>
                                                 </li>
                                                 <li class="breadcrumb-item primary-color active"
-                                                    th:text="${content.getCurrentDirectory().getNameToBreadcrumb()}">
+                                                    th:text="${content.getCurrentDirectory().nameForBreadcrumb()}">
                                                     current
                                                 </li>
                                             </ol>

@@ -1,5 +1,6 @@
 package ua.kiev.prog.photopond.drive.directories;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,11 +15,13 @@ import ua.kiev.prog.photopond.user.UserRole;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -54,34 +57,12 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         instance.setFoldersBasedir(foldersBasedir);
         basedirPath = Paths.get(foldersBasedir);
 
-        dropAndCreateDirectoryOnDisk(basedirPath);
+        FileUtils.cleanDirectory(basedirPath.toFile());
 
         user = new UserInfoBuilder().login("awesomeUser").role(UserRole.USER).build();
         root = createDirectory(1L, "/", user);
         directory = createDirectory(7L, "/first", user);
         directoryPathOnDisk = Paths.get(foldersBasedir + directory.getFullPath());
-    }
-
-    private void dropAndCreateDirectoryOnDisk(Path path) throws IOException {
-        if (Files.exists(path)) {
-            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    if (!dir.equals(path)) {
-                        Files.delete(dir);
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } else {
-            Files.createDirectories(path);
-        }
     }
 
     private List<Directory> createSubdirectoryList(Directory directory, String... subDirectoryNames) {
@@ -122,13 +103,18 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void saveNullDirectory() throws Exception {
+    public void saveNullDirectory() {
         //When
         instance.save(null);
     }
 
     @Test
-    public void saveWhenDirectoryNotExists() throws Exception {
+    public void saveWhenDirectoryNotExists() {
+        //Given
+        when(directoryJpaRepository.save(any(Directory.class))).thenAnswer(
+                invocationOnMock -> invocationOnMock.getArguments()[0]
+        );
+
         //When
         instance.save(directory);
 
@@ -141,6 +127,9 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     public void saveWhenDirectoryExists() throws Exception {
         //Given
         Files.createDirectories(directoryPathOnDisk);
+        when(directoryJpaRepository.save(any(Directory.class))).thenAnswer(
+                invocationOnMock -> invocationOnMock.getArguments()[0]
+        );
 
         //When
         instance.save(directory);
@@ -151,7 +140,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test(expected = DirectoryModificationException.class)
-    public void saveWhenParentDirectoryNotExists() throws Exception {
+    public void saveWhenParentDirectoryNotExists() {
         //Given
         String parentPath = buildPath("First");
         directory.setPath(buildPath(parentPath, "second"));
@@ -168,13 +157,13 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void deleteNullDirectory() throws Exception {
+    public void deleteNullDirectory() {
         //When
         instance.delete(null);
     }
 
     @Test
-    public void deleteEmptyDirectory() throws Exception {
+    public void deleteEmptyDirectory() {
         //Given
         when(directoryJpaRepository.findByOwnerAndPathStartingWith(directory.getOwner(), directory.getPath() + SEPARATOR))
                 .thenReturn(new LinkedList<>());
@@ -188,7 +177,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteWithSubdirectories() throws Exception {
+    public void deleteWithSubdirectories() {
         //Given
         List<Directory> subdirectories = createSubdirectoryList(directory, "one", "two", "three");
         when(directoryJpaRepository.findByOwnerAndPathStartingWith(directory.getOwner(), directory.getPath() + SEPARATOR))
@@ -207,9 +196,8 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test(expected = DirectoryModificationException.class)
-    public void deleteWithJpaRepositoryException() throws Exception {
+    public void deleteWithJpaRepositoryException() {
         //Given
-
         doThrow(QueryTimeoutException.class).when(directoryJpaRepository).deleteAll(singletonList(directory));
 
         try {
@@ -218,19 +206,34 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         } catch (DirectoryModificationException e) {
             //Then
             verify(directoryJpaRepository).deleteAll(singletonList(directory));
-            assertThat(Files.exists((directoryPathOnDisk))).isTrue();
-            throw new DirectoryModificationException();
+            assertThat(Files.exists(directoryPathOnDisk)).isTrue();
+            throw e;
         }
     }
 
+    @Test
+    public void renameTargetEqualsSource() throws DirectoryModificationException {
+        //Given
+        Directory expected = new DirectoryBuilder().from(directory).build();
+
+        //When
+        instance.rename(directory, directory.getPath());
+
+        //Then
+        verify(directoryJpaRepository, never()).save(any(Directory.class));
+        verify(directoryJpaRepository, never()).findByOwnerAndPathStartingWith(any(UserInfo.class), any(String.class));
+        assertThat(directory).isEqualTo(expected);
+        assertThat(Files.exists(Paths.get(basedirPath + expected.getFullPath()))).isTrue();
+    }
+
     @Test(expected = DirectoryModificationException.class)
-    public void renameNotExistsDirectory() throws Exception {
+    public void renameNotExistsDirectory() {
         // When
         instance.rename(directory, "someName");
     }
 
     @Test
-    public void renameSuccess() throws Exception {
+    public void renameSuccess() {
         //Given
         long id = 767L;
         String sourceName = "source";
@@ -324,7 +327,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test(expected = DirectoryModificationException.class)
-    public void renameWhenTargetDirectoryAlreadyExistsInDataBase() throws Exception {
+    public void renameWhenTargetDirectoryAlreadyExistsInDataBase() {
         //Given
         String newName = "anotherDir";
         String targetPath = buildPath(directory.parentPath(), newName);
@@ -342,19 +345,19 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void moveNullDirectory() throws Exception {
+    public void moveNullDirectory() {
         //When
         instance.move(null, directory);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void moveToNullDirectory() throws Exception {
+    public void moveToNullDirectory() {
         //When
         instance.move(directory, null);
     }
 
     @Test
-    public void moveTargetDirectoryEqualsCurrentDirectory() throws Exception {
+    public void moveTargetDirectoryEqualsCurrentDirectory() {
         //Given
         Directory expectedDirectory = new DirectoryBuilder().from(directory).build();
 
@@ -366,7 +369,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test(expected = DirectoryModificationException.class)
-    public void moveBetweenDifferentUsers() throws Exception {
+    public void moveBetweenDifferentUsers() {
         //Given
         Directory directoryWithAnotherOwner = createDirectory(321L, SEPARATOR + "anotherDirectory");
         //When
@@ -374,7 +377,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test(expected = DirectoryModificationException.class)
-    public void moveTargetDirectoryContainsSubDirectoryWithSameName() throws Exception {
+    public void moveTargetDirectoryContainsSubDirectoryWithSameName() {
         //Given
         Directory target = createDirectory(321L, SEPARATOR + "targetToMove", user);
         Directory targetSubDirectory = createDirectory(322L, target.getPath() + SEPARATOR + directory.getName(), user);
@@ -403,7 +406,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveSuccess() throws Exception {
+    public void moveSuccess() {
         //Given
         String[] subDirectoryNames = {"qwerty", "New folder", "New folder (2)"};
         List<Directory> subDirectories = createSubdirectoryList(directory, subDirectoryNames);
@@ -439,7 +442,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findSubDirectoriesForRoot() {
+    public void findTopLevelSubDirectoriesForRoot() {
         // Given
         Directory root = new DirectoryBuilder().owner(user).path(SEPARATOR).build();
         String[] subDirectoryNames = {"qwerty", "New folder", "New folder (2)"};
@@ -450,14 +453,14 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         List<Directory> expectedSubDirectories = createSubdirectoryList(root, subDirectoryNames);
 
         // When
-        List<Directory> result = instance.findTopSubDirectories(root);
+        List<Directory> result = instance.findTopLevelSubDirectories(root);
 
         // Then
         assertThat(result).containsExactlyInAnyOrder(expectedSubDirectories.toArray(new Directory[0]));
     }
 
     @Test
-    public void findSubDirectoriesForNonRoot() {
+    public void findTopLevelSubDirectoriesForNonRoot() {
         // Given
         String[] subDirectoryNames = {"qwerty", "New folder", "New folder (2)"};
         List<Directory> subDirectories = createSubdirectoryList(directory, subDirectoryNames);
@@ -467,7 +470,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         List<Directory> expectedSubDirectories = createSubdirectoryList(directory, subDirectoryNames);
 
         // When
-        List<Directory> result = instance.findTopSubDirectories(directory);
+        List<Directory> result = instance.findTopLevelSubDirectories(directory);
 
         // Then
         assertThat(result).containsExactlyInAnyOrder(expectedSubDirectories.toArray(new Directory[0]));
@@ -488,5 +491,110 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
 
         //Then
         assertThat(count).isEqualTo(directories.size());
+    }
+
+    @Test
+    public void findByOwnerAndPathSuccess() {
+        //Given
+        Directory expected = new DirectoryBuilder().from(directory).build();
+        when(directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.getPath()))
+                .thenReturn(singletonList(directory));
+
+        //When
+        List<Directory> result = instance.findByOwnerAndPath(directory.getOwner(), directory.getPath());
+
+        //Then
+        verify(directoryJpaRepository).findByOwnerAndPath(expected.getOwner(), expected.getPath());
+        assertThat(result)
+                .isNotNull()
+                .hasSize(1)
+                .containsExactly(expected);
+    }
+
+    @Test
+    public void findByOwnerAndPathFailure() {
+        //Given
+        when(directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.getPath()))
+                .thenReturn(emptyList());
+
+        //When
+        List<Directory> result = instance.findByOwnerAndPath(directory.getOwner(), directory.getPath());
+
+        //Then
+        assertThat(result)
+                .isNotNull()
+                .isEmpty();
+    }
+
+    @Test
+    public void findByIdSuccess() {
+        //Given
+        Directory expected = new DirectoryBuilder().from(directory).build();
+        when(directoryJpaRepository.findById(directory.getId()))
+                .thenReturn(Optional.ofNullable(directory));
+
+        //When
+        Optional<Directory> result = instance.findById(directory.getId());
+
+        //Then
+        verify(directoryJpaRepository).findById(expected.getId());
+        assertThat(result)
+                .isNotNull()
+                .isPresent()
+                .hasValue(expected);
+    }
+
+    @Test
+    public void findByIdFailure() {
+        //Given
+        when(directoryJpaRepository.findById(any(Long.class)))
+                .thenReturn(Optional.empty());
+        long id = 123L;
+
+        //When
+        Optional<Directory> result = instance.findById(id);
+
+        //Then
+        verify(directoryJpaRepository).findById(id);
+        assertThat(result)
+                .isNotNull()
+                .isNotPresent();
+    }
+
+
+    @Test
+    public void findByOwnerAndIdSuccess() {
+        //Given
+        Directory expected = new DirectoryBuilder().from(directory).build();
+        when(directoryJpaRepository.findByOwnerAndId(directory.getOwner(), directory.getId()))
+                .thenReturn(Optional.ofNullable(directory));
+
+        //When
+        Optional<Directory> result = instance.findByOwnerAndId(directory.getOwner(), directory.getId());
+
+        //Then
+        verify(directoryJpaRepository).findByOwnerAndId(expected.getOwner(), expected.getId());
+        assertThat(result)
+                .isNotNull()
+                .isPresent()
+                .hasValue(expected);
+    }
+
+    @Test
+    public void findByOwnerAndIdFailure() {
+        //Given
+        when(directoryJpaRepository.findByOwnerAndId(any(UserInfo.class), any(Long.class)))
+                .thenReturn(Optional.empty());
+        long id = 123L;
+
+        //When
+        Optional<Directory> result = instance.findByOwnerAndId(user, id);
+
+        //Then
+        verify(directoryJpaRepository).findByOwnerAndId(user, id);
+        assertThat(result)
+                .isNotNull()
+                .isNotPresent();
+
     }
 }

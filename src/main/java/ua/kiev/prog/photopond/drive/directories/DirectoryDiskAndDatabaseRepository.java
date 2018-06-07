@@ -14,7 +14,7 @@ public interface DirectoryDiskAndDatabaseRepository {
 
     void move(Directory source, Directory target) throws DirectoryModificationException;
 
-    List<Directory> findTopSubDirectories(Directory directory);
+    List<Directory> findTopLevelSubDirectories(Directory directory);
 
     long countByOwner(UserInfo owner);
 

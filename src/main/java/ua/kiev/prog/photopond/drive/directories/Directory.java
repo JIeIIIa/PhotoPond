@@ -44,7 +44,7 @@ public class Directory implements Serializable {
 
     public Directory(UserInfo owner) {
         this();
-        this.owner = owner;
+        setOwner(owner);
     }
 
     public Directory(UserInfo owner, String path) {
@@ -87,9 +87,7 @@ public class Directory implements Serializable {
 
     private void updateLevel(String path) {
         level = 0;
-        if (path == null) {
-            return;
-        }
+
         if (SEPARATOR.equals(path)) {
             level = -1;
         }
@@ -127,7 +125,7 @@ public class Directory implements Serializable {
         return getName(this.path);
     }
 
-    public String getNameToBreadcrumb() {
+    public String nameForBreadcrumb() {
         String name = getName();
         if (isRoot()) {
             name = "..";
@@ -136,10 +134,6 @@ public class Directory implements Serializable {
     }
 
     public static String getName(String path) {
-        if (path == null) {
-            throw new IllegalArgumentException("Path is null");
-        }
-
         return path.substring(path.lastIndexOf(SEPARATOR) + 1, path.length());
     }
 

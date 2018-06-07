@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import ua.kiev.prog.photopond.Utils.TestUtils;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 
@@ -69,7 +70,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
 
         basedirPath = Paths.get(foldersBasedir);
 
-        FileUtils.deleteDirectory(new File(foldersBasedir));
+        /*FileUtils.deleteDirectory(new File(foldersBasedir));
         List<Directory> directories = directoryJpaRepository.findAll();
         for (Directory dir : directories) {
             Path path = Paths.get(foldersBasedir + dir.getFullPath());
@@ -80,7 +81,8 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
                     e.printStackTrace();
                 }
             }
-        }
+        }*/
+        TestUtils.createDirectories(basedirPath, directoryJpaRepository);
 
         user = userInfoJpaRepository.findByLogin("User")
                 .orElseThrow(() -> new IllegalStateException("Failure retrieve User"));
@@ -173,6 +175,20 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
         assertThat(Files.exists(subPath)).isFalse();
         assertThat(directoryJpaRepository.countByOwner(user))
                 .isEqualTo(count - 2);
+    }
+
+    @Test
+    public void renameTargetEqualsSource() throws DirectoryModificationException {
+        //Given
+        directory = new DirectoryBuilder().id(2110L).owner(user).path("/first/second").build();
+        Directory expected = new DirectoryBuilder().from(directory).build();
+
+        //When
+        instance.rename(directory, directory.getPath());
+
+        //Then
+        assertThat(directory).isEqualTo(expected);
+        assertThat(Files.exists(Paths.get(basedirPath + expected.getFullPath()))).isTrue();
     }
 
     @Test(expected = DirectoryModificationException.class)
@@ -352,12 +368,12 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test
-    public void findSubDirectoriesForRoot() {
+    public void findTopLevelSubDirectoriesForRoot() {
         // Given
         Directory root = new DirectoryBuilder().id(2000L).owner(user).path(SEPARATOR).build();
 
         // When
-        List<Directory> result = instance.findTopSubDirectories(root);
+        List<Directory> result = instance.findTopLevelSubDirectories(root);
 
         // Then
         assertThat(result).hasSize(2);
@@ -367,9 +383,9 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test
-    public void findSubDirectoriesForNonRoot() {
+    public void findTopLevelSubDirectoriesForNonRoot() {
         // When
-        List<Directory> result = instance.findTopSubDirectories(directory);
+        List<Directory> result = instance.findTopLevelSubDirectories(directory);
 
         // Then
         assertThat(result).hasSize(3);
@@ -387,4 +403,77 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
         assertThat(count).isEqualTo(10);
     }
 
+    @Test
+    public void findByOwnerAndPathSuccess() {
+        //Given
+        String path = "/folder";
+        Directory expected = new DirectoryBuilder().id(2200L).owner(user).path(path).build();
+
+        //When
+        List<Directory> result = instance.findByOwnerAndPath(user, path);
+
+        //Then
+        assertThat(result)
+                .isNotNull()
+                .hasSize(1)
+                .containsExactly(expected);
+    }
+
+    @Test
+    public void findByOwnerAndPathFailure() {
+        //When
+        List<Directory> result = instance.findByOwnerAndPath(user, "/phantom/path");
+
+        //Then
+        assertThat(result)
+                .isNotNull()
+                .isEmpty();
+    }
+
+    @Test
+    public void findByIdSuccess() {
+        //When
+        Optional<Directory> result = instance.findById(directory.getId());
+
+        //Then
+        assertThat(result)
+                .isNotNull()
+                .isPresent()
+                .hasValue(directory);
+    }
+
+    @Test
+    public void findByIdFailure() {
+        //When
+        Optional<Directory> result = instance.findById(98765L);
+
+        //Then
+        assertThat(result)
+                .isNotNull()
+                .isNotPresent();
+    }
+
+
+    @Test
+    public void findByOwnerAndIdSuccess() {
+        //When
+        Optional<Directory> result = instance.findByOwnerAndId(directory.getOwner(), directory.getId());
+
+        //Then
+        assertThat(result)
+                .isNotNull()
+                .isPresent()
+                .hasValue(directory);
+    }
+
+    @Test
+    public void findByOwnerAndIdFailure() {
+        //When
+        Optional<Directory> result = instance.findByOwnerAndId(user, 987L);
+
+        //Then
+        assertThat(result)
+                .isNotNull()
+                .isNotPresent();
+    }
 }

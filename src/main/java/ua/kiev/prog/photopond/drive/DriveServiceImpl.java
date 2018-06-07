@@ -188,7 +188,7 @@ public class DriveServiceImpl implements DriveService {
         List<Directory> parentDirectories = findParentDirectories(current);
         content.setParents(parentDirectories);
 
-        List<Directory> topSubDirectories = directoryRepository.findTopSubDirectories(current);
+        List<Directory> topSubDirectories = directoryRepository.findTopLevelSubDirectories(current);
         content.setTopSubDirectories(topSubDirectories);
 
         List<PictureFile> files = fileRepository.findByDirectory(current);

@@ -5,9 +5,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.kiev.prog.photopond.user.UserInfo;
 
+import javax.persistence.TransactionRequiredException;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -22,7 +25,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.*;
 
 @Repository
 public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndDatabaseRepository {
-    private static final Logger log = LogManager.getLogger(DirectoryDiskAndDatabaseRepositoryImpl.class);
+    private static final Logger LOG = LogManager.getLogger(DirectoryDiskAndDatabaseRepositoryImpl.class);
 
     @Value("${folders.basedir.location}")
     private String foldersBaseDir;
@@ -31,7 +34,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
 
     @Autowired
     public DirectoryDiskAndDatabaseRepositoryImpl(DirectoryJpaRepository directoryJpaRepository) {
-        log.traceEntry("Constructor with parameter: {}", directoryJpaRepository);
+        LOG.info("Create instance of {} with parameter {}", DirectoryDiskAndDatabaseRepositoryImpl.class, directoryJpaRepository);
         this.directoryJpaRepository = directoryJpaRepository;
     }
 
@@ -39,75 +42,80 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
         this.foldersBaseDir = foldersBaseDir;
     }
 
-    @Override
-    public Directory save(Directory directory) throws DirectoryModificationException {
-        log.traceEntry("Save {}", directory);
-        throwExceptionIfDirectoryNull(directory);
-
-        if (directory.getLevel() > 1 &&
-                directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.parentPath()).size() != 1) {
-            log.debug("Not exists parent directory for current saved directory {}", directory);
-            throw new DirectoryModificationException("Not exists parent directory for current saved directory");
-        }
-
-        Path pathOnDisk = Paths.get(foldersBaseDir + directory.getFullPath());
-        if (Files.notExists(pathOnDisk, LinkOption.NOFOLLOW_LINKS)) {
-            log.trace("Try to create directory:   {}", pathOnDisk);
-            try {
-                Files.createDirectories(pathOnDisk);
-            } catch (IOException e) {
-                log.debug("Cannot create directory on disk:   {}", pathOnDisk);
-                throw new DirectoryModificationException("Cannot create directory on disk", e);
-            }
-            log.trace("Directory was created on disk:   {}", pathOnDisk);
-        }
-        directory = directoryJpaRepository.save(directory);
-        return log.traceExit("Directory was saved in database:   {}", directory);
-    }
-
     private void throwExceptionIfDirectoryNull(Directory directory) {
         if (directory == null) {
-            log.debug("Directory:   NULL");
+            LOG.debug("Directory:   NULL");
             throw new IllegalArgumentException("directory is null");
         }
     }
 
     @Override
-    public void delete(Directory directory) throws DirectoryModificationException {
-        log.traceEntry("Delete {}", directory);
+    public Directory save(Directory directory) throws DirectoryModificationException {
+        LOG.traceEntry("Save {}", directory);
         throwExceptionIfDirectoryNull(directory);
 
+        if (directory.getLevel() > 1 &&
+                directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.parentPath()).size() != 1) {
+            LOG.debug("Not exists parent directory for current saved directory {}", directory);
+            throw new DirectoryModificationException("Not exists parent directory for current saved directory");
+        }
 
-        Path pathOnDisk;
+        directory = directoryJpaRepository.save(directory);
+        Path pathOnDisk = Paths.get(foldersBaseDir + directory.getFullPath());
+        if (Files.notExists(pathOnDisk, LinkOption.NOFOLLOW_LINKS)) {
+            LOG.trace("Try to create directory:   {}", pathOnDisk);
+            try {
+                Files.createDirectories(pathOnDisk);
+            } catch (IOException e) {
+                LOG.error("Cannot create directory on disk:   {}", pathOnDisk);
+                throw new DirectoryModificationException("Cannot create directory on disk", e);
+            }
+            LOG.debug("Directory was created on disk:   {}", pathOnDisk);
+        }
+        return LOG.traceExit("Directory was saved in database:   {}", directory);
+    }
+
+    @Override
+    public void delete(Directory directory) throws DirectoryModificationException {
+        LOG.traceEntry("Delete {}", directory);
+        throwExceptionIfDirectoryNull(directory);
+
+        deleteFromDatabase(directory);
+        deleteFromDisk(directory);
+        LOG.traceExit();
+    }
+
+    private void deleteFromDatabase(Directory directory) throws DirectoryModificationException {
         try {
-            pathOnDisk = Paths.get(foldersBaseDir + directory.getFullPath());
             List<Directory> directoriesToDelete = directoryJpaRepository.findByOwnerAndPathStartingWith(
                     directory.getOwner(), directory.getPath() + SEPARATOR
             );
             directoriesToDelete.add(directory);
             directoryJpaRepository.deleteAll(directoriesToDelete);
-            log.trace("Directory with contents was deleted from database:   {}", directory);
-        } catch (Exception e) {
-            log.debug("Failure deleting from jpa repository for '{}'", directory);
-            throw new DirectoryModificationException("Failure deleting from jpa repository", e);
+            LOG.trace("Directory with contents was deleted from database:   {}", directory);
+        } catch (TransactionRequiredException | DataAccessException | IllegalArgumentException e) {
+            LOG.warn("Failure deleting from jpa repository for '{}'", directory);
+            throw new DirectoryModificationException("Failure deleting from jpa repository: " + directory, e);
         }
+    }
+
+    private void deleteFromDisk(Directory directory) {
         try {
-            FileUtils.deleteDirectory(pathOnDisk.toFile());
-            log.trace("Directory with contents was deleted from disk:   {}", directory);
+            FileUtils.deleteDirectory(new File(foldersBaseDir + directory.getFullPath()));
+            LOG.trace("Directory with contents was deleted from disk:   {}", directory);
         } catch (IOException | IllegalArgumentException e) {
-            log.error("Failure deleting from disk for '{}'", directory);
+            LOG.error("Failure deleting from disk for '{}'", directory);
         }
-        log.traceExit();
     }
 
     @Override
     public void rename(Directory directory, String newPath) throws DirectoryModificationException {
-        log.traceEntry("Rename:   {}   ->   {}", directory, newPath);
+        LOG.traceEntry("Rename:   {}   ->   {}", directory, newPath);
         throwExceptionIfDirectoryNull(directory);
 
         String newName = Directory.getName(newPath);
-        if (directory.getName().equals(newName)) {
-            log.traceExit("New and old names are same:  {}", directory);
+        if (Objects.equals(directory.getName(), newName)) {
+            LOG.traceExit("New and old names are same:  {}", directory);
             return;
         }
 
@@ -115,40 +123,40 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
 
         isPossibleToRename(parameters);
         moveDirectories(parameters, "Rename: cannot rename directory on disk");
-        log.traceExit();
+        LOG.traceExit();
     }
 
     private void isPossibleToRename(OperationArgumentsVO parameters) throws DirectoryModificationException {
         if (!Files.exists(parameters.currentPathOnDisk())) {
-            log.debug("Rename:   directory with name '{}' not found on disk", parameters.currentPathOnDisk());
+            LOG.debug("Rename:   directory with name '{}' not found on disk", parameters.currentPathOnDisk());
             throw new DirectoryModificationException("Cannot rename directory",
                     new IllegalAccessException("Directory with name '" + parameters.currentPathOnDisk() + "' not found on disk")
             );
         }
         if (directoryJpaRepository.findByOwnerAndPath(parameters.owner(), parameters.targetPath()).size() > 0) {
-            log.debug("Rename:   directory on path '{}' already exists in database for user {}", parameters.targetPath(), parameters.owner.getLogin());
+            LOG.debug("Rename:   directory on path '{}' already exists in database for user {}", parameters.targetPath(), parameters.owner.getLogin());
             throw new DirectoryModificationException("Cannot rename directory",
                     new IllegalAccessException("Directory on path '" + parameters.targetPath() + "' already exists in database for user '" + parameters.owner.getLogin() + "'")
             );
         }
         String parentDirectoryPath = retrieveParentPath(parameters.targetPath());
         if (directoryJpaRepository.findByOwnerAndPath(parameters.owner(), parentDirectoryPath).isEmpty()) {
-            log.debug("Rename:   not found parent directory '{}'", parentDirectoryPath);
+            LOG.debug("Rename:   not found parent directory '{}'", parentDirectoryPath);
             throw new DirectoryModificationException("Cannot rename directory",
                     new IllegalAccessException("Not found parent directory '" + parentDirectoryPath + "'")
             );
         }
-        log.traceExit();
+        LOG.traceExit();
     }
 
     @Override
     public void move(Directory source, Directory target) throws DirectoryModificationException {
-        log.traceEntry("Move directory:   " + source);
+        LOG.traceEntry("Move directory:   " + source);
         throwExceptionIfDirectoryNull(source);
         throwExceptionIfDirectoryNull(target);
 
         if (source.equals(target)) {
-            log.traceExit("Source and target are equal:  {}", source);
+            LOG.traceExit("Source and target are equal:  {}", source);
             return;
         }
 
@@ -156,46 +164,70 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
         OperationArgumentsVO parameters = new OperationArgumentsVO(source, target.getPath(), source.getName());
 
         moveDirectories(parameters, "Move: cannot move directory or subdirectories on disk");
-        log.traceExit();
+        LOG.traceExit();
     }
 
     private void isPossibleToMove(Directory source, Directory target) throws DirectoryModificationException {
-        log.traceEntry();
+        LOG.traceEntry();
         if (!source.getOwner().equals(target.getOwner())) {
-            log.debug("Source and target directories must have same owner!   source={},   Target={}", source, target);
+            LOG.debug("Source and target directories must have same owner!   source={},   Target={}", source, target);
             throw new DirectoryModificationException("Cannot move directory",
                     new IllegalAccessException("Source and target directories must have same owner")
             );
         }
         if (target.getPath().startsWith(source.getPath())) {
-            log.debug("Target [{}] is subdirectory fot [{}]", target.getPath(), source.getPath());
+            LOG.debug("Target [{}] is subdirectory fot [{}]", target.getPath(), source.getPath());
             throw new DirectoryModificationException("Cannot move directory",
                     new IllegalAccessException("Target [" + target.getPath() + "]directory is subdirectory for [" + source.getPath() + "]")
             );
         }
         if (!directoryJpaRepository.findByOwnerAndPath(source.getOwner(), target.getPath() + SEPARATOR + source.getName()).isEmpty()) {
-            log.debug("Target [{}] contains directory with same name='{}'", target, source.getName());
+            LOG.debug("Target [{}] contains directory with same name='{}'", target, source.getName());
             throw new DirectoryModificationException("Cannot move directory",
                     new IllegalAccessException("Target directory contains directory with same name")
             );
         }
-        log.traceExit();
+        LOG.traceExit();
     }
 
     private void moveDirectories(OperationArgumentsVO args, String error) throws DirectoryModificationException {
-        log.traceEntry("{}", args);
+        LOG.traceEntry("{}", args);
         try {
             FileUtils.copyDirectory(args.currentPathOnDisk().toFile(), args.targetPathOnDisk().toFile());
-            log.trace("Directory on disk was copied: '{}' -> '{}'", args.currentPathOnDisk(), args.targetPathOnDisk());
-            args.source().setPath(args.targetPath());
-            directoryJpaRepository.save(args.source());
-            log.trace("Renamed source path on entity. New path: {}", args.source().getPath());
-            replaceRelatedDirectoryPaths(args);
-
         } catch (IOException e) {
-            log.debug("Exception while moving directory: {}", e);
+            LOG.debug("Exception while moving directory: {}", e);
             throw new DirectoryModificationException(error, e);
         }
+        LOG.trace("Directory on disk was copied: '{}' -> '{}'", args.currentPathOnDisk(), args.targetPathOnDisk());
+
+        moveDirectoriesOnDatabase(args);
+        moveDirectoriesOnDisk(args);
+
+        LOG.traceExit();
+    }
+
+    private void moveDirectoriesOnDatabase(OperationArgumentsVO args) {
+        args.source().setPath(args.targetPath());
+        directoryJpaRepository.save(args.source());
+        LOG.trace("Renamed source path on entity. New path: {}", args.source().getPath());
+        replaceRelatedDirectoryPaths(args);
+
+    }
+
+    private void replaceRelatedDirectoryPaths(OperationArgumentsVO args) {
+        LOG.traceEntry("Replace related directory paths   {}", args.toString());
+        List<Directory> directories = directoryJpaRepository
+                .findByOwnerAndPathStartingWith(args.owner(), args.currentPath() + SEPARATOR);
+        for (Directory dir : directories) {
+            String pathAfterRename = dir.getPath().replaceFirst(args.currentPath, args.targetPath());
+            LOG.trace("Change path: '{}' -> '{}'", dir.getPath(), pathAfterRename);
+            dir.setPath(pathAfterRename);
+            directoryJpaRepository.save(dir);
+        }
+        LOG.debug("Paths was replaced with arguments = {}", args);
+    }
+
+    private void moveDirectoriesOnDisk(OperationArgumentsVO args) {
         try {
             Files.walk(args.currentPathOnDisk())
                     .sorted(Comparator.reverseOrder())
@@ -203,32 +235,18 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
                         try {
                             Files.deleteIfExists(path);
                         } catch (IOException e) {
-                            log.error("Failure delete {} after copy", path);
+                            LOG.error("Failure delete {} after copy", path);
                         }
                     });
         } catch (IOException e) {
-            log.error("Data was copied but source did not removed: {}", e);
+            LOG.error("Data was copied but source did not removed: {}", e);
         }
-
-        log.traceExit();
-    }
-
-    private void replaceRelatedDirectoryPaths(OperationArgumentsVO args) {
-        log.traceEntry("Replace related directory paths   {}", args.toString());
-        List<Directory> directories = directoryJpaRepository
-                .findByOwnerAndPathStartingWith(args.owner(), args.currentPath() + SEPARATOR);
-        for (Directory dir : directories) {
-            String pathAfterRename = dir.getPath().replaceFirst(args.currentPath, args.targetPath());
-            log.trace("Change path: '{}' -> '{}'", dir.getPath(), pathAfterRename);
-            dir.setPath(pathAfterRename);
-        }
-        log.debug("Paths was replaced with arguments = {}", args);
-        log.traceExit();
     }
 
     @Override
-    public List<Directory> findTopSubDirectories(Directory directory) {
-        log.traceEntry("Directory:   " + directory);
+    public List<Directory> findTopLevelSubDirectories(Directory directory) {
+        LOG.traceEntry("Directory:   " + directory);
+        throwExceptionIfDirectoryNull(directory);
         String path;
         if (directory.isRoot()) {
             path = directory.getPath();
@@ -240,32 +258,32 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
                 path,
                 directory.getLevel() + 1
         );
-        log.debug("Count top-level subdirectories = {}      for {}", topSubDirectories.size(), directory);
-        return log.traceExit(topSubDirectories);
+        LOG.debug("Count top-level subdirectories = {}      for {}", topSubDirectories.size(), directory);
+        return LOG.traceExit(topSubDirectories);
     }
 
     @Override
     public long countByOwner(UserInfo owner) {
-        log.traceEntry("Count by {}", owner);
+        LOG.traceEntry("Count by {}", owner);
         long count = directoryJpaRepository.countByOwner(owner);
 
-        return log.traceExit(count);
+        return LOG.traceExit(count);
     }
 
     @Override
     public List<Directory> findByOwnerAndPath(UserInfo owner, String path) {
-        log.traceEntry("Find by owner = {} and path = '{}'", owner, path);
-        return log.traceExit(directoryJpaRepository.findByOwnerAndPath(owner, path));
+        LOG.traceEntry("Find by owner = {} and path = '{}'", owner.getLogin(), path);
+        return LOG.traceExit(directoryJpaRepository.findByOwnerAndPath(owner, path));
     }
 
     @Override
     public Optional<Directory> findById(Long directoryId) {
-        return log.traceExit(directoryJpaRepository.findById(directoryId));
+        return LOG.traceExit(directoryJpaRepository.findById(directoryId));
     }
 
     @Override
     public Optional<Directory> findByOwnerAndId(UserInfo owner, Long directoryId) {
-        return log.traceExit(directoryJpaRepository.findById(directoryId));
+        return LOG.traceExit(directoryJpaRepository.findByOwnerAndId(owner, directoryId));
     }
 
     private class OperationArgumentsVO {
@@ -277,9 +295,9 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
 
         OperationArgumentsVO(Directory source, String newParentPath, String newName) {
             this.source = source;
-            currentPath = source.getPath();
-            targetPath = buildPath(newParentPath, newName);
-            owner = source.getOwner();
+            this.owner = source.getOwner();
+            this.currentPath = source.getPath();
+            this.targetPath = buildPath(newParentPath, newName);
         }
 
         public Directory source() {

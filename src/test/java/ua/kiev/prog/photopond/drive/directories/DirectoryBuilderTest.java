@@ -14,49 +14,62 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 public class DirectoryBuilderTest {
     @Test
     public void id() {
+        //Given
         Long id = 777L;
 
+        //When
         Directory directory = new DirectoryBuilder().id(id).build();
 
+        //Then
         assertThat(directory.getId()).isEqualTo(id);
     }
 
     @Test
     public void owner() {
+        //Given
         UserInfo user = new UserInfoBuilder()
                 .id(123)
                 .login("someUser")
                 .role(UserRole.ADMIN)
                 .build();
 
+        //When
         Directory directory = new DirectoryBuilder().owner(user).build();
 
+        //Then
         assertThat(directory.getOwner()).isEqualTo(user);
     }
 
     @Test
     public void path() {
+        //Given
         String path = buildPath("some", "long", "long", "long", "path");
 
+        //When
         Directory directory = new DirectoryBuilder().path(path).build();
 
+        //Then
         assertThat(directory.getPath()).isEqualTo(path);
     }
 
     @Test
     public void defaultBuild() {
-        Directory directory = new DirectoryBuilder().build();
-
+        //Given
         Directory expected = new Directory();
         expected.setId(Long.MIN_VALUE);
         expected.setOwner(new UserInfo());
         expected.setPath(Directory.SEPARATOR);
 
+        //When
+        Directory directory = new DirectoryBuilder().build();
+
+        //Then
         assertThat(directory).isEqualTo(expected);
     }
 
     @Test
     public void from() {
+        //Given
         UserInfo user = new UserInfoBuilder()
                 .id(123)
                 .login("someUser")
@@ -67,8 +80,10 @@ public class DirectoryBuilderTest {
         directory.setOwner(user);
         directory.setPath(buildPath("some","path"));
 
+        //When
         Directory result = new DirectoryBuilder().from(directory).build();
 
+        //Then
         assertThat(result.getId()).isEqualTo(777L);
         assertThat(result.getOwner()).isEqualTo(user);
         assertThat(result.getPath()).isEqualTo("/some/path");
