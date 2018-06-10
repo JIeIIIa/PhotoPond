@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 
@@ -23,7 +24,7 @@ public class PictureFile implements Serializable {
     private String filename;
 
     @NotNull
-    @ManyToOne(/*cascade = CascadeType.REMOVE */)
+    @ManyToOne
     private Directory directory;
 
     @Transient
@@ -92,19 +93,25 @@ public class PictureFile implements Serializable {
     }
 
     public boolean isNew() {
-        return id == null;
+        return id == null || id == Long.MIN_VALUE;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         PictureFile that = (PictureFile) o;
+        return Objects.equals(filename, that.filename) &&
+                Objects.equals(directory, that.directory) &&
+                Arrays.equals(data, that.data);
+    }
 
-        if (filename != null ? !filename.equals(that.filename) : that.filename != null) return false;
-        if (directory != null ? !directory.equals(that.directory) : that.directory != null) return false;
-        return Arrays.equals(data, that.data);
+    @Override
+    public int hashCode() {
+
+        int result = Objects.hash(filename, directory);
+        result = 31 * result + Arrays.hashCode(data);
+        return result;
     }
 
     @Override
@@ -112,16 +119,8 @@ public class PictureFile implements Serializable {
         return "PictureFile{" +
                 "id=" + id +
                 ", filename='" + filename + '\'' +
-                ", directory=" + directory +
+                ", directory={" + directory + "}" +
                 '}';
-    }
-
-    @Override
-    public int hashCode() {
-        int result = filename != null ? filename.hashCode() : 0;
-        result = 31 * result + (directory != null ? directory.hashCode() : 0);
-        result = 31 * result + Arrays.hashCode(data);
-        return result;
     }
 
     public static boolean isFilenameCorrect(String filename) {

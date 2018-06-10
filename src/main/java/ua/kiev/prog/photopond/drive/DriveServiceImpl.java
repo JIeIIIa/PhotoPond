@@ -3,7 +3,6 @@ package ua.kiev.prog.photopond.drive;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +24,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 @Service
 @Transactional
 public class DriveServiceImpl implements DriveService {
-    private static final Logger log = LogManager.getLogger(DriveServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(DriveServiceImpl.class);
 
     private final DirectoryDiskAndDatabaseRepository directoryRepository;
 
@@ -45,14 +44,14 @@ public class DriveServiceImpl implements DriveService {
     @Override
     @Transactional(readOnly = true)
     public long countByOwner(UserInfo owner) {
-        log.traceEntry("Count directories by {}", owner);
+        LOG.traceEntry("Count directories by {}", owner);
         long count = directoryRepository.countByOwner(owner);
-        return log.traceExit(count);
+        return LOG.traceExit(count);
     }
 
     @Override
     public Content getDirectoryContent(String ownerLogin, String path) throws DriveException {
-        log.traceEntry("Content at '{}' for user = '{}'", path, ownerLogin);
+        LOG.traceEntry("Content at '{}' for user = '{}'", path, ownerLogin);
 
         FileParts fileParts = null;
         Directory directory;
@@ -108,7 +107,7 @@ public class DriveServiceImpl implements DriveService {
                 directoryRepository.move(sourceParts.getDirectory(), targetDirectory);
             }
         } catch (DriveException e) {
-            log.debug("Failure moving directory: {} -> {}", source, target);
+            LOG.debug("Failure moving directory: {} -> {}", source, target);
             throw new DriveException("Failure moving directory: " + source + " -> " + target);
         }
     }
@@ -141,30 +140,40 @@ public class DriveServiceImpl implements DriveService {
         FileParts source = new FileParts(ownerLogin, path);
         List<PictureFile> files = fileRepository.findByDirectoryAndFilename(source.getDirectory(), source.getFilename());
         if (files.size() != 1) {
-            throw new DriveException("Found more than one file for ownerLogin = " + ownerLogin + "   and   filename = " + source.getFilename());
+            throw new DriveException("File not found OR found more than one file for ownerLogin = " + ownerLogin + "   and   filename = " + source.getFilename
+                    ());
         }
 
         return files.get(0).getData();
     }
 
     @Override
-    @Modifying
     public void deletePictureFile(String ownerLogin, String path) throws DriveException {
         FileParts source = new FileParts(ownerLogin, path);
+        List<PictureFile> files = fileRepository.findByDirectoryAndFilename(source.getDirectory(), source.getFilename());
+        if (files.size() != 1) {
+            throw new DriveException("File not found OR found more than one file for ownerLogin = " + ownerLogin + "   and   filename = " + source.getFilename());
+        }
         try {
-            fileRepository.deleteByDirectoryAndFilename(source.getDirectory(), source.getFilename());
+            fileRepository.delete(files.get(0));
         } catch (PictureFileException e) {
             throw new PictureFileException(e);
         }
     }
 
     @Override
-    @Modifying
     public void movePictureFile(String ownerLogin, String path, String newPath) throws DriveException {
         FileParts source = new FileParts(ownerLogin, path);
         FileParts target = new FileParts(ownerLogin, newPath);
+
+        List<PictureFile> files = fileRepository.findByDirectoryAndFilename(source.getDirectory(), source.getFilename());
+        if (files.size() != 1) {
+            throw new DriveException();
+        }
+        PictureFile file = files.get(0);
+
         try {
-            fileRepository.move(source.getDirectory(), source.getFilename(), target.getDirectory(), target.getFilename());
+            fileRepository.move(file, target.getDirectory(), target.getFilename());
         } catch (PictureFileException e) {
             throw new DriveException("a", e);
         }
@@ -181,7 +190,7 @@ public class DriveServiceImpl implements DriveService {
     }
 
     private Content getDirectoryContent(Directory current) throws DriveException {
-        log.traceEntry("Get content for {}", current);
+        LOG.traceEntry("Get content for {}", current);
         Content content = new Content();
         content.setCurrentDirectory(current);
 
@@ -194,12 +203,11 @@ public class DriveServiceImpl implements DriveService {
         List<PictureFile> files = fileRepository.findByDirectory(current);
         content.setFiles(files);
 
-        return log.traceExit(content);
+        return LOG.traceExit(content);
     }
 
-    @Modifying
     private Directory createRootDirectoryIfNotExists(UserInfo owner) throws DriveException {
-        log.traceEntry("Check and try create root directory: owner={} ", owner);
+        LOG.traceEntry("Check and try create root directory: owner={} ", owner);
         long count = directoryRepository.countByOwner(owner);
         Directory root = null;
         if (count == 0) {
@@ -208,10 +216,10 @@ public class DriveServiceImpl implements DriveService {
                     .path(SEPARATOR)
                     .build();
             try {
-                log.debug("Try to create root directory for {}", owner);
+                LOG.debug("Try to create root directory for {}", owner);
                 root = directoryRepository.save(root);
             } catch (DirectoryModificationException e) {
-                log.debug("User {} has no content and failed to create root directory", owner);
+                LOG.debug("User {} has no content and failed to create root directory", owner);
                 throw new DriveException("Failed to create root directory", e);
             }
         }
@@ -219,7 +227,7 @@ public class DriveServiceImpl implements DriveService {
     }
 
     private List<Directory> findParentDirectories(Directory directory) throws DriveException {
-        log.traceEntry("Find parent directories for '{}'", directory);
+        LOG.traceEntry("Find parent directories for '{}'", directory);
         List<Directory> list = new LinkedList<>();
         if (directory.isRoot()) {
             return list;
@@ -228,12 +236,12 @@ public class DriveServiceImpl implements DriveService {
         do {
             List<Directory> parents = directoryRepository.findByOwnerAndPath(current.getOwner(), current.parentPath());
             if (parents.size() != 1) {
-                log.debug("Failed to get parent directory for '{}'", current.parentPath());
+                LOG.debug("Failed to get parent directory for '{}'", current.parentPath());
                 throw new DriveException("Not found or found more than one parent directory for " + current);
             }
             current = parents.get(0);
             list.add(0, current);
-            log.trace("Add parent directory '{}' in list", current);
+            LOG.trace("Add parent directory '{}' in list", current);
         } while (!current.isRoot());
         return list;
     }

@@ -35,6 +35,15 @@ public class PictureFileBuilder {
         return this;
     }
 
+    public PictureFileBuilder from(PictureFile pictureFile) {
+        id = pictureFile.getId();
+        directory = pictureFile.getDirectory();
+        filename = pictureFile.getFilename();
+        data = pictureFile.getData();
+
+        return this;
+    }
+
     public PictureFile build() {
         PictureFile file = new PictureFile();
         file.setId(id);

@@ -6,8 +6,6 @@ import ua.kiev.prog.photopond.drive.pictures.PictureFile;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 public interface DriveService {
-//    List<Directory> findTopSubdirectories(UserInfo owner, Directory directory);
-
     long countByOwner(UserInfo owner);
 
     Content getDirectoryContent(String ownerLogin, String path) throws DriveException;
