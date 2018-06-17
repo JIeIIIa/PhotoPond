@@ -428,4 +428,25 @@ public class DirectoryTest {
                 .isNotNull()
                 .isEqualTo(expected);
     }
+
+    @Test
+    public void isRootForRootDirectory() {
+        //When
+        boolean result = Directory.isRoot(SEPARATOR);
+
+        //Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void isRootForSubDirectory() {
+        //Given
+        String path = buildPath("first", "second", "third");
+
+        //When
+        boolean result = Directory.isRoot(path);
+
+        //Then
+        assertThat(result).isFalse();
+    }
 }

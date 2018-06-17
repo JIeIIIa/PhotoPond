@@ -49,7 +49,11 @@ public class PictureFileBuilder {
         file.setId(id);
         file.setFilename(filename);
         file.setDirectory(directory);
-        file.setData(data);
+        if (data == null) {
+            file.setData(new byte[0]);
+        } else {
+            file.setData(data);
+        }
 
         return file;
     }

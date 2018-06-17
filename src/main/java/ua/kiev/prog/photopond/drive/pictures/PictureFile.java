@@ -1,5 +1,7 @@
 package ua.kiev.prog.photopond.drive.pictures;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 
 import javax.persistence.*;
@@ -9,6 +11,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
+import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @Entity
 @Table(name = "pictureFiles")
@@ -25,6 +28,7 @@ public class PictureFile implements Serializable {
 
     @NotNull
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Directory directory;
 
     @Transient
@@ -69,27 +73,13 @@ public class PictureFile implements Serializable {
     }
 
     public String getFullPath() {
-        if (directory == null) {
-            throw new IllegalStateException("");
-        }
-        if (filename == null) {
-            throw new IllegalStateException("");
-        }
-        return directory.getFullPath() + SEPARATOR + filename;
+        checkState();
+        return buildPath(directory.getFullPath(), filename);
     }
 
     public String getPath() {
-        if (directory == null) {
-            throw new IllegalStateException("");
-        }
-        if (filename == null) {
-            throw new IllegalStateException("");
-        }
-        if(directory.isRoot()) {
-            return directory.getPath() + filename;
-        } else {
-            return directory.getPath() + SEPARATOR + filename;
-        }
+        checkState();
+        return buildPath(directory.getPath(), filename);
     }
 
     public boolean isNew() {
@@ -132,5 +122,12 @@ public class PictureFile implements Serializable {
         return true;
     }
 
-
+    private void checkState() {
+        if (directory == null) {
+            throw new IllegalStateException("Directory must not be null");
+        }
+        if (filename == null) {
+            throw new IllegalStateException("Filename must not be null");
+        }
+    }
 }

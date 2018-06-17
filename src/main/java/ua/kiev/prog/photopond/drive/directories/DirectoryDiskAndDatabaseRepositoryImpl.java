@@ -38,7 +38,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
         this.directoryJpaRepository = directoryJpaRepository;
     }
 
-    void setFoldersBasedir(String foldersBaseDir) {
+    public void setFoldersBasedir(String foldersBaseDir) {
         this.foldersBaseDir = foldersBaseDir;
     }
 
@@ -284,6 +284,13 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryDiskAndD
     @Override
     public Optional<Directory> findByOwnerAndId(UserInfo owner, Long directoryId) {
         return LOG.traceExit(directoryJpaRepository.findByOwnerAndId(owner, directoryId));
+    }
+
+    @Override
+    public boolean exists(UserInfo owner, String path) {
+        return LOG.traceExit(
+                directoryJpaRepository.findByOwnerAndPath(owner, path).size() > 0
+        );
     }
 
     private class OperationArgumentsVO {

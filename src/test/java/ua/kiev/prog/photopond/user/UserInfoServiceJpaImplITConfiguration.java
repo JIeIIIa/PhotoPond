@@ -8,7 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @TestConfiguration
 @Profile("unitTest")
-public class UserInfoServiceJpaServiceImplITConfiguration {
+public class UserInfoServiceJpaImplITConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(value = BCryptPasswordEncoder.class)

@@ -70,18 +70,6 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
 
         basedirPath = Paths.get(foldersBasedir);
 
-        /*FileUtils.deleteDirectory(new File(foldersBasedir));
-        List<Directory> directories = directoryJpaRepository.findAll();
-        for (Directory dir : directories) {
-            Path path = Paths.get(foldersBasedir + dir.getFullPath());
-            if (!Files.exists(path)) {
-                try {
-                    Files.createDirectories(path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }*/
         TestUtils.createDirectories(basedirPath, directoryJpaRepository);
 
         user = userInfoJpaRepository.findByLogin("User")
@@ -96,13 +84,13 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void saveNullDirectory() throws Exception {
+    public void saveNullDirectory() {
         //When
         instance.save(null);
     }
 
     @Test
-    public void saveWhenDirectoryNotExists() throws Exception {
+    public void saveWhenDirectoryNotExists() {
         //Given
         String newPath = "/first/second/third/newFolder";
         Directory dir = new DirectoryBuilder().owner(user).path(newPath).build();
@@ -122,7 +110,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test(expected = DirectoryModificationException.class)
-    public void saveWhenParentDirectoryNotExists() throws Exception {
+    public void saveWhenParentDirectoryNotExists() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/phantomDirectory/newFolder").build();
 
@@ -131,13 +119,13 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void deleteNullDirectory() throws Exception {
+    public void deleteNullDirectory() {
         //When
         instance.delete(null);
     }
 
     @Test
-    public void deleteEmptyDirectory() throws Exception {
+    public void deleteEmptyDirectory() {
         //Given
         directory = new DirectoryBuilder().id(2111L).owner(user).path("/first/second/third").build();
         Path path = Paths.get(foldersBasedir + directory.getFullPath());
@@ -155,7 +143,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test
-    public void deleteWithSubdirectories() throws Exception {
+    public void deleteWithSubdirectories() {
         //Given
         directory = new DirectoryBuilder().id(2110L).owner(user).path("/first/second").build();
         Directory subDirectory = new DirectoryBuilder().id(2111L).owner(user).path("/first/second/third").build();
@@ -192,7 +180,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test(expected = DirectoryModificationException.class)
-    public void renameNotExistsDirectory() throws Exception {
+    public void renameNotExistsDirectory() {
         //Given
         Directory directory = new DirectoryBuilder().id(777L).owner(user).path("/oldName").build();
 
@@ -201,7 +189,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test
-    public void renameSuccess() throws Exception {
+    public void renameSuccess() {
         //Given
         Path oldPath = Paths.get(foldersBasedir + directory.getFullPath());
         String targetPath = buildPath(directory.parentPath(), "target");
@@ -271,7 +259,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test(expected = DirectoryModificationException.class)
-    public void renameWhenTargetDirectoryAlreadyExistsInDataBase() throws Exception {
+    public void renameWhenTargetDirectoryAlreadyExistsInDataBase() {
         //Given
         String targetPath = "/folder";
 
@@ -280,19 +268,19 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void moveNullDirectory() throws Exception {
+    public void moveNullDirectory() {
         //When
         instance.move(null, directory);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void moveToNullDirectory() throws Exception {
+    public void moveToNullDirectory() {
         //When
         instance.move(directory, null);
     }
 
     @Test
-    public void moveTargetDirectoryEqualsCurrentDirectory() throws Exception {
+    public void moveTargetDirectoryEqualsCurrentDirectory() {
         //Given
         Directory expectedDirectory = new DirectoryBuilder().from(directory).build();
         long count = directoryJpaRepository.countByOwner(user);
@@ -306,7 +294,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test(expected = DirectoryModificationException.class)
-    public void moveBetweenDifferentUsers() throws Exception {
+    public void moveBetweenDifferentUsers() {
         //Given
         Directory directoryWithAnotherOwner = new DirectoryBuilder()
                 .id(1200L)
@@ -318,7 +306,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test(expected = DirectoryModificationException.class)
-    public void moveTargetDirectoryContainsSubDirectoryWithSameName() throws Exception {
+    public void moveTargetDirectoryContainsSubDirectoryWithSameName() {
         //Given
         Directory target = new DirectoryBuilder().id(2200L).owner(user).path("/folder").build();
 
@@ -336,9 +324,8 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     }
 
     @Test
-    public void moveSuccess() throws Exception {
+    public void moveSuccess() {
         //Given
-
         List<Directory> subDirectories = directoryJpaRepository.findByOwnerAndPathStartingWith(user, directory.getPath())
                 .stream()
                 .map(d -> new DirectoryBuilder().from(d).build())
@@ -475,5 +462,23 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
         assertThat(result)
                 .isNotNull()
                 .isNotPresent();
+    }
+
+    @Test
+    public void directoryExists() {
+        //When
+        boolean result = instance.exists(user, "/first");
+
+        //Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void directoryNotExists() {
+        //When
+        boolean result = instance.exists(user, "/phantomDirectory");
+
+        //Then
+        assertThat(result).isFalse();
     }
 }

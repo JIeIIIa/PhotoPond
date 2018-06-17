@@ -3,12 +3,9 @@ package ua.kiev.prog.photopond.drive;
 import org.springframework.web.multipart.MultipartFile;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.pictures.PictureFile;
-import ua.kiev.prog.photopond.user.UserInfo;
 
 public interface DriveService {
-    long countByOwner(UserInfo owner);
-
-    Content getDirectoryContent(String ownerLogin, String path) throws DriveException;
+    Content retrieveDirectoryContent(String ownerLogin, String path) throws DriveException;
 
     Directory addDirectory(String ownerLogin, String parentDirectoryPath, String newDirectoryName) throws DriveException;
 
@@ -16,7 +13,7 @@ public interface DriveService {
 
     PictureFile addPictureFile(String ownerLogin, String directoryPath, MultipartFile multipartFile) throws DriveException;
 
-    byte[] getFile(String ownerLogin, String path) throws DriveException;
+    byte[] retrievePictureFileData(String ownerLogin, String path) throws DriveException;
 
     void deletePictureFile(String ownerLogin, String path) throws DriveException;
 

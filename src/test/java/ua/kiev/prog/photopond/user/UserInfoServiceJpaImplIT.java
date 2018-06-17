@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles({"dev", "testDB", "unitTest"})
 @EnableAutoConfiguration
 @DataJpaTest
-@ContextConfiguration(classes = {UserInfoServiceJpaServiceImplITConfiguration.class})
+@ContextConfiguration(classes = {UserInfoServiceJpaImplITConfiguration.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         TransactionalTestExecutionListener.class,
         DbUnitTestExecutionListener.class})

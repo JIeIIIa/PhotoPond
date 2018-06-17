@@ -37,7 +37,7 @@ public class DriveController {
                              HttpServletRequest request) throws DriveException {
         String tail = getUriTail(request, userLogin);
 
-        Content content = driveService.getDirectoryContent(userLogin, tail);
+        Content content = driveService.retrieveDirectoryContent(userLogin, tail);
 
         modelAndView.setViewName("/drive/directory");
         modelAndView.addObject("content", content);
@@ -52,12 +52,13 @@ public class DriveController {
                                         @NotNull @RequestParam("newDirectoryName") String newDirectoryName,
                                         HttpServletRequest request) throws DriveException {
 
-        Directory createdDirectory = driveService.addDirectory(userLogin, getUriTail(request, userLogin), newDirectoryName);
+        String sourcePath = getUriTail(request, userLogin);
+        Directory createdDirectory = driveService.addDirectory(userLogin, sourcePath, newDirectoryName);
 
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .path("/user/{login}/drive{path}")
                 .build()
-                .expand(userLogin, createdDirectory.parentPath())
+                .expand(userLogin, sourcePath)
                 .encode();
         RedirectView redirectView = new RedirectView(uriComponents.toUriString(), true, true, false);
         ModelAndView modelAndView = new ModelAndView(redirectView);

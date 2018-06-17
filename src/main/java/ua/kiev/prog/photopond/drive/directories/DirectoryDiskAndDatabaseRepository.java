@@ -23,4 +23,6 @@ public interface DirectoryDiskAndDatabaseRepository {
     Optional<Directory> findById(Long directoryId);
 
     Optional<Directory> findByOwnerAndId(UserInfo owner, Long directoryId);
+
+    boolean exists(UserInfo owner, String path);
 }

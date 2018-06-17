@@ -12,11 +12,11 @@ import ua.kiev.prog.photopond.core.ApplicationConfiguration;
 @Configuration
 @DevOrProd
 public class SecurityWebMVCConfiguration extends ApplicationConfiguration {
-    private static Logger log = LogManager.getLogger(SecurityWebMVCConfiguration.class);
+    private static final Logger LOG = LogManager.getLogger(SecurityWebMVCConfiguration.class);
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        log.debug("Add custom interceptors: AccessUserDirectoryInterceptor, UserInformationInterceptor");
+        LOG.debug("Add custom interceptors: {}, {}", AccessUserDirectoryInterceptor.class, UserInformationInterceptor.class);
         super.addInterceptors(registry);
         registry.addInterceptor(new AccessUserDirectoryInterceptor()).addPathPatterns("/user/*/**");
         registry.addInterceptor(new UserInformationInterceptor());
@@ -24,6 +24,7 @@ public class SecurityWebMVCConfiguration extends ApplicationConfiguration {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
+        LOG.debug("Create bean with type {}", BCryptPasswordEncoder.class);
         return new BCryptPasswordEncoder();
     }
 }

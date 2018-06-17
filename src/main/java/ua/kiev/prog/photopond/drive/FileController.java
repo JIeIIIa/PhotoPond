@@ -35,7 +35,7 @@ public class FileController {
                                              HttpServletRequest request) {
         byte[] data;
         try {
-            data = driveService.getFile(ownerLogin, getUriTail(request, ownerLogin));
+            data = driveService.retrievePictureFileData(ownerLogin, getUriTail(request, ownerLogin));
         } catch (DriveException e) {
             return ResponseEntity.notFound().build();
         }

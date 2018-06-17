@@ -60,9 +60,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
     private PictureFileDiskAndDatabaseRepositoryImpl instance;
 
     private Path basedirPath;
-    UserInfo user;
-    Directory directory;
-    PictureFile pictureFile;
+    private UserInfo user;
+    private Directory directory;
+    private PictureFile pictureFile;
 
     @Before
     public void setUp() throws IOException {
@@ -130,8 +130,8 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
         PictureFile file = PictureFileBuilder.getInstance()
                 .filename(filename)
                 .directory(directory)
-                .data(null)
                 .build();
+        file.setData(null);
 
         //When
         try {
@@ -343,7 +343,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
                 .isNotNull()
                 .isPresent().get()
                 .isEqualToComparingFieldByField(expected);
-        assertThatFileContainsData(result.get(), expected.getData());
+        if (result.isPresent()) {
+            assertThatFileContainsData(result.get(), expected.getData());
+        }
     }
 
     @Test

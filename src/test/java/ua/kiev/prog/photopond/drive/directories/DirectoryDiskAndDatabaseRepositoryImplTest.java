@@ -597,4 +597,30 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
                 .isNotPresent();
 
     }
+
+    @Test
+    public void directoryExists() {
+        //Given
+        when(directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.getPath()))
+                .thenReturn(singletonList(directory));
+        //When
+        boolean result = instance.exists(directory.getOwner(), directory.getPath());
+
+        //Then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void directoryNotExists() {
+        //Given
+        String path = "/phantomDirectory";
+        when(directoryJpaRepository.findByOwnerAndPath(user, path))
+                .thenReturn(emptyList());
+
+        //When
+        boolean result = instance.exists(user, path);
+
+        //Then
+        assertThat(result).isFalse();
+    }
 }

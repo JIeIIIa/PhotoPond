@@ -88,7 +88,7 @@ public class Directory implements Serializable {
     private void updateLevel(String path) {
         level = 0;
 
-        if (SEPARATOR.equals(path)) {
+        if (isRoot(path)) {
             level = -1;
         }
         Pattern pattern = Pattern.compile(SEPARATOR);
@@ -161,7 +161,7 @@ public class Directory implements Serializable {
 
     public String getFullPath() {
         String fullPath = getOwnerFolder();
-        if (!SEPARATOR.equals(path)) {
+        if (!isRoot(path)) {
             fullPath += path;
         }
         return fullPath;
@@ -178,7 +178,7 @@ public class Directory implements Serializable {
     }
 
     public boolean isRoot() {
-        return SEPARATOR.equals(path);
+        return isRoot(path);
     }
 
     @Override
@@ -211,7 +211,7 @@ public class Directory implements Serializable {
         if (firstSubDirectoryName == null || firstSubDirectoryName.isEmpty()) {
             throw new IllegalArgumentException("FirstSubDirectoryName cannot be null or empty");
         }
-        if (!SEPARATOR.equals(firstSubDirectoryName)) {
+        if (!isRoot(firstSubDirectoryName)) {
             appendToPath(stringBuilder, firstSubDirectoryName);
         }
         for (String subDirectoryName : subDirectoryNames) {
@@ -229,6 +229,10 @@ public class Directory implements Serializable {
         }
         isPathCorrect(path);
         return path;
+    }
+
+    public static boolean isRoot(String path) {
+        return SEPARATOR.equals(path);
     }
 
     private static void appendToPath(StringBuilder stringBuilder, String subDirectoryName) {

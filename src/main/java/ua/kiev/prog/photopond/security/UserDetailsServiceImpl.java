@@ -19,23 +19,23 @@ import java.util.Set;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService{
-    private static Logger log = LogManager.getLogger(UserDetailsServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(UserDetailsServiceImpl.class);
 
     private final UserInfoService userService;
 
     @Autowired
     public UserDetailsServiceImpl(UserInfoService userService) {
-        log.traceEntry("Create UserDetailsServiceImpl");
+        LOG.info("Create instance of " + UserDetailsServiceImpl.class);
         this.userService = userService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        log.debug("try load user by login: " + login);
+        LOG.debug("try load user by login: " + login);
         Optional<UserInfo> user = userService.findUserByLogin(login);
 
         if (!user.isPresent()) {
-            log.warn("Cannot load UserInfo for [ login = '{}' ]", login);
+            LOG.warn("Cannot load UserInfo for [ login = '{}' ]", login);
             throw new UsernameNotFoundException(login + " not found");
         }
 
@@ -47,7 +47,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
                 .roles(user.get().getRole().name())
                 .disabled(user.get().isDeactivated())
                 .build();
-        log.info("User [ login = {} ] was loaded", login);
+        LOG.debug("User [ login = {} ] was loaded", login);
         return userDetails;
     }
 }

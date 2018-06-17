@@ -14,21 +14,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- jQuery -->
-    <script src="../../libs/jquery/jquery-3.2.1.min.js"></script>
+    <script src="../../../libs/jquery/jquery-3.2.1.min.js"></script>
 
     <!-- Bootstrap CSS -->
-    <script src="../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
-    <link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap.min.css">
-    <script src="../../libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
+    <link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css">
+    <script src="../../../libs/bootstrap/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="../../css/main.css">
-    <link rel="stylesheet" href="../../css/skins/default-skin.min.css">
+    <link rel="stylesheet" href="../../../css/main.css">
+    <link rel="stylesheet" href="../../../css/skins/default-skin.min.css">
 
 </head>
 
 <body>
-<object th:include="fragments/header :: header" th:remove="tag"/>
-<script src="../../js/userDirectory.js" th:src="@{/js/userDirectory.js}"></script>
+<object th:include="fragments/header :: header" th:remove="tag"></object>
+<script src="../../../js/userDirectory.js" th:src="@{/js/userDirectory.js}"></script>
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -247,7 +247,7 @@
                                                          alt="some picture"
                                                          th:alt="${file.getPath()}"
                                                          style="object-fit: contain;height: 100%; width: 100%;"/>
-                                                    <!--<div class="caption" th:text="${file.getFilename()}" style="word-wrap: break-word">Filename</div>-->
+                                                    <!--<div class="caption" th:text="${file.retrieveFilename()}" style="word-wrap: break-word">Filename</div>-->
                                                 </div>
                                             </div>
                                         </div>
