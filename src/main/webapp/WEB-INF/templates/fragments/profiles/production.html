@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       lang="en">
 <head
-           th:fragment="head (pageTitle)" th:remove="tag">
+        th:fragment="head(pageTitle)" th:remove="tag">
     <title th:text="${pageTitle}">Template title</title>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
@@ -12,21 +12,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- jQuery -->
-    <script th:src="@{/libs/jquery/jquery-3.2.1.min.js}"></script>
 
     <!-- Bootstrap CSS -->
-    <script th:src="@{/libs/bootstrap/tether-1.3.3/js/tether.min.js}"></script>
-    <link rel="stylesheet" th:href="@{/libs/bootstrap/css/bootstrap.min.css}">
-    <script th:src="@{/libs/bootstrap/js/bootstrap.min.js}"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
 
     <!--Font Awesome-->
     <link rel="stylesheet" th:href="@{/libs/font-awesome-4.7.0/css/font-awesome.min.css}">
-
+    <!--df-->
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/skins/default-skin.css}">
 
 </head>
 <body>
+<div th:fragment="bottomScripts" th:remove="tag">
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.3/js/tether.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js"></script>
+</div>
 </body>
 </html>
