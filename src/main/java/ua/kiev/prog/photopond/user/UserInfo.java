@@ -22,6 +22,7 @@ public class UserInfo implements Serializable {
 
     @NotNull
     @Size(min = 6, max = 65)
+    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.ORDINAL)
@@ -108,7 +109,9 @@ public class UserInfo implements Serializable {
     public UserInfo copyFrom(UserInfo userInfo) {
         id = userInfo.getId();
         login = userInfo.getLogin();
-        password = userInfo.getPassword();
+        if (userInfo.getPassword() != null) {
+            password = userInfo.getPassword();
+        }
         role = userInfo.getRole();
         return this;
     }

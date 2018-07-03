@@ -1,5 +1,7 @@
 package ua.kiev.prog.photopond.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -26,6 +28,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ua.kiev.prog.photopond.user.UserRole.ADMIN;
+import static ua.kiev.prog.photopond.user.UserRole.USER;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = UserAdministrationController.class, secure = false)
@@ -42,8 +46,8 @@ public class UserAdministrationControllerTest {
 
     @Test
     public void getAllUsers() throws Exception {
-        UserInfo userOne = new UserInfo("One", "qwerty", UserRole.USER);
-        UserInfo userTwo = new UserInfo("Two", "asdfgh", UserRole.ADMIN);
+        UserInfo userOne = new UserInfo("One", "qwerty", USER);
+        UserInfo userTwo = new UserInfo("Two", "asdfgh", ADMIN);
         List<UserInfo> usersList = Arrays.asList(userOne, userTwo);
         when(userInfoService.findAllUsers()).thenReturn(usersList);
 
@@ -76,13 +80,11 @@ public class UserAdministrationControllerTest {
                 .thenAnswer(
                         (Answer<Optional<UserInfo>>) invocationOnMock -> Optional.ofNullable((UserInfo) invocationOnMock.getArguments()[0])
                 );
-        String jsonContent = "{\"id\":" + pathId + ",\"login\":\"someUser\",\"password\":\"password\",\"role\":\"USER\"}";
+        String expectedJsonContent = "{\"id\":" + pathId + ",\"login\":\"someUser\",\"role\":\"USER\"}";
 
         MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post(URL_PREFIX + "/" + pathId)
-                .param("login", user.getLogin())
-                .param("password", user.getPassword())
-                .param("role", user.getRole().name())
-                .contentType(MediaType.MULTIPART_FORM_DATA);
+                .content(buildJsonContent(user))
+                .contentType(MediaType.APPLICATION_JSON);
         if (user.getId() != pathId) {
             post.param("id", String.valueOf(user.getId()));
         }
@@ -90,7 +92,7 @@ public class UserAdministrationControllerTest {
         mockMvc.perform(post)
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.content().json(jsonContent))
+                .andExpect(MockMvcResultMatchers.content().json(expectedJsonContent))
                 .andDo(print());
     }
 
@@ -98,10 +100,10 @@ public class UserAdministrationControllerTest {
     public void updateNotExistsUser() throws Exception {
         when(userInfoService.update(any(UserInfo.class)))
                 .thenReturn(Optional.empty());
+        UserInfo user = new UserInfoBuilder().id(77L).login("user").password("password").role(ADMIN).build();
         MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post(URL_PREFIX + "/77")
-                .param("login", "user")
-                .param("password", "password")
-                .param("role", "USER");
+                .content(buildJsonContent(user))
+                .contentType(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(post)
                 .andExpect(status().isNoContent())
@@ -114,7 +116,7 @@ public class UserAdministrationControllerTest {
         user.setId(77);
         when(userInfoService.delete(user.getId()))
                 .thenReturn(Optional.of(user));
-        String jsonContent = "{\"id\":77,\"login\":\"someUser\",\"password\":\"password\",\"role\":\"USER\"}";
+        String jsonContent = "{\"id\":77,\"login\":\"someUser\",\"role\":\"USER\"}";
 
         MockHttpServletRequestBuilder delete = MockMvcRequestBuilders.delete(URL_PREFIX + "/77");
 
@@ -136,5 +138,17 @@ public class UserAdministrationControllerTest {
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""))
                 .andDo(print());
+    }
+
+    private String buildJsonContent(UserInfo user) throws JsonProcessingException {
+        if (user.getPassword() == null) {
+            return new ObjectMapper().writeValueAsString(user);
+        } else {
+            return "{\"id\": " + user.getId() +
+                    ", \"login\": \"" + user.getLogin() + "\"" +
+                    ", \"password\": \"" + user.getPassword() + "\"" +
+                    ", \"role\": \"" + user.getRole().name() + "\"}";
+        }
+
     }
 }

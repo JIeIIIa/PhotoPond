@@ -1,141 +1,353 @@
 body {
-	font-size: 20px;
-	min-width: 320px;
+    font-size: 20px;
+    min-width: 320px;
 
-	font-family: "Roboto", sans-serif;
-	overflow-x: hidden;
-	
-	font-weight: 300;
+    font-family: "Roboto", sans-serif;
+    overflow-x: hidden;
 
-	margin: 0;
-	padding: 5em 0 0;
+    font-weight: 300;
 
-	-webkit-font-smoothing: antialiased;
-	-webkit-overflow-scrolling: touch;
+    margin: 0;
+    padding: 5em 0 0;
+
+    -webkit-font-smoothing: antialiased;
+    -webkit-overflow-scrolling: touch;
 
 }
+
+[v-cloak] {
+    display: none;
+}
+
+/*          Loader              */
+
+@keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+.loadIcon {
+    margin: 60px auto;
+    height: 120px;
+    width: 120px;
+    position: relative;
+}
+
+.loadIcon div {
+    position: absolute;
+}
+
+.loadIcon div:first-child {
+    height: 120px;
+    width: 120px;
+    border-radius: 60px;
+    border-top: solid 10px #237699;
+    animation: spin 2s infinite;
+    -webkit-animation: spin 2s infinite;
+    animation-timing-function: linear;
+    -webkit-animation-timing-function: linear;
+}
+
+.loadIcon div:nth-child(2) {
+    height: 90px;
+    width: 90px;
+    border-radius: 45px;
+    border-top: solid 10px #6CC5EC;
+    top: 15px;
+    left: 15px;
+    animation: spin 1.5s infinite;
+    -webkit-animation: spin 1.5s infinite;
+    animation-timing-function: linear;
+    -webkit-animation-timing-function: linear;
+}
+
+.loadIcon div:nth-child(3) {
+    height: 60px;
+    width: 60px;
+    border-radius: 30px;
+    border-top: solid 10px #ACDFF6;
+    top: 30px;
+    left: 30px;
+    animation: spin 1s infinite;
+    -webkit-animation: spin 1s infinite;
+    animation-timing-function: linear;
+    -webkit-animation-timing-function: linear;
+}
+
+.loadIcon div:nth-child(4) {
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+    border-top: solid 10px #D1EEFB;
+    top: 45px;
+    left: 45px;
+    animation: spin 0.5s infinite;
+    -webkit-animation: spin 0.5s infinite;
+    animation-timing-function: linear;
+    -webkit-animation-timing-function: linear;
+}
+
+/*      Vue.js animations       */
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .25s;
+}
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
+{
+    opacity: 0;
+}
+
+.slide-right-leave-active,
+.slide-right-enter-active {
+    transition: all 0.5s;
+}
+
+.slide-right-enter, .slide-right-leave-to {
+    display: inline-flex;
+    transform: translateX(200%);
+}
+
+.slide-left-leave-active,
+.slide-left-enter-active {
+    transition: all 0.5s;
+}
+
+.slide-left-enter, .slide-left-leave-to {
+    display: inline-flex;
+    transform: translateX(-200%);
+}
+
+.table-row-enter, .table-row-leave-to  /*, .list-complete-leave-active  до версии 2.1.8*/
+{
+    opacity: 0;
+    transform: translateX(-150%);
+    display: inline-flex;
+}
+
+.table-row-enter-active {
+    transition: all 0.5s;
+    display: inline-flex;
+}
+
+.table-row-leave-active {
+    transition: all .5s;
+    display: inline-flex;
+    position: absolute;
+}
+
+.table-row-move {
+    display: inline-flex;
+    transition: all 0.5s;
+}
+
+.textArrow {
+    float: left;
+    margin-top: 0.2rem;
+    margin-left: 0.1rem;
+    color: #6CC5EC;
+}
+
+/*      Left bottom button      */
+
+.left-corner-container {
+    position: fixed;
+    left: 1em;
+    bottom: 1em;
+    width: calc(100% - 2em);
+    padding: 0;
+}
+
+.left-corner-item {
+    overflow: hidden;
+    height: 2em;
+    border-top-left-radius: 2em;
+    border-bottom-left-radius: 2em;
+}
+
+.left-corner-btn-first {
+    position: absolute;
+    left: -0.2em;
+    top: -0.085em;
+}
+
+.corner-container-btn {
+    height: 2em;
+    width: 2em;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 2em;
+    border: none;
+    border-radius: 2em; /*Transform the square into rectangle, sync that value with the width/height*/
+}
+
+.corner-container-btn-face {
+    background-color: #6FB583;
+    cursor: pointer;
+
+    color: white;
+    z-index: 100;
+    transition: all 0.5s;
+    opacity: 0.5;
+}
+
+.conner-container-btn-background {
+    z-index: 10;
+    background-color: #1b5460;
+}
+
+.corner-container-input {
+    position: relative;
+    width: 80%;
+    z-index: 1;
+    left: 2.5em;
+}
+
+.left-corner-container :focus {
+    outline-width: 0;
+}
+
+.corner-container-active .corner-container-btn-face {
+    opacity: 1;
+}
+
+.corner-container-btn-face:hover {
+    opacity: 1;
+}
+
+/*          Header              */
 
 .breadcrumb-item + .breadcrumb-item::before {
-	content: none;
+    content: none;
 }
 
-.scroll-area{
-	width:100%;
-	/*height:100%;*/
-	/*margin-top:100px;*/
-	background-color:green;
-	float:left;
-	overflow-y:scroll;
+.scroll-area {
+    width: 100%;
+    /*height:100%;*/
+    /*margin-top:100px;*/
+    background-color: green;
+    float: left;
+    overflow-y: scroll;
 }
 
-.logo {	
-	font-family: "Roboto Slab";
-	font-weight: 900;
-	font-size: 1.8rem;
+.logo {
+    font-family: "Roboto Slab";
+    font-weight: 900;
+    font-size: 1.8rem;
 }
 
 .logo .capitalLetter {
-	position: absolute;
-	font-size: 2.5em;
-	top: 0%;
-	margin-top: -0.2em;
-	z-index: 30;
+    position: absolute;
+    font-size: 2.5em;
+    top: 0%;
+    margin-top: -0.2em;
+    z-index: 30;
 }
 
-.logo .pond{
-	position: absolute;
-	font-size: 2em;
-	top: 00%;
-	margin-top: 0.05em;
-	margin-left: 0.75em;
-	z-index: 30;
+.logo .pond {
+    position: absolute;
+    font-size: 2em;
+    top: 00%;
+    margin-top: 0.05em;
+    margin-left: 0.75em;
+    z-index: 30;
 }
 
-.logo .photo {	
-	position: absolute;
-	font-size: 0.8em;
-	top: 0%;
-	margin-left: 2.5em;
-	margin-top: 0.35em;
-	letter-spacing: 0.4em;
-	z-index: 30;
+.logo .photo {
+    position: absolute;
+    font-size: 0.8em;
+    top: 0%;
+    margin-left: 2.5em;
+    margin-top: 0.35em;
+    letter-spacing: 0.4em;
+    z-index: 30;
 }
 
 .hidden {
-	display: none;
+    display: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-family: "Roboto Slab";
-	font-weight: 600;
+    font-family: "Roboto Slab";
+    font-weight: 600;
 }
 
-
 .navbar a:hover, .navbar a:focus {
-	/*text-decoration: none;*/
-	outline: 0;
+    /*text-decoration: none;*/
+    outline: 0;
 }
 
 .navbar {
-	font-weight: 800;
-	
- 	z-index: 100;
+    font-weight: 800;
+
+    z-index: 100;
 }
 
-
 .navbar-brand {
-	font-size: 1.5rem;
-	padding-bottom: 0.75em;
+    font-size: 1.5rem;
+    padding-bottom: 0.75em;
 }
 
 .navbar li {
-	margin-left: 1.5em;
+    margin-left: 1.5em;
 }
 
 .navbar-inverse .nav-item.active .nav-link {
-	border-bottom: 5px solid;
-	padding-bottom: 0px;
+    border-bottom: 5px solid;
+    padding-bottom: 0px;
 }
 
 .navbar-toggler .fa.fa-bars {
-	font-size: 2em;
+    font-size: 2em;
 }
 
 .navbar .bnt-primary {
-	text-transform: uppercase;
-	font-weight: 900;
+    text-transform: uppercase;
+    font-weight: 900;
 }
 
 .navbar-toggler {
-	/*font-size: 1.25em;*/
+    /*font-size: 1.25em;*/
 }
 
 .collapse {
-	background-color: inherit;
-	z-index: 20;
+    background-color: inherit;
+    z-index: 20;
 }
 
-
 #headerwrap {
-	min-height: 40rem;
-	width: 100%;
+    min-height: 40rem;
+    width: 100%;
 
-	/* чтоб изображение нормально выглядело на всех разрешениях */
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	-o-background-size: cover;
-	background-size: cover;
+    /* чтоб изображение нормально выглядело на всех разрешениях */
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 #headerwrap h1 {
-	font-size: 3.5em;
-	margin-top: 17rem;
-	font-weight: 600;
-	letter-spacing: 0.15em;
+    font-size: 3.5em;
+    margin-top: 17rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
 }
 
 #headerwrap h2 {
-	font-size: 1.5em;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
+    font-size: 1.5em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }

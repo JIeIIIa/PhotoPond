@@ -50,7 +50,7 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
     private void cryptPassword(UserInfo user, String password) {
         LOG.debug("Crypt password for user {}", user.getLogin());
-        if (user != null) {
+        if (user != null && password != null) {
             user.setPassword(passwordEncoder.encode(password));
         }
     }
@@ -93,20 +93,19 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(
-                userInfoRepository.findById(userInfo.getId())
-                        .map(u -> {
-                            u.copyFrom(userInfo);
-                            userInfoRepository.save(u);
-                            LOG.trace("Information after update:   {}", u);
-                            return u;
-                        })
-                        .orElseGet(() -> {
-                            LOG.debug("Cannot find user with [ id = {} ] in Repository", userInfo.getId());
-                            return null;
-                        })
-        );
+        Optional<UserInfo> updated = userInfoRepository.findById(userInfo.getId())
+                .map(u -> copyUserInfo(u, userInfo))
+                .map(userInfoRepository::save);
+
+        return LOG.traceExit("Information after update:   {}", updated);
     }
+
+    private UserInfo copyUserInfo(UserInfo source, UserInfo newInformation) {
+        cryptPassword(newInformation, newInformation.getPassword());
+        source.copyFrom(newInformation);
+        return source.copyFrom(newInformation);
+    }
+
 
     @Override
     public Optional<UserInfo> findById(long id) {

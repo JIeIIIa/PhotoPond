@@ -71,9 +71,7 @@ public class EmbeddedUserInfoRepository implements UserInfoSimpleRepository {
     public UserInfo update(UserInfo userInfo) {
         for (UserInfo user : users) {
             if (user.getId() == userInfo.getId()) {
-                user.setLogin(userInfo.getLogin());
-                user.setPassword(userInfo.getPassword());
-                user.setRole(userInfo.getRole());
+                user.copyFrom(userInfo);
                 return user;
             }
         }

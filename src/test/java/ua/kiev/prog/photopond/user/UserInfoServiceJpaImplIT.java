@@ -128,8 +128,8 @@ public class UserInfoServiceJpaImplIT {
 
         //Then
         assertThat(user)
-        .isNotNull()
-        .isNotPresent();
+                .isNotNull()
+                .isNotPresent();
     }
 
     @Test
@@ -184,27 +184,70 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void updatePasswordSuccess() {
         //Given
+        String password = "qwerty";
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         UserInfo updatedUser = new UserInfoBuilder()
                 .id(777)
                 .login("someUser123")
-                .password("qwerty")
+                .password(password)
                 .role(UserRole.ADMIN)
                 .build();
         //When
-        Optional<UserInfo> afterUpdate = userInfoServiceJpaImpl.update(updatedUser);
+        Optional<UserInfo> result = userInfoServiceJpaImpl.update(updatedUser);
 
         //Then
-        Optional<UserInfo> userInDB = userInfoJpaRepository.findById(777L);
-
-        assertThat(afterUpdate)
+        assertThat(result)
                 .isPresent()
                 .get()
-                .isEqualToComparingFieldByField(updatedUser);
-        assertThat(userInDB)
-                .isPresent()
-                .get()
-                .isEqualToComparingFieldByField(updatedUser);
+                .isEqualToIgnoringGivenFields(updatedUser, "password")
+                .matches(u -> passwordEncoder.matches(password, u.getPassword()));
     }
+
+    @Test
+    public void updateWithPasswordNotNullSuccess() {
+        //Given
+        String newPassword = "newPassword";
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        UserInfo newInformation = new UserInfoBuilder()
+                .id(777L)
+                .login("user")
+                .password(newPassword)
+                .role(UserRole.ADMIN).build();
+        UserInfo expected = new UserInfo().copyFrom(newInformation);
+        expected.setPassword(passwordEncoder.encode(newInformation.getPassword()));
+
+        //When
+        Optional<UserInfo> result = userInfoServiceJpaImpl.update(newInformation);
+
+        //Then
+        assertThat(result)
+                .isPresent()
+                .get()
+                .isEqualToIgnoringGivenFields(expected, "password")
+                .matches(u -> passwordEncoder.matches(newPassword, u.getPassword()));
+    }
+
+    @Test
+    public void updateWithPasswordIsNullSuccess() {
+        //Given
+        long id = 777L;
+        UserInfo newInformation = new UserInfoBuilder()
+                .id(id)
+                .login("user")
+                .password(null)
+                .role(UserRole.ADMIN).build();
+        UserInfo expected = new UserInfo().copyFrom(newInformation);
+        expected.setPassword("password");
+
+        //When
+        Optional<UserInfo> result = userInfoServiceJpaImpl.update(newInformation);
+
+        //Then
+        assertThat(result)
+                .isPresent()
+                .hasValue(expected);
+    }
+
 
     @Test
     public void updateWhenExistsSameLogin() {

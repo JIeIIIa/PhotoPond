@@ -217,6 +217,63 @@ public class UserInfoServiceJpaImplTest {
         verify(userRepository).findByLogin(USER_LOGIN);
     }
 
+    @Test
+    public void updateWithPasswordNotNullSuccess() {
+        //Given
+        String newPassword = "newPassword";
+        UserInfo newInformation = new UserInfoBuilder()
+                .id(mockUser.getId())
+                .login("user")
+                .password(newPassword)
+                .role(UserRole.ADMIN).build();
+        UserInfo expected = new UserInfo().copyFrom(newInformation);
+        expected.setPassword(passwordEncoder.encode(newInformation.getPassword()));
+
+        when(userRepository.countByLoginAndIdNot(newInformation.getLogin(), newInformation.getId()))
+                .thenReturn(0L);
+        when(userRepository.findById(mockUser.getId()))
+                .thenReturn(Optional.ofNullable(mockUser));
+        when(userRepository.save(any(UserInfo.class)))
+                .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
+
+        //When
+        Optional<UserInfo> result = instance.update(newInformation);
+
+        //Then
+        assertThat(result)
+                .isPresent()
+                .get()
+                .isEqualToIgnoringGivenFields(expected, "password")
+                .matches(u -> passwordEncoder.matches(newPassword, u.getPassword()));
+    }
+
+    @Test
+    public void updateWithPasswordIsNullSuccess() {
+        //Given
+        long id = 777L;
+        UserInfo newInformation = new UserInfoBuilder()
+                .id(id)
+                .login("user")
+                .password(null)
+                .role(UserRole.ADMIN).build();
+        UserInfo expected = new UserInfo().copyFrom(newInformation);
+        expected.setPassword(mockUser.getPassword());
+
+        when(userRepository.countByLoginAndIdNot(newInformation.getLogin(), newInformation.getId()))
+                .thenReturn(0L);
+        when(userRepository.findById(mockUser.getId()))
+                .thenReturn(Optional.ofNullable(mockUser));
+        when(userRepository.save(any(UserInfo.class)))
+                .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
+
+        //When
+        Optional<UserInfo> result = instance.update(newInformation);
+
+        //Then
+        assertThat(result)
+                .isPresent()
+                .hasValue(expected);
+    }
 
     @Test
     public void updateWhenExistsSameLogin() {

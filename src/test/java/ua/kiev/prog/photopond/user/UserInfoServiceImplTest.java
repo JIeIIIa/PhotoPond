@@ -215,6 +215,77 @@ public class UserInfoServiceImplTest {
     }
 
     @Test
+    public void updateWithPasswordNotNullSuccess() {
+        //Given
+        UserInfo user = new UserInfo(USER_LOGIN, "somePassword", UserRole.USER);
+        String newPassword = "newPassword";
+        UserInfo newInformation = new UserInfoBuilder()
+                .login("newLogin")
+                .password(newPassword)
+                .role(UserRole.ADMIN).build();
+        UserInfo expected = new UserInfo().copyFrom(newInformation);
+        expected.setPassword(passwordEncoder.encode(newInformation.getPassword()));
+
+        when(userRepository.existsByLogin(newInformation.getLogin(), newInformation.getId()))
+                .thenReturn(false);
+        when(userRepository.findById(user.getId()))
+                .thenReturn(Optional.of(user));
+        when(userRepository.update(any(UserInfo.class)))
+                .thenAnswer(invocationOnMock -> {
+                    UserInfo u = (UserInfo) invocationOnMock.getArguments()[0];
+                    if (u.getId() == user.getId()) {
+                        return user.copyFrom(u);
+                    } else {
+                        return u;
+                    }
+                });
+
+        //When
+        Optional<UserInfo> result = instance.update(newInformation);
+
+        //Then
+        assertThat(result)
+                .isPresent()
+                .get()
+                .isEqualToIgnoringGivenFields(expected, "password")
+                .matches(u -> passwordEncoder.matches(newPassword, u.getPassword()));
+    }
+
+    @Test
+    public void updateWithPasswordIsNullSuccess() {
+        //Given
+        UserInfo user = new UserInfo(USER_LOGIN, "somePassword", UserRole.USER);
+        UserInfo newInformation = new UserInfoBuilder()
+                .login("user")
+                .password(null)
+                .role(UserRole.ADMIN).build();
+        UserInfo expected = new UserInfo().copyFrom(newInformation);
+        expected.setPassword(user.getPassword());
+
+        when(userRepository.existsByLogin(newInformation.getLogin(), newInformation.getId()))
+                .thenReturn(false);
+        when(userRepository.findById(user.getId()))
+                .thenReturn(Optional.of(user));
+        when(userRepository.update(any(UserInfo.class)))
+                .thenAnswer(invocationOnMock -> {
+                    UserInfo u = (UserInfo) invocationOnMock.getArguments()[0];
+                    if (u.getId() == user.getId()) {
+                        return user.copyFrom(u);
+                    } else {
+                        return u;
+                    }
+                });
+
+        //When
+        Optional<UserInfo> result = instance.update(newInformation);
+
+        //Then
+        assertThat(result)
+                .isPresent()
+                .hasValue(expected);
+    }
+
+    @Test
     public void updateWhenExistsSameLogin() {
         //Given
         String userLogin = "user";

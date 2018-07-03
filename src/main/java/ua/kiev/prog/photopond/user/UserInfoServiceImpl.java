@@ -51,7 +51,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     private void cryptPassword(UserInfo user, String password) {
         LOG.debug("Crypt password for user {}", user.getLogin());
-        if (user != null) {
+        if (user != null && password != null) {
             user.setPassword(passwordEncoder.encode(password));
         }
     }
@@ -93,6 +93,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             LOG.debug("User with login = '{}' is already exists", userInfo.getLogin());
             return Optional.empty();
         }
+        cryptPassword(userInfo, userInfo.getPassword());
         return Optional.ofNullable(userInfoRepository.update(userInfo));
 
     }
