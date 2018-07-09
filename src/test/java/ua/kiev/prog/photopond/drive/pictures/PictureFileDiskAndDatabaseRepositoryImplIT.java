@@ -2,7 +2,6 @@ package ua.kiev.prog.photopond.drive.pictures;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
-import groovy.util.logging.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -43,7 +42,6 @@ import static org.assertj.core.api.Assertions.assertThat;
         DbUnitTestExecutionListener.class})
 @DatabaseSetup("classpath:datasets/picturefile_dataset_IT.xml")
 @Transactional
-@Log4j2
 public class PictureFileDiskAndDatabaseRepositoryImplIT {
     @Value(value = "${folders.basedir.location}")
     private String foldersBasedir;
@@ -298,7 +296,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
         FileUtils.deleteQuietly(new File(basedirPath + pictureFile.getFullPath()));
 
         //When
-            instance.move(pictureFile, directory, "newFileName.jpg");
+        instance.move(pictureFile, directory, "newFileName.jpg");
     }
 
     @Test(expected = PictureFileException.class)

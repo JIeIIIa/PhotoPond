@@ -1,6 +1,5 @@
 package ua.kiev.prog.photopond.core;
 
-import groovy.util.logging.Log4j2;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SpringSecurityWebAuthenticationTestConfiguration.class
 })
 @ActiveProfiles({"dev", "unitTest", "securityWebAuthTestConfig"})
-@Log4j2
 public class WelcomeControllerTestRunWithSpringRunner {
     @Autowired
     UserInfoService userInfoService;
@@ -64,7 +62,6 @@ public class WelcomeControllerTestRunWithSpringRunner {
     public void indexWithoutSuffixUrlAndDeactivatedRoleTest() throws Exception {
         matchViewNameAfterGetRequest("/index", ROOT_VIEW_NAME);
     }
-
 
 
     @Test

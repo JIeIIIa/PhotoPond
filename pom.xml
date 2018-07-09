@@ -116,21 +116,26 @@
         </dependency>
 
         <!-- THYMELEAF -->
+
         <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity4</artifactId>
+        </dependency>
+        <!--<dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf</artifactId>
-            <!--<version>${thymeleaf-spring4.version}</version>-->
+            &lt;!&ndash;<version>${thymeleaf-spring4.version}</version>&ndash;&gt;
         </dependency>
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf-spring5</artifactId>
-            <!--<version>${thymeleaf-spring4.version}</version>-->
+            &lt;!&ndash;<version>${thymeleaf-spring4.version}</version>&ndash;&gt;
         </dependency>
         <dependency>
             <groupId>nz.net.ultraq.thymeleaf</groupId>
             <artifactId>thymeleaf-layout-dialect</artifactId>
-            <!--<version>${thymeleaf-layout-dialect.version}</version>-->
-        </dependency>
+            &lt;!&ndash;<version>${thymeleaf-layout-dialect.version}</version>&ndash;&gt;
+        </dependency>-->
         <!-- LOG4J2-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

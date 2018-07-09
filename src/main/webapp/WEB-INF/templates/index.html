@@ -22,7 +22,7 @@
 
 <body>
 
-<div th:replace="fragments/header :: header">Static header</div>
+<div th:replace="fragments/header :: header('startPage')">Static header</div>
 
 <div class="container-fluid">
 
@@ -30,7 +30,7 @@
         <div id="headerwrap">
             <div class="col-md-8 offset-md-2 col-12">
 
-                <h1>PhotoPond</br> is awesome</h1>
+                <h1>PhotoPond<br> is awesome</h1>
                 <h2>The best place to store your pictures.</h2>
 
             </div>

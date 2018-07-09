@@ -21,7 +21,8 @@ h1, h2, h3, h4, h5, h6 {
 /* цвет текста (название сайта или бренда), при поднесении к нему курсора мышки или при его нахождении в фокусе */
 .navbar-inverse .navbar-brand:hover,
 .navbar-inverse .navbar-brand:focus {
-    color: #416d8f;
+    /*color: #416d8f;*/
+    color: #f0f1e3;
 }
 
 .navbar-inverse .bnt-primary {
@@ -50,11 +51,13 @@ h1, h2, h3, h4, h5, h6 {
     border-color: #0f100b;
 }
 
-.inverse-dropdown .dropdown-item {
+.inverse-dropdown .dropdown-item,
+.inverse-dropdown .dropdown-item a {
     color: #DDECF7;
 }
 
-.inverse-dropdown .dropdown-item:hover {
+.inverse-dropdown .dropdown-item:hover,
+.inverse-dropdown .dropdown-item:hover a {
     color: #0f100b;
     background-color: #b1d6ed;
 }

@@ -8,7 +8,7 @@ body {
     font-weight: 300;
 
     margin: 0;
-    padding: 5em 0 0;
+    padding: 4em 0 0;
 
     -webkit-font-smoothing: antialiased;
     -webkit-overflow-scrolling: touch;
@@ -131,7 +131,7 @@ body {
     transform: translateX(-200%);
 }
 
-.table-row-enter, .table-row-leave-to  /*, .list-complete-leave-active  до версии 2.1.8*/
+.table-row-enter, .table-row-leave-to /*, .list-complete-leave-active  до версии 2.1.8*/
 {
     opacity: 0;
     transform: translateX(-150%);
@@ -230,50 +230,68 @@ body {
 
 /*          Header              */
 
-.breadcrumb-item + .breadcrumb-item::before {
-    content: none;
-}
-
-.scroll-area {
-    width: 100%;
-    /*height:100%;*/
-    /*margin-top:100px;*/
-    background-color: green;
-    float: left;
-    overflow-y: scroll;
+.navbar-inverse .navbar-brand:focus .logo-background,
+.navbar-inverse .navbar-brand:hover .logo-background {
+    transform: scale(1, 0.6);
+    transition-duration: 300ms;
 }
 
 .logo {
     font-family: "Roboto Slab";
     font-weight: 900;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+    overflow: hidden;
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    width: 6rem;
+    height: 4.775rem;
+    z-index: 30;
+}
+
+.logo-background {
+    position: relative;
+    display: inline-block;
+    border-radius: 50%;
+    height: 5.7rem;
+    width: 5.7rem;
+    top: -0.5rem;
+
+    background-color: #1b5460;
+    z-index: 30;
 }
 
 .logo .capitalLetter {
+    display: flex;
     position: absolute;
     font-size: 2.5em;
-    top: 0%;
+    top: 0.2rem;
+    left: 0.7rem;
     margin-top: -0.2em;
-    z-index: 30;
+    z-index: 40;
 }
 
 .logo .pond {
+    display: flex;
     position: absolute;
-    font-size: 2em;
-    top: 00%;
-    margin-top: 0.05em;
-    margin-left: 0.75em;
-    z-index: 30;
+    font-size: 1.5em;
+    top: 0.2rem;
+    left: 0.7rem;
+    margin-top: 0.4em;
+    margin-left: 0.5em;
+    letter-spacing: -0.1em;
+    z-index: 40;
 }
 
 .logo .photo {
+    display: flex;
     position: absolute;
-    font-size: 0.8em;
-    top: 0%;
-    margin-left: 2.5em;
-    margin-top: 0.35em;
-    letter-spacing: 0.4em;
-    z-index: 30;
+    top: 0.2rem;
+    left: 0.7rem;
+    font-size: 0.55em;
+    margin-left: 2.8em;
+    margin-top: 1.55em;
+    z-index: 40;
 }
 
 .hidden {
@@ -301,10 +319,6 @@ h1, h2, h3, h4, h5, h6 {
     padding-bottom: 0.75em;
 }
 
-.navbar li {
-    margin-left: 1.5em;
-}
-
 .navbar-inverse .nav-item.active .nav-link {
     border-bottom: 5px solid;
     padding-bottom: 0px;
@@ -319,13 +333,49 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 900;
 }
 
-.navbar-toggler {
-    /*font-size: 1.25em;*/
+.dropdown-toggle:after {
+    margin-left: 0;
+}
+
+.inverse-dropdown .dropdown-item:hover a {
+    text-decoration: none;
+}
+
+.inverse-dropdown .dropdown-item img {
+    max-height: 2rem;
+}
+
+.inverse-dropdown .dropdown-header {
+    color: #b1d6ed;
+}
+
+.inverse-dropdown .dropdown-header .login{
+    color: #ddecf7;
 }
 
 .collapse {
     background-color: inherit;
     z-index: 20;
+}
+
+.btn-log {
+    font-size:1em
+}
+
+#header .flag {
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+#header .image-container {
+    height: 3.1rem;
+    width: 3.1rem;
+}
+
+#header .image-container > img {
+    max-width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 #headerwrap {
@@ -350,4 +400,17 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1.5em;
     letter-spacing: 0.1em;
     text-transform: uppercase;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: none;
+}
+
+.scroll-area {
+    width: 100%;
+    /*height:100%;*/
+    /*margin-top:100px;*/
+    background-color: green;
+    float: left;
+    overflow-y: scroll;
 }

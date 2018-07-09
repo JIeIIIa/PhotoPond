@@ -22,12 +22,12 @@
     <link rel="stylesheet" href="../../css/skins/default-skin.min.css">
 </head>
 <body>
-<object th:include="fragments/header :: header" th:remove="tag"/>
+<object th:include="fragments/header :: header('login')" th:remove="tag"></object>
 
 <div class="container-fluid">
     <div class="form-group">
         <div class="col-md-8 offset-md-2">
-            <form class="form-horizontal" action="/j_spring_security_check" method="POST">
+            <form class="form-horizontal" th:action="@{/j_spring_security_check}" method="POST">
                 <div class="form-group">
                     <label for="j_login" class="control-label" th:text="#{auth.login}">Login</label>
                     <input class="form-control" type="text" placeholder="Login" th:placeholder="#{auth.login}" id="j_login" name="j_login">

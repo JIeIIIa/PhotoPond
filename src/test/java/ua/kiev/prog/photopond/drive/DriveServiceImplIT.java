@@ -2,7 +2,6 @@ package ua.kiev.prog.photopond.drive;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
-import groovy.util.logging.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +63,6 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DatabaseSetup("classpath:datasets/picturefile_dataset_IT.xml")
 @Transactional
-@Log4j2
 public class DriveServiceImplIT {
     private final String ROOT_PATH = SEPARATOR;
 
