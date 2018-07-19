@@ -11,7 +11,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import ua.kiev.prog.photopond.drive.directories.Directory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -22,7 +21,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 @Controller
 @RequestMapping(value = "/user/{login}/drive")
 public class DriveController {
-    private static final Logger log = LogManager.getLogger(DriveController.class);
+    private static final Logger LOG = LogManager.getLogger(DriveController.class);
 
     private final DriveService driveService;
 
@@ -32,17 +31,14 @@ public class DriveController {
     }
 
     @RequestMapping(value = "/**", method = RequestMethod.GET)
-    public ModelAndView getDirectory(ModelAndView modelAndView,
+    public ModelAndView directoryPage(ModelAndView modelAndView,
                              @PathVariable("login") String userLogin,
                              HttpServletRequest request) throws DriveException {
         String tail = getUriTail(request, userLogin);
 
-        Content content = driveService.retrieveDirectoryContent(userLogin, tail);
-
         modelAndView.setViewName("/drive/directory");
-        modelAndView.addObject("content", content);
 
-        log.debug("echo:   " + tail);
+        LOG.debug("echo:   " + tail);
         return modelAndView;
     }
 
@@ -53,7 +49,7 @@ public class DriveController {
                                         HttpServletRequest request) throws DriveException {
 
         String sourcePath = getUriTail(request, userLogin);
-        Directory createdDirectory = driveService.addDirectory(userLogin, sourcePath, newDirectoryName);
+        DriveItemDTO createdDirectory = driveService.addDirectory(userLogin, sourcePath, newDirectoryName);
 
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .path("/user/{login}/drive{path}")
@@ -64,25 +60,30 @@ public class DriveController {
         ModelAndView modelAndView = new ModelAndView(redirectView);
         modelAndView.setStatus(HttpStatus.PERMANENT_REDIRECT);
 
-        log.debug("created:   " + createdDirectory);
+        LOG.debug("created:   " + createdDirectory);
         return modelAndView;
     }
 
     @RequestMapping(value = "/**", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity move(@PathVariable("login") String userLogin,
-                                             @NotNull @RequestBody DriveElementDTO elementDTO,
+                                             @NotNull @RequestBody DriveItemDTO elementDTO,
                                              HttpServletRequest request) throws DriveException {
-
+        if (!DriveItemType.DIR.equals(elementDTO.getType())) {
+            LOG.trace("Bad request parameter: expected type is DIR");
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
         try {
-            String targetParentPath = getUriTail(elementDTO.parentURI, userLogin);
+            String targetParentPath = getUriTail(elementDTO.getParentUri(), userLogin);
             String sourcePath = getUriTail(request, userLogin);
             driveService.moveDirectory(
                     userLogin,
                     sourcePath,
-                    buildPath(targetParentPath, elementDTO.elementName)
+                    buildPath(targetParentPath, elementDTO.getName())
             );
-        } catch (DriveException e) {
+        } catch (DriveException | IllegalArgumentException e) {
             return ResponseEntity.noContent().build();
         }
 

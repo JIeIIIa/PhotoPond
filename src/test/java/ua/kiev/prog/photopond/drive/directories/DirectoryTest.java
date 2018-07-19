@@ -332,10 +332,17 @@ public class DirectoryTest {
         buildPath("first", "", "second");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void buildPathWhenRootDirectoryNotFirst() {
+        //Given
+        String expected = "/first/third";
+
         //When
-        buildPath("first", SEPARATOR, "third");
+        String result = buildPath("first", SEPARATOR, "third");
+
+        //Then
+        assertThat(result)
+                .isEqualTo(expected);
     }
 
     @Test(expected = IllegalArgumentException.class)

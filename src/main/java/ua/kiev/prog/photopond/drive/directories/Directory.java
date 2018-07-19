@@ -212,16 +212,18 @@ public class Directory implements Serializable {
             throw new IllegalArgumentException("FirstSubDirectoryName cannot be null or empty");
         }
         if (!isRoot(firstSubDirectoryName)) {
-            appendToPath(stringBuilder, firstSubDirectoryName);
+            concatPath(stringBuilder, firstSubDirectoryName);
         }
         for (String subDirectoryName : subDirectoryNames) {
             if (subDirectoryName == null) {
                 throw new IllegalArgumentException("Found null name in subDirectoryNames. Cannot build path.");
             }
             if (subDirectoryName.isEmpty()) {
-                throw new IllegalArgumentException("Found null name in subDirectoryNames. Cannot build path.");
+                throw new IllegalArgumentException("Found empty name in subDirectoryNames. Cannot build path.");
             }
-            appendToPath(stringBuilder, subDirectoryName);
+            if (!isRoot(subDirectoryName)) {
+                concatPath(stringBuilder, subDirectoryName);
+            }
         }
         String path = stringBuilder.toString();
         if (path.isEmpty()) {
@@ -231,12 +233,19 @@ public class Directory implements Serializable {
         return path;
     }
 
+    public static String appendToPath(String path, String name) {
+        if (name == null || name.isEmpty()) {
+            return path;
+        }
+        return buildPath(path, name);
+    }
+
     public static boolean isRoot(String path) {
         return SEPARATOR.equals(path);
     }
 
-    private static void appendToPath(StringBuilder stringBuilder, String subDirectoryName) {
-        if (!subDirectoryName.startsWith(SEPARATOR)) {
+    private static void concatPath(StringBuilder stringBuilder, String subDirectoryName) {
+        if (!subDirectoryName.startsWith(SEPARATOR) && !stringBuilder.toString().endsWith(SEPARATOR)) {
             stringBuilder.append(SEPARATOR);
         }
         stringBuilder.append(subDirectoryName);

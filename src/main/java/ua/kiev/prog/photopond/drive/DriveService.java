@@ -1,17 +1,19 @@
 package ua.kiev.prog.photopond.drive;
 
 import org.springframework.web.multipart.MultipartFile;
-import ua.kiev.prog.photopond.drive.directories.Directory;
-import ua.kiev.prog.photopond.drive.pictures.PictureFile;
+
+import java.util.List;
 
 public interface DriveService {
-    Content retrieveDirectoryContent(String ownerLogin, String path) throws DriveException;
+    List<DriveItemDTO> retrieveContent(String ownerLogin, String path, boolean withFiles) throws DriveException;
 
-    Directory addDirectory(String ownerLogin, String parentDirectoryPath, String newDirectoryName) throws DriveException;
+    DirectoriesDTO retrieveDirectories(String ownerLogin, String path) throws DriveException;
+
+    DriveItemDTO addDirectory(String ownerLogin, String parentDirectoryPath, String newDirectoryName) throws DriveException;
 
     void moveDirectory(String ownerLogin, String source, String target) throws DriveException;
 
-    PictureFile addPictureFile(String ownerLogin, String directoryPath, MultipartFile multipartFile) throws DriveException;
+    DriveItemDTO addPictureFile(String ownerLogin, String directoryPath, MultipartFile multipartFile) throws DriveException;
 
     byte[] retrievePictureFileData(String ownerLogin, String path) throws DriveException;
 

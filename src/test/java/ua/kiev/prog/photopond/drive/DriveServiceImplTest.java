@@ -10,7 +10,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
-import ua.kiev.prog.photopond.drive.Content.ContentBuilder;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
 import ua.kiev.prog.photopond.drive.directories.DirectoryDiskAndDatabaseRepository;
@@ -25,6 +24,7 @@ import ua.kiev.prog.photopond.user.UserInfoService;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
@@ -32,6 +32,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static ua.kiev.prog.photopond.drive.DriveItemDTOMapper.toDTO;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
@@ -85,9 +86,7 @@ public class DriveServiceImplTest {
         Directory expectedRoot = new DirectoryBuilder()
                 .from(root)
                 .build();
-        Content expectedContent = ContentBuilder.getInstance()
-                .currentDirectory(root)
-                .build();
+        List<DriveItemDTO> expected = emptyList();
 
         when(directoryRepository.countByOwner(user)).thenReturn(0L);
         when(directoryRepository.findByOwnerAndPath(user, SEPARATOR))
@@ -100,17 +99,17 @@ public class DriveServiceImplTest {
                 .thenReturn(Optional.of(user));
 
         //When
-        Content result = instance.retrieveDirectoryContent(user.getLogin(), SEPARATOR);
+        List<DriveItemDTO> result = instance.retrieveContent(user.getLogin(), SEPARATOR, true);
 
         //Then
         ArgumentCaptor<Directory> rootDirectory = ArgumentCaptor.forClass(Directory.class);
         verify(directoryRepository).save(rootDirectory.capture());
         assertThat(rootDirectory.getValue()).isEqualToIgnoringGivenFields(expectedRoot, "id");
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(expectedContent);
+        assertThat(result).hasSameElementsAs(expected);
     }
 
     @Test(expected = DriveException.class)
-    public void userHasNoDirectoryAndFailuerCreating() {
+    public void userHasNoDirectoryAndFailureCreating() {
         //Given
         Directory expectedRoot = new DirectoryBuilder()
                 .from(root)
@@ -127,7 +126,7 @@ public class DriveServiceImplTest {
 
         //When
         try {
-            instance.retrieveDirectoryContent(user.getLogin(), SEPARATOR);
+            instance.retrieveContent(user.getLogin(), SEPARATOR, true);
         } catch (DriveException e) {
             //Then
             ArgumentCaptor<Directory> rootDirectory = ArgumentCaptor.forClass(Directory.class);
@@ -141,24 +140,18 @@ public class DriveServiceImplTest {
     @Test
     public void rootDirectoryWithoutContent() {
         //Given
-        Directory expectedRoot = new DirectoryBuilder()
-                .owner(user)
-                .path(SEPARATOR)
-                .build();
         when(directoryRepository.countByOwner(user)).thenReturn(1L);
         when(directoryRepository.findByOwnerAndPath(user, SEPARATOR)).thenReturn(singletonList(root));
         when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.of(user));
-        Content expectedContent = ContentBuilder.getInstance()
-                .currentDirectory(root)
-                .build();
+
+        List<DriveItemDTO> expected = emptyList();
 
         //When
-        Content content = instance.retrieveDirectoryContent(user.getLogin(), SEPARATOR);
+        List<DriveItemDTO> content = instance.retrieveContent(user.getLogin(), SEPARATOR, true);
 
         //Then
         verify(directoryRepository, never()).save(any(Directory.class));
-        assertThat(content).isEqualToComparingFieldByFieldRecursively(expectedContent);
-        assertThat(content.getCurrentDirectory()).isEqualToIgnoringGivenFields(expectedRoot, "id");
+        assertThat(content).hasSameElementsAs(expected);
     }
 
     @Test
@@ -182,28 +175,18 @@ public class DriveServiceImplTest {
                 .thenReturn(singletonList(
                         new DirectoryBuilder().from(directories[2]).build()
                 ));
-        Content expectedContent = ContentBuilder.getInstance()
-                .currentDirectory(directories[2])
-                .parents(asList(
-                        new DirectoryBuilder().from(directories[0]).build(),
-                        new DirectoryBuilder().from(directories[1]).build()
-                ))
-                .build();
+        List<DriveItemDTO> expected = emptyList();
+
         when(directoryRepository.findTopLevelSubDirectories(new DirectoryBuilder().from(directories[2]).build()))
                 .thenReturn(new LinkedList<>());
         when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.of(user));
 
         //When
-        Content content = instance.retrieveDirectoryContent(user.getLogin(), directories[2].getPath());
+        List<DriveItemDTO> content = instance.retrieveContent(user.getLogin(), directories[2].getPath(), true);
 
         //Then
         verify(directoryRepository, never()).save(any(Directory.class));
-        assertThat(content).isEqualToComparingFieldByFieldRecursively(expectedContent);
-        assertThat(content.getCurrentDirectory()).isEqualToIgnoringGivenFields(directories[2], "id");
-        assertThat(content.getTopSubDirectories())
-                .isEmpty();
-        assertThat(content.getParents())
-                .containsExactly(directories[0], directories[1]);
+        assertThat(content).hasSameElementsAs(expected);
     }
 
     @Test
@@ -227,36 +210,25 @@ public class DriveServiceImplTest {
                 .thenReturn(singletonList(
                         new DirectoryBuilder().from(directories[2]).build()
                 ));
-        Content expectedContent = ContentBuilder.getInstance()
-                .currentDirectory(directories[1])
-                .parents(singletonList(
-                        new DirectoryBuilder().from(directories[0]).build()
-                ))
-                .topSubDirectories(singletonList(new DirectoryBuilder().from(directories[2]).build()))
-                .build();
+        List<DriveItemDTO> expected = singletonList(toDTO(new DirectoryBuilder().from(directories[2]).build()));
 
         when(directoryRepository.findTopLevelSubDirectories(new DirectoryBuilder().from(directories[1]).build()))
                 .thenReturn(singletonList(new DirectoryBuilder().from(directories[2]).build()));
         when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.of(user));
 
         //When
-        Content content = instance.retrieveDirectoryContent(user.getLogin(), directories[1].getPath());
+        List<DriveItemDTO> result = instance.retrieveContent(user.getLogin(), directories[1].getPath(), true);
 
         //Then
         verify(directoryRepository, never()).save(any(Directory.class));
-        assertThat(content).isEqualToComparingFieldByFieldRecursively(expectedContent);
-        assertThat(content.getCurrentDirectory()).isEqualToIgnoringGivenFields(directories[1], "id");
-        assertThat(content.getTopSubDirectories())
-                .hasSize(1)
-                .containsExactly(directories[2]);
-        assertThat(content.getParents())
-                .containsExactly(directories[0]);
+        assertThat(result).hasSameElementsAs(expected);
     }
 
     @Test
     public void addDirectorySuccess() {
         //Given
         Directory expected = new DirectoryBuilder().path(buildPath(root.getPath(), "first")).owner(user).build();
+        DriveItemDTO expectedDTO = toDTO(new DirectoryBuilder().path(buildPath(root.getPath(), "first")).owner(user).build());
 
         when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.ofNullable(user));
         when(directoryRepository.exists(user, expected.getPath())).thenReturn(false);
@@ -265,11 +237,11 @@ public class DriveServiceImplTest {
         );
 
         //When
-        Directory result = instance.addDirectory(user.getLogin(), root.getPath(), expected.getName());
+        DriveItemDTO result = instance.addDirectory(user.getLogin(), root.getPath(), expected.getName());
 
         //Then
         verify(directoryRepository).save(expected);
-        assertThat(result).isEqualToIgnoringGivenFields(expected, "id");
+        assertThat(result).isEqualToComparingFieldByField(expectedDTO);
     }
 
     @Test(expected = DriveException.class)
@@ -710,6 +682,7 @@ public class DriveServiceImplTest {
                 .filename(originalFilename)
                 .data(originalFilename.getBytes())
                 .build();
+        DriveItemDTO expectedDTO = toDTO(expected);
 
         when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.of(user));
         when(directoryRepository.findByOwnerAndPath(user, directory.getPath())).thenReturn(singletonList(directory));
@@ -718,14 +691,14 @@ public class DriveServiceImplTest {
         );
 
         //When
-        PictureFile result = instance.addPictureFile(user.getLogin(), directory.getPath(), file);
+        DriveItemDTO result = instance.addPictureFile(user.getLogin(), directory.getPath(), file);
 
         //Then
         verify(userInfoService).findUserByLogin(user.getLogin());
         verify(fileRepository).save(expected);
         assertThat(result)
                 .isNotNull()
-                .isEqualToIgnoringGivenFields(expected, "id");
+                .isEqualToComparingFieldByField(expectedDTO);
     }
 
     @Test(expected = DriveException.class)

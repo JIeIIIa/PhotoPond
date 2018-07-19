@@ -321,7 +321,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .navbar-inverse .nav-item.active .nav-link {
     border-bottom: 5px solid;
-    padding-bottom: 0px;
+    padding-bottom: 0;
 }
 
 .navbar-toggler .fa.fa-bars {
@@ -349,7 +349,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #b1d6ed;
 }
 
-.inverse-dropdown .dropdown-header .login{
+.inverse-dropdown .dropdown-header .login {
     color: #ddecf7;
 }
 
@@ -359,7 +359,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-log {
-    font-size:1em
+    font-size: 1em
 }
 
 #header .flag {
@@ -413,4 +413,30 @@ h1, h2, h3, h4, h5, h6 {
     background-color: green;
     float: left;
     overflow-y: scroll;
+}
+
+.selected {
+    border: 4px solid #00ff00;
+}
+
+.btn:focus, .btn:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.userElement > img {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+}
+
+.no-carret::after {
+    display: none;
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;     /** IE6+, Firefox 7+, Opera 11+, Chrome, Safari **/
+    -o-text-overflow: ellipsis;  /** Opera 9 & 10 **/
 }

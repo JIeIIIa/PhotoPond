@@ -1,6 +1,6 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml"
       lang="en">
 
 
@@ -9,7 +9,7 @@
     <!-- Required meta tags -->
     <meta charset="UTF-8">
 
-    <title>PhotoPond - main page</title>
+    <title>PhotoPond - directories</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -24,239 +24,199 @@
 <body>
 <object th:include="fragments/header :: header('home')" th:remove="tag"></object>
 
-<div class="container-fluid">
+<div class="container-fluid" id="directoryApp" v-cloak>
     <div class="row">
         <div class="col-12">
-            <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-            <form style="display: none;"
-                  th:action="@{'/user/{login}/files'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}"
-                  method="POST" enctype="multipart/form-data">
-
-                <input type="file" placeholder="add picture" id="files" name="files" multiple>
-                <button type="submit" id="uploadFilesButton">Create</button>
-            </form>
+            <input type="file" multiple
+                   placeholder="add picture files" id="files" name="files" ref="files"
+                   v-on:change="onFileUploadFinish"
+                   style="display: none">
         </div>
     </div>
     <div class="row">
-        <div class="col-2">
+        <div class="col-12">
+            <!--Path to breadcrumb-->
             <div class="row">
+                <div class="col-12">
+                    <ol class="breadcrumb mb-0">
+                        <template v-for="(parent, index) in parentDirectories">
+                            <li class="breadcrumb-item secondary-color" v-if="index < parentDirectories.length - 1">
+                                <a v-bind:href="parent.url" v-html="parent.name"
+                                   data-toggle="tooltip" data-placement="bottom" v-bind:title="parent.tooltip"></a>
+                                <i class="fa fa-angle-double-right mx-2" aria-hidden="true"></i>
+                            </li>
+                            <li class="breadcrumb-item primary-color active" v-else>
+                                <span v-html="parent.name" data-toggle="tooltip" data-placement="bottom" v-bind:title="parent.tooltip"></span>
+                            </li>
+                        </template>
+                    </ol>
+                </div>
+            </div>
 
-                <!-- REMOVE_TO FORM -->
-                <div class="modal fade" id="moveToForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="moveToModalLabel">Move to</h5>
-                                <h5 class="modal-title" id="moveToLabel" data-url="#"
-                                    th:attr="data-url=@{'/api/{login}/directories'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}">
-                                    path to remove
-                                </h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
+            <!-- Toolbar-->
+            <div class="row justify-content-between mb-3">
+                <div class="col-5">
+                    <div class="btn-toolbar">
+                        <div class="btn-group" role="group" data-toggle="tooltip" data-placement="bottom" title="Add elements">
+                            <div class="btn-group-sm" role="group">
+                                <button type="button" id="addElementGroupDown" class="btn btn-success dropdown-toggle no-carret"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-plus"></i>
                                 </button>
-                            </div>
-                            <div class="modal-body">
 
-                                <div class="form-group">
-                                    <div id="subDirNames">
-                                        <div class="subDir" data-url="#">sub directory</div>
+                                <div class="dropdown-menu" aria-labelledby="addElementGroupDown">
+                                    <div class="dropdown-item" id="openUploadFilesForm" v-on:click="onFileUpload">
+                                        <i class="fa fa-file-image-o"></i>Add file
+                                    </div>
+                                    <div class="dropdown-item" id="openAddDirectoryForm" v-on:click="onCreateDirectory"><i class="fa fa-folder-o"></i>Add
+                                        directory
                                     </div>
                                 </div>
-
-
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary" id="moveToButton">Move to</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- ADD DIRECTORY FORM -->
-                <div class="modal fade" id="addDirectoryForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                            <form th:action="@{'/user/{login}/drive'+${content.getCurrentDirectory().getPath()} (login=${userLogin})}"
-                                  method="POST">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="addDirectoryModalLabel">New directory</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
+                            <transition name="fade">
+                                <div class="btn-group-sm ml-1" v-if="selectedItemCount > 0">
+                                    <button type="button" class="btn btn-info"
+                                            data-toggle="tooltip" data-placement="bottom" title="Rename element"
+                                            id="openRenameForm" v-on:click="onRename">
+                                        <i class="fa fa-pencil-square-o"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-info"
+                                            data-toggle="tooltip" data-placement="bottom" title="Move elements"
+                                            id="openMoveForm" v-on:click="onMove">
+                                        <i class="fa fa-share-square-o"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger"
+                                            data-toggle="tooltip" data-placement="bottom" title="Delete elements"
+                                            id="deleteBtn" v-on:click="onDelete">
+                                        <i class="fa fa-eraser"></i>
                                     </button>
                                 </div>
-                                <div class="modal-body">
-
-                                    <div class="form-group">
-                                        <label for="addDirectoryName" class="col-form-label">New name:</label>
-                                        <input type="text" class="form-control" id="addDirectoryName" name="newDirectoryName">
-                                    </div>
-
-
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary" id="addDirectoryButton">Add</button>
-                                </div>
-                            </form>
+                            </transition>
                         </div>
                     </div>
                 </div>
-
-                <!-- RENAME ELEMENT FORM -->
-                <div class="modal fade" id="renameElementForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Rename</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                <div class="col d-inline-flex justify-content-end">
+                    <div class="btn-group-sm" role="group">
+                        <button class="btn btn-outline-secondary border-0 dropdown-toggle"
+                                id="changeElementSize"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Size
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="changeElementSize">
+                            <div class="dropdown-item">
+                                Small
                             </div>
-                            <div class="modal-body">
-                                <form>
-                                    <div class="form-group">
-                                        <label for="nameAfterRename" class="col-form-label">New name:</label>
-                                        <input type="text" class="form-control" id="nameAfterRename">
-                                    </div>
-
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" id="renameButton">Rename</button>
+                            <div class="dropdown-item">Large
                             </div>
                         </div>
                     </div>
-                </div>
-
-
-                <div class="col-12">
-                    <button class="btn-primary btn-block" id="openUploadFilesForm">Add file</button>
-                </div>
-                <div class="col-12">
-                    <button class="btn-primary btn-block" id="openAddDirectoryForm">Add directory</button>
-                </div>
-                <div class="col-12">
-                    <button class="btn-primary btn-block" id="deleteBtn">Delete</button>
-                </div>
-                <div class="col-12">
-                    <button class="btn-primary btn-block" id="openRenameForm">Rename</button>
-                </div>
-                <div class="col-12">
-                    <button class="btn-primary btn-block" id="openMoveForm">Move to</button>
-                </div>
-            </div>
-            <!--<input type="file" placeholder="add picture" id="uploadFiles" multiple>-->
-        </div>
-        <div class="col-10">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <!--Path to breadcrumb-->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="container-fluid">
-                                    <div class="row align-items-start">
-                                        <div class="col-12">
-                                            <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                                            <ol class="breadcrumb">
-                                                <li class="breadcrumb-item secondary-color" th:each="parent:${content.getParents()}">
-                                                    <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                                                    <a href="#" th:href="@{'/user/{login}/drive'+${parent.getPath()}(login=${userLogin})}"
-                                                       th:text="${parent.nameForBreadcrumb()}">parent
-                                                    </a>
-                                                    <i class="fa fa-angle-double-right mx-2" aria-hidden="true"></i>
-                                                </li>
-                                                <li class="breadcrumb-item primary-color active"
-                                                    th:text="${content.getCurrentDirectory().nameForBreadcrumb()}">
-                                                    current
-                                                </li>
-                                            </ol>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <!--Print subdirectories-->
-                        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                        <div class="row" th:if="${not content.getTopSubDirectories().isEmpty()}">
-                            <div class="col-12">
-                                <div class="container-fluid">
-                                    <div class="row">
-                                        <div class="col-12"><h3>Directories:</h3></div>
-                                    </div>
-                                    <div class="row">
-                                        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                                        <div th:each="subDir:${content.getTopSubDirectories()}" th:remove="tag">
-                                            <div class="col-3 userElementCard">
-                                                <div class="card userElement">
-                                                    <div class="card-body">
-                                                        <div class="card-text">
-                                                            <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                                                            <i class="fa fa-folder" style="color: #f0cb58"> </i>
-                                                            <a href="#"
-                                                               class="contentSrc"
-                                                               th:href="@{'/user/{login}/drive'+${subDir.getPath()}(login=${userLogin})}"
-                                                               th:attr="data-url=@{'/user/{login}/drive'+${subDir.getPath()}(login=${userLogin})}"
-                                                               th:data-name="${subDir.getName()}"
-                                                               th:text="${' '+subDir.getName()}">
-                                                                subDir
-                                                            </a>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!--Print Pictures-->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="container-fluid">
-                                    <div class="row">
-                                        <div class="col-12"><h3>Pictures:</h3></div>
-                                    </div>
-                                    <div class="row text-center">
-                                        <!--/*@thymesVar id="content" type="ua.kiev.prog.photopond.drive.Content"*/-->
-                                        <div th:each="file:${content.getFiles()}" th:remove="tag">
-                                            <div class="col-12 col-sm-6 col-md-3 userElementCard">
-                                                <div class="card userElement h-100" style="height: 10rem;">
-                                                    <!--/*@thymesVar id="userLogin" type="java.lang.String"*/-->
-                                                    <img src="#"
-                                                         class="contentSrc"
-                                                         th:src="@{'/user/{login}/files'+${file.getPath()}(login=${userLogin})}"
-                                                         th:attr="data-url=@{'/user/{login}/files'+${file.getPath()}(login=${userLogin})}"
-                                                         alt="some picture"
-                                                         th:alt="${file.getPath()}"
-                                                         style="object-fit: contain;height: 100%; width: 100%;"/>
-                                                    <!--<div class="caption" th:text="${file.retrieveFilename()}" style="word-wrap: break-word">Filename</div>-->
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                    <div class="btn-group-sm">
+                        <div class="btn btn-sm btn-outline-secondary border-0">By name</div>
+                    </div>
+                    <div>
+                        <i class="fa fa-arrow-up"></i>
                     </div>
                 </div>
             </div>
+
+            <!--Print subdirectories-->
+            <div class="row mb-3" v-if="hasDirectory">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12"><h5>Directories:</h5></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3 userElementCard" v-for="item in sortedElements" v-if="isDirectory(item)">
+                            <div class="card userElement btn btn-block"
+                                 v-bind:class="{selected: item.selected}">
+                                <a class="contentSrc truncate"
+                                   data-toggle="tooltip" data-placement="bottom" v-bind:title="item.data.name"
+                                   v-bind:href="item.data.uri">
+                                    <i class="fa fa-folder" style="color: #f0cb58"></i>
+                                    {{ item.data.name }}
+                                </a>
+                                <input type="checkbox" title="" v-model="item.selected" style="position:absolute; top: 0; left: 0;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Print Pictures-->
+            <div class="row mb-3" v-if="hasFile">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12"><h5>Pictures:</h5></div>
+                    </div>
+                    <div class="row text-center">
+                        <template v-for="item in sortedElements" v-if="isFile(item)">
+                            <div class="col-12 col-sm-6 col-md-3 userElementCard">
+                                <div class="card userElement h-100" v-bind:class="{selected: item.selected}">
+                                    <img src="#"
+                                         class="contentSrc"
+                                         v-bind:src="item.data.uri"/>
+                                    <input title="" type="checkbox" v-model="item.selected" style="position: absolute">
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
+
+    <single-input-modal-form inline-template
+                             id="createDirectory"
+                             th:attr="custom-header=#{admin.allUsers.deleting.title},
+                                        error-message=#{admin.allUsers.deleting.error},
+                                        success-button-title='Create',
+                                        message='New directory name'"
+                             v-bind:operation-in-progress="dialogOperationInProgress"
+                             v-bind:error-code="errorCode"
+                             v-model:value="editedValue"
+                             v-on:clear-error-code="clearErrorCode"
+                             v-on:success="onCreateDirectorySuccess">
+        <div th:insert="~{fragments/singleInputModalForm :: singleInputModalForm}"></div>
+    </single-input-modal-form>
+
+    <single-input-modal-form inline-template
+                             id="renameItem"
+                             th:attr="custom-header=#{admin.allUsers.deleting.title},
+                                        error-message=#{admin.allUsers.deleting.error},
+                                        success-button-title='Rename',
+                                        message='New name'"
+                             v-bind:operation-in-progress="dialogOperationInProgress"
+                             v-bind:error-code="errorCode"
+                             v-model:value="editedValue"
+                             v-on:clear-error-code="clearErrorCode"
+                             v-on:success="onRenameSuccess">
+        <div th:insert="~{fragments/singleInputModalForm :: singleInputModalForm}"></div>
+    </single-input-modal-form>
+
+    <confirm-modal-form inline-template
+                        id="deleteItems"
+                        th:attr=" custom-header=#{admin.allUsers.deleting.title},
+                                    error-message=#{admin.allUsers.deleting.error}"
+                        v-bind:message="message"
+                        v-bind:error-code="errorCode"
+                        v-bind:value="editedValue"
+                        v-on:clear-error-code="clearErrorCode"
+                        v-on:confirm="onDeleteConfirm">
+        <div th:insert="~{fragments/confirmModalForm :: confirmModalForm}"></div>
+    </confirm-modal-form>
+
+    <move-modal-form inline-template
+                     id="moveItems"
+                     ref="moveModalForm"
+                     th:attr=" custom-header=#{admin.allUsers.deleting.title},
+                                error-message=#{admin.allUsers.deleting.title}"
+                     v-bind:message="message"
+                     v-bind:operation-in-progress="dialogOperationInProgress"
+                     v-on:move-confirm="onMoveConfirm">
+        <div th:insert="~{drive/moveModalForm :: moveModalForm}"></div>
+    </move-modal-form>
 
 </div>
 
@@ -273,11 +233,12 @@
 </div>
 <script src="../../../js/userDirectory.js" th:src="@{/js/userDirectory.js}"></script>
 
-</body>
-<style>
-    .selected {
-        border: 4px solid #0f0;
-    }
-</style>
+<script src="../../../js/alertItem.js" th:src="@{/js/alertItem.js}"></script>
+<script src="../../../js/singleInputModalForm.js" th:src="@{/js/singleInputModalForm.js}"></script>
+<script src="../../../js/confirmModalForm.js" th:src="@{/js/confirmModalForm.js}"></script>
+<script src="../../../js/drive/moveModalForm.js" th:src="@{/js/drive/moveModalForm.js}"></script>
+<script src="../../../js/drive/directory.js" th:src="@{/js/drive/directory.js}"></script>
 
+
+</body>
 </html>

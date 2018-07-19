@@ -80,12 +80,12 @@ function getSubdirectories(url) {
 $(document).ready(function () {
     console.log('userDirectory was loaded');
 
-    $('.card.userElement').click(function () {
+    /*$('.card.userElement').click(function () {
         $(this).toggleClass("selected");
         console.log("clicked");
     });
-
-    $('#openUploadFilesForm').click(function () {
+*/
+    $('#openUploadFilesForm_').click(function () {
         console.log('Upload label clicked');
         var inputDlg = $('#files');
         inputDlg.val('');
@@ -93,13 +93,13 @@ $(document).ready(function () {
     });
 
     //Trigger now when you have selected any file
-    $("#files").change(function (e) {
+    $("#files_").change(function (e) {
         console.log('Try to upload');
         $('#uploadFilesButton').click();
     });
 
 
-    $("#deleteBtn").click(function () {
+    $("#deleteBtn_").click(function () {
         console.log('start deleting...');
         var elements = $(".userElement.selected");
         if (jQuery.isEmptyObject(elements)) {
@@ -136,7 +136,7 @@ $(document).ready(function () {
     });
 
 
-    $("#openRenameForm").click(function () {
+    $("#openRenameForm_").click(function () {
         var elements = $(".userElement.selected");
         if (jQuery.isEmptyObject(elements)) {
             return;
@@ -209,11 +209,13 @@ $(document).ready(function () {
     });
 
     $('#openAddDirectoryForm').click(function () {
+/*
         $('#addDirectoryName').val("");
         $('#addDirectoryForm').modal('show');
+*/
     });
 
-    $('#openMoveForm').click(function () {
+    $('#openMoveForm_').click(function () {
         console.log("Starting removing form...");
         var elements = $(".userElement.selected");
         if (jQuery.isEmptyObject(elements)) {
@@ -224,7 +226,7 @@ $(document).ready(function () {
         clearSubdirectoriesForm();
         getSubdirectories(dataUrl);
         $('#moveToForm').modal('show');
-    })
+    });
 
     $('#moveToButton').click(function () {
         console.log('try removing...');

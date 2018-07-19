@@ -130,4 +130,10 @@ public class PictureFile implements Serializable {
             throw new IllegalStateException("Filename must not be null");
         }
     }
+
+    public String parentPath() {
+        checkState();
+
+        return directory.getPath();
+    }
 }

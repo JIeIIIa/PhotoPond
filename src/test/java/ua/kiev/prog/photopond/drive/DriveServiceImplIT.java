@@ -38,13 +38,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static ua.kiev.prog.photopond.drive.Content.ContentBuilder;
+import static ua.kiev.prog.photopond.drive.DriveItemDTOMapper.toDTO;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
@@ -124,17 +124,13 @@ public class DriveServiceImplIT {
                 directoryJpaRepository.findByOwnerAndPathStartingWith(user, SEPARATOR)
         );
 
-        Content expectedContent = ContentBuilder.getInstance()
-                .currentDirectory(expectedRoot)
-                .topSubDirectories(emptyList())
-                .files(emptyList())
-                .build();
+        List<DriveItemDTO> expected = emptyList();
 
         //When
-        Content result = instance.retrieveDirectoryContent(user.getLogin(), SEPARATOR);
+        List<DriveItemDTO> result = instance.retrieveContent(user.getLogin(), SEPARATOR, true);
 
         //Then
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(expectedContent);
+        assertThat(result).hasSameElementsAs(expected);
     }
 
     @Test
@@ -156,17 +152,13 @@ public class DriveServiceImplIT {
         );
         pictureFileJpaRepository.deleteAll(pictureFileJpaRepository.findByDirectory(expectedRoot));
 
-        Content expectedContent = ContentBuilder.getInstance()
-                .currentDirectory(expectedRoot)
-                .topSubDirectories(emptyList())
-                .files(emptyList())
-                .build();
+        List<DriveItemDTO> expected = emptyList();
 
         //When
-        Content result = instance.retrieveDirectoryContent(user.getLogin(), SEPARATOR);
+        List<DriveItemDTO> result = instance.retrieveContent(user.getLogin(), SEPARATOR, true);
 
         //Then
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(expectedContent);
+        assertThat(result).hasSameElementsAs(expected);
     }
 
     @Test
@@ -178,23 +170,18 @@ public class DriveServiceImplIT {
                 .path(SEPARATOR)
                 .build();
 
-        Content expectedContent = ContentBuilder.getInstance()
-                .currentDirectory(expectedRoot)
-                .topSubDirectories(asList(
-                        new DirectoryBuilder().id(2100L).owner(user).path("/first").build(),
-                        new DirectoryBuilder().id(2200L).owner(user).path("/folder").build()
-                ))
-                .files(asList(
-                        PictureFileBuilder.getInstance().id(200L).filename("root.jpg").directory(expectedRoot).data("root.jpg".getBytes()).build(),
-                        PictureFileBuilder.getInstance().id(201L).filename("targetFilename.jpg").directory(expectedRoot).data("targetFilename.jpg".getBytes()).build()
-                ))
-                .build();
+        List<DriveItemDTO> expected = asList(
+                toDTO(new DirectoryBuilder().id(2100L).owner(user).path("/first").build()),
+                toDTO(new DirectoryBuilder().id(2200L).owner(user).path("/folder").build()),
+                toDTO(PictureFileBuilder.getInstance().id(200L).filename("root.jpg").directory(expectedRoot).data("root.jpg".getBytes()).build()),
+                toDTO(PictureFileBuilder.getInstance().id(201L).filename("targetFilename.jpg").directory(expectedRoot).data("targetFilename.jpg".getBytes()).build())
+        );
 
         //When
-        Content result = instance.retrieveDirectoryContent(user.getLogin(), SEPARATOR);
+        List<DriveItemDTO> result = instance.retrieveContent(user.getLogin(), SEPARATOR, true);
 
         //Then
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(expectedContent);
+        assertThat(result).hasSameElementsAs(expected);
     }
 
     @Test
@@ -206,33 +193,32 @@ public class DriveServiceImplIT {
                 .path(SEPARATOR)
                 .build();
 
-        Content expectedContent = ContentBuilder.getInstance()
-                .currentDirectory(new DirectoryBuilder().id(2100L).owner(user).path("/first").build())
-                .topSubDirectories(asList(
-                        new DirectoryBuilder().id(2110L).owner(user).path("/first/second").build(),
-                        new DirectoryBuilder().id(2120L).owner(user).path("/first/folder(2)").build()
-                ))
-                .files(emptyList())
-                .parents(singletonList(root))
-                .build();
+        List<DriveItemDTO> expected = asList(
+                        toDTO(new DirectoryBuilder().id(2110L).owner(user).path("/first/second").build()),
+                        toDTO(new DirectoryBuilder().id(2120L).owner(user).path("/first/folder(2)").build())
+                );
 
         //When
-        Content result = instance.retrieveDirectoryContent(user.getLogin(), "/first");
+        List<DriveItemDTO> result = instance.retrieveContent(user.getLogin(), "/first", true);
 
         //Then
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(expectedContent);
+        assertThat(result).hasSameElementsAs(expected);
     }
 
     @Test
     public void addDirectorySuccess() {
         //Given
-        Directory expected = new DirectoryBuilder().path(buildPath(ROOT_PATH, "newDirectory")).owner(user).build();
+        DriveItemDTO expected = toDTO(new DirectoryBuilder()
+                .path(buildPath(ROOT_PATH, "newDirectory"))
+                .owner(user)
+                .build()
+        );
 
         //When
-        Directory result = instance.addDirectory(user.getLogin(), ROOT_PATH, expected.getName());
+        DriveItemDTO result = instance.addDirectory(user.getLogin(), ROOT_PATH, expected.getName());
 
         //Then
-        assertThat(result).isEqualToIgnoringGivenFields(expected, "id");
+        assertThat(result).isEqualToComparingFieldByField(expected);
     }
 
     @Test(expected = DriveException.class)
@@ -384,19 +370,20 @@ public class DriveServiceImplIT {
         MultipartFile file = new MockMultipartFile("filename", originalFilename, "image/jpeg", originalFilename.getBytes());
 
         Directory directory = new DirectoryBuilder().id(2110L).owner(user).path("/first/second").build();
-        PictureFile expected = PictureFileBuilder.getInstance()
+        PictureFile expectedFile = PictureFileBuilder.getInstance()
                 .directory(directory)
                 .filename(originalFilename)
                 .data(originalFilename.getBytes())
                 .build();
+        DriveItemDTO expected = toDTO(expectedFile);
 
         //When
-        PictureFile result = instance.addPictureFile(user.getLogin(), directory.getPath(), file);
+        DriveItemDTO result = instance.addPictureFile(user.getLogin(), directory.getPath(), file);
 
         //Then
         assertThat(result)
                 .isNotNull()
-                .isEqualToIgnoringGivenFields(expected, "id");
+                .isEqualToComparingFieldByField(expected);
     }
 
     @Test

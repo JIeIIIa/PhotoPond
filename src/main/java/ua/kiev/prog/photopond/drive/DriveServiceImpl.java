@@ -3,6 +3,7 @@ package ua.kiev.prog.photopond.drive;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,10 +22,11 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+import static ua.kiev.prog.photopond.drive.DriveItemDTOMapper.toDTO;
 import static ua.kiev.prog.photopond.drive.DriveServiceImpl.pathOption.CONSIDER_AS_ONE;
 import static ua.kiev.prog.photopond.drive.DriveServiceImpl.pathOption.RETRIEVE_NAME;
-import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
-import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
+import static ua.kiev.prog.photopond.drive.directories.Directory.*;
 
 @Service
 @Transactional
@@ -46,27 +48,76 @@ public class DriveServiceImpl implements DriveService {
         this.userInfoService = userInfoService;
     }
 
-    @Override
-    public Content retrieveDirectoryContent(String ownerLogin, String path) throws DriveException {
-        LOG.traceEntry("Content at '{}' for user = '{}'", path, ownerLogin);
-
+    private Directory retrieveDirectory(String ownerLogin, String path) {
+        LOG.traceEntry("Retrieve directory information for user = '{}' by path '{}'", ownerLogin, path);
         DriveUnit driveUnit = new DriveUnit(ownerLogin, path, CONSIDER_AS_ONE);
         Directory directory = null;
 
         try {
             directory = driveUnit.retrieveDirectory();
         } catch (DriveException e) {
+            LOG.debug("Error in retrieving data");
             if (Directory.isRoot(path)) {
                 createRootDirectoryIfNotExists(driveUnit.retrieveOwner());
                 directory = driveUnit.retrieveDirectory();
             }
+        } catch (IllegalStateException e) {
+            LOG.debug("Wrong data");
+            throw new DriveException(e);
         }
 
-        return getDirectoryContent(directory);
+        return directory;
     }
 
     @Override
-    public Directory addDirectory(String ownerLogin, String parentDirectoryPath, String newDirectoryName) throws DriveException {
+    public List<DriveItemDTO> retrieveContent(String ownerLogin, String path, boolean withFiles) throws DriveException {
+        LOG.traceEntry("Retrieve content (with files == {}) at '{}' for user = '{}'", withFiles, path, ownerLogin);
+        LinkedList<DriveItemDTO> list = new LinkedList<>();
+
+        Directory directory = retrieveDirectory(ownerLogin, path);
+
+        directoryRepository.findTopLevelSubDirectories(directory)
+                .forEach(d -> list.add(toDTO(d)));
+
+        if (withFiles) {
+            fileRepository.findByDirectory(directory)
+                    .forEach(f -> list.add(toDTO(f)));
+        }
+        return list;
+    }
+
+    @Override
+    public DirectoriesDTO retrieveDirectories(String ownerLogin, String path) throws DriveException {
+        LOG.traceEntry("Retrieve directories information  at '{}' for user = '{}'");
+        DirectoriesDTO directoriesDTO = new DirectoriesDTO();
+        Directory directory = retrieveDirectory(ownerLogin, path);
+        String baseUrl = "/api/" + ownerLogin + "/directories";
+
+
+        try {
+            directoriesDTO.setChildDirectories(
+                    directoryRepository.findTopLevelSubDirectories(directory)
+                            .stream()
+                            .map(d -> toDTO(d, baseUrl))
+                            .collect(toList())
+            );
+            directoriesDTO.setCurrent(toDTO(directory, baseUrl));
+
+            DriveItemDTO parent = new DriveItemDTO();
+            parent.setType(DriveItemType.DIR);
+            parent.setName(getName(directory.getPath()));
+            parent.setParentUri(appendToPath(baseUrl, directory.parentPath()));
+
+            directoriesDTO.setParent(parent);
+        } catch (IllegalArgumentException | DataAccessException e) {
+            throw new DriveException("Failure retrieve directory content", e);
+        }
+
+        return directoriesDTO;
+    }
+
+    @Override
+    public DriveItemDTO addDirectory(String ownerLogin, String parentDirectoryPath, String newDirectoryName) throws DriveException {
         LOG.traceEntry("Parameters: ownerLogin = {};   parentDirectoryPath = {}, newDirectoryName = {}",
                 ownerLogin, parentDirectoryPath, newDirectoryName);
         DriveUnit source = new DriveUnit(ownerLogin, parentDirectoryPath, CONSIDER_AS_ONE);
@@ -83,7 +134,7 @@ public class DriveServiceImpl implements DriveService {
                 .path(path)
                 .build();
 
-        return directoryRepository.save(newDirectory);
+        return toDTO(directoryRepository.save(newDirectory));
     }
 
     @Override
@@ -132,7 +183,7 @@ public class DriveServiceImpl implements DriveService {
     }
 
     @Override
-    public PictureFile addPictureFile(String ownerLogin, String directoryPath, MultipartFile multipartFile) throws DriveException {
+    public DriveItemDTO addPictureFile(String ownerLogin, String directoryPath, MultipartFile multipartFile) throws DriveException {
         LOG.traceEntry("Try to save file into the directory '{}' for owner = {}", directoryPath, ownerLogin);
         DriveUnit sourceParts = new DriveUnit(ownerLogin, directoryPath, CONSIDER_AS_ONE);
         PictureFile newFile;
@@ -149,7 +200,7 @@ public class DriveServiceImpl implements DriveService {
             throw new DriveException(message, new PictureFileException(e));
         }
 
-        return fileRepository.save(newFile);
+        return toDTO(fileRepository.save(newFile));
     }
 
     @Override
@@ -181,18 +232,6 @@ public class DriveServiceImpl implements DriveService {
         }
     }
 
-    private Content getDirectoryContent(Directory current) throws DriveException {
-        LOG.traceEntry("Get content for {}", current);
-        Content content = new Content();
-
-        content.setCurrentDirectory(current);
-        content.setParents(findParentDirectories(current));
-        content.setTopSubDirectories(directoryRepository.findTopLevelSubDirectories(current));
-        content.setFiles(fileRepository.findByDirectory(current));
-
-        return LOG.traceExit(content);
-    }
-
     private void createRootDirectoryIfNotExists(UserInfo owner) throws DriveException {
         LOG.traceEntry("Check and try create root directory: owner={} ", owner);
         List<Directory> directories = directoryRepository.findByOwnerAndPath(owner, SEPARATOR);
@@ -218,27 +257,6 @@ public class DriveServiceImpl implements DriveService {
         }
     }
 
-    private List<Directory> findParentDirectories(Directory directory) throws DriveException {
-        LOG.traceEntry("Find parent directories for '{}'", directory);
-        List<Directory> list = new LinkedList<>();
-        if (directory == null || directory.isRoot()) {
-            LOG.debug("return empty list");
-            return list;
-        }
-        Directory current = directory;
-        do {
-            List<Directory> parents = directoryRepository.findByOwnerAndPath(current.getOwner(), current.parentPath());
-            if (parents.size() != 1) {
-                LOG.debug("Failed to get parent directory for '{}'", current.parentPath());
-                throw new DriveException("Not found or found more than one parent directory for " + current);
-            }
-            current = parents.get(0);
-            list.add(0, current);
-            LOG.trace("Add parent directory '{}' in list for {}", current, directory);
-        } while (!current.isRoot());
-        return LOG.traceExit(list);
-    }
-
     private PictureFile findPictureFile(String ownerLogin, String path) {
         DriveUnit source = new DriveUnit(ownerLogin, path, RETRIEVE_NAME);
         List<PictureFile> files = fileRepository.findByDirectoryAndFilename(source.retrieveDirectory(), source.retrieveFilename());
@@ -255,6 +273,7 @@ public class DriveServiceImpl implements DriveService {
 
         return files.get(0);
     }
+
     enum pathOption {
         CONSIDER_AS_ONE, RETRIEVE_NAME
     }
