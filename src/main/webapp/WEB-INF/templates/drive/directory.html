@@ -16,6 +16,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css">
 
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="../../../libs/font-awesome-free-5.1.1-web/css/all.css">
+
     <link rel="stylesheet" href="../../../css/main.css">
     <link rel="stylesheet" href="../../../css/skins/default-skin.min.css">
 
@@ -66,10 +69,10 @@
 
                                 <div class="dropdown-menu" aria-labelledby="addElementGroupDown">
                                     <div class="dropdown-item" id="openUploadFilesForm" v-on:click="onFileUpload">
-                                        <i class="fa fa-file-image-o"></i>Add file
+                                        <i class="far fa-image mr-2"></i>Add file
                                     </div>
-                                    <div class="dropdown-item" id="openAddDirectoryForm" v-on:click="onCreateDirectory"><i class="fa fa-folder-o"></i>Add
-                                        directory
+                                    <div class="dropdown-item" id="openAddDirectoryForm" v-on:click="onCreateDirectory">
+                                        <i class="far fa-folder mr-2"></i>Add directory
                                     </div>
                                 </div>
                             </div>
@@ -78,17 +81,17 @@
                                     <button type="button" class="btn btn-info"
                                             data-toggle="tooltip" data-placement="bottom" title="Rename element"
                                             id="openRenameForm" v-on:click="onRename">
-                                        <i class="fa fa-pencil-square-o"></i>
+                                        <i class="far fa-edit"></i>
                                     </button>
                                     <button type="button" class="btn btn-info"
                                             data-toggle="tooltip" data-placement="bottom" title="Move elements"
                                             id="openMoveForm" v-on:click="onMove">
-                                        <i class="fa fa-share-square-o"></i>
+                                        <i class="far fa-share-square"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger"
                                             data-toggle="tooltip" data-placement="bottom" title="Delete elements"
                                             id="deleteBtn" v-on:click="onDelete">
-                                        <i class="fa fa-eraser"></i>
+                                        <i class="far fa-trash-alt"></i>
                                     </button>
                                 </div>
                             </transition>

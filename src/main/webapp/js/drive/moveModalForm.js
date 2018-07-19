@@ -10,8 +10,8 @@ var moveModalForm = Vue.component('move-modal-form', {
         }
     },
     watch: {
-        content: function(val) {
-            this.currentUrl = this.makePath(val.current);
+        content: function (val) {
+            this.currentUrl = this.makePath(val.current, false);
             if (jQuery.isEmptyObject(val.current)) {
                 this.currentUrl = '';
             }
@@ -25,7 +25,7 @@ var moveModalForm = Vue.component('move-modal-form', {
     computed: {
         errorMessageObject() {
             var res = [];
-            if(this.errorCode !== "") {
+            if (this.errorCode !== "") {
                 res.push({
                     text: this.errorMessage,
                     code: this.errorCode
@@ -40,11 +40,13 @@ var moveModalForm = Vue.component('move-modal-form', {
                 var item = this.content.parent;
                 item.uri = item.parentUri;
                 item.name = '..';
+                item.nameInHtml = '<i class="fas fa-level-up-alt"></i>';
                 list.push(item);
             }
             if (!jQuery.isEmptyObject(this.content.childDirectories)) {
                 this.content.childDirectories.forEach(function (item) {
                     item.uri = item.parentUri + '/' + item.name;
+                    item.nameInHtml = item.name;
                     list.push(item);
                 })
             }
@@ -56,18 +58,24 @@ var moveModalForm = Vue.component('move-modal-form', {
         }
     },
     methods: {
-        makePath(item) {
+        makePath(item, useHtml) {
             if (jQuery.isEmptyObject(item)) {
                 return '';
             }
-            var uri = item.parentUri.replace(/\/api\/.+\/directories/, '..');
+            var uri;
+            if (useHtml) {
+                uri = item.parentUri.replace(/\/api\/.+\/directories/, '<i class="fa fa-home"></i>');
+            } else {
+                uri = item.parentUri.replace(/\/api\/.+\/directories/, '..');
+            }
+
             if (!jQuery.isEmptyObject(item.name)) {
                 uri += '/' + item.name;
             }
 
             return uri;
         },
-        closeAlert: function() {
+        closeAlert: function () {
             this.errorCode = '';
         },
         loadSubDirectories(url) {
@@ -76,7 +84,7 @@ var moveModalForm = Vue.component('move-modal-form', {
             this.errorCode = '';
             axios.get(url)
                 .then(function (response) {
-                    if(response.status === 200) {
+                    if (response.status === 200) {
                         ref.content = response.data;
                     } else {
                         ref.errorCode = response.status;
