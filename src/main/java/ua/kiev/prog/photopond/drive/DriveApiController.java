@@ -29,73 +29,47 @@ public class DriveApiController {
     }
 
     @RequestMapping(value = "/directories/**", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity retrieveChildDirectories(@PathVariable("login") String userLogin,
-                                                   HttpServletRequest request) throws DriveException {
+    public ResponseEntity<DirectoriesDTO> retrieveChildDirectories(@PathVariable("login") String userLogin,
+                                                                   HttpServletRequest request) throws DriveException {
         String sourcePath = getUriTail(request, userLogin);
         LOG.trace("login = {},   sourcePath = '{}'", userLogin, sourcePath);
-        ResponseEntity responseEntity;
 
-        try {
-            DirectoriesDTO directoriesDTO = driveService.retrieveDirectories(userLogin, sourcePath);
-            responseEntity = ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(directoriesDTO);
-        } catch (DriveException e) {
-            LOG.debug("Error in retrieving child directories:   {}", e.getMessage());
-            responseEntity = ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .body(e.getMessage());
-        }
-
-        return responseEntity;
+        DirectoriesDTO directoriesDTO = driveService.retrieveDirectories(userLogin, sourcePath);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(directoriesDTO);
     }
 
     @RequestMapping(value = "/directory/**", method = RequestMethod.GET)
-    public ResponseEntity retrieveContent(@PathVariable("login") String userLogin,
-                                          HttpServletRequest request) {
+    public ResponseEntity<List<DriveItemDTO>> retrieveContent(@PathVariable("login") String userLogin,
+                                                              HttpServletRequest request) {
         String sourcePath = getUriTail(request, userLogin);
         LOG.trace("login = {},   sourcePath = '{}'", userLogin, sourcePath);
-        ResponseEntity responseEntity;
-        try {
-            List<DriveItemDTO> items = driveService.retrieveContent(userLogin, sourcePath, true);
-            LOG.trace(items);
-            responseEntity = ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(items);
 
-        } catch (DriveException e) {
-            LOG.debug("Error in retrieving directory content:   {}", e.getMessage());
-            responseEntity = ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .body(e.getMessage());
-        }
+        List<DriveItemDTO> items = driveService.retrieveContent(userLogin, sourcePath, true);
+        LOG.trace(items);
 
-        return responseEntity;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(items);
+
     }
 
     @RequestMapping(value = "/directory/**", method = RequestMethod.POST)
-    public ResponseEntity createDirectory(
+    public ResponseEntity<DriveItemDTO> createDirectory(
             @PathVariable("login") String userLogin,
             @NotNull @RequestBody String newDirectoryName,
             HttpServletRequest request) throws DriveException {
 
         String sourcePath = getUriTail(request, userLogin);
         LOG.trace("login = '{}',    sourcePath = '{}',   newDirectoryName = '{}'", userLogin, sourcePath, newDirectoryName);
-        ResponseEntity responseEntity;
-        try {
-            DriveItemDTO createdDirectoryDTO = driveService.addDirectory(userLogin, sourcePath, newDirectoryName);
-            LOG.debug("Directory was create:   " + createdDirectoryDTO);
-            responseEntity = ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(createdDirectoryDTO);
-        } catch (DriveException e) {
-            LOG.debug("Error in creating directory:   {}", e.getMessage());
-            responseEntity = ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .body(e.getMessage());
-        }
 
-        return responseEntity;
+        DriveItemDTO createdDirectoryDTO = driveService.addDirectory(userLogin, sourcePath, newDirectoryName);
+        LOG.debug("Directory was create:   " + createdDirectoryDTO);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(createdDirectoryDTO);
     }
 
     @RequestMapping(value = "/files/**", method = RequestMethod.POST)
@@ -105,20 +79,14 @@ public class DriveApiController {
         LinkedList<DriveItemDTO> list = new LinkedList<>();
         String targetDirectoryPath = getUriTail(request, ownerLogin);
         LOG.trace("login = {},   targetDirectoryPath = '{}'", ownerLogin, targetDirectoryPath);
-        try {
-            for (MultipartFile file : files) {
-                try {
-                    DriveItemDTO createdFile = driveService.addPictureFile(ownerLogin, targetDirectoryPath, file);
-                    list.add(createdFile);
-                } catch (DriveException e) {
-                    LOG.debug("Error in creating file (user = '{}'):   {}/{}", ownerLogin, targetDirectoryPath, file.getOriginalFilename());
-                }
+
+        for (MultipartFile file : files) {
+            try {
+                DriveItemDTO createdFile = driveService.addPictureFile(ownerLogin, targetDirectoryPath, file);
+                list.add(createdFile);
+            } catch (DriveException e) {
+                LOG.debug("Error in creating file (user = '{}'):   {}/{}", ownerLogin, targetDirectoryPath, file.getOriginalFilename());
             }
-        } catch (Exception e) {
-            LOG.debug("Unexpected error:   ", e.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .body(e.getMessage());
         }
 
         LOG.trace("Created files:  {}", list);

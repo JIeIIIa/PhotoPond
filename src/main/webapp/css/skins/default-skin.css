@@ -4,6 +4,11 @@ body {
 
 }
 
+.notFoundPage, .commonErrorPage {
+    background: url(/pic/error_background.jpg) no-repeat center center fixed;
+    background-size: cover;
+}
+
 h1, h2, h3, h4, h5, h6 {
     /*color: #1a2b1e;*/
 }

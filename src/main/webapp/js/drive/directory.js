@@ -106,20 +106,32 @@ var app = new Vue({
         }
     },
     methods: {
+        pageNotFound() {
+            var redirectedUrl = '/page-not-found';
+            var form = $('<form action="' + redirectedUrl + '" method="post" hidden="hidden">' +
+                '<input type="text" name="url" value="' + window.location.href + '" />' +
+                '</form>');
+            $('body').append(form);
+            form.submit();
+        },
         loadDirectoryData() {
             var ref = this;
             // ref.showLoader = true;
             axios.get(this.baseApiUrl)
                 .then(function (response) {
-                    response.data.forEach(function (item) {
-                        ref.addElement(item);
-                    });
-                    ref.allUsers = response.data;
-
+                    if (response.status === 200) {
+                        response.data.forEach(function (item) {
+                            ref.addElement(item);
+                        });
+                        ref.allUsers = response.data;
+                    } else {
+                        ref.pageNotFound();
+                    }
                     // ref.showLoader = false;
                 })
                 .catch(function (error) {
                     // ref.showLoader = false;
+                    ref.pageNotFound();
                 })
         },
         addElement(data) {

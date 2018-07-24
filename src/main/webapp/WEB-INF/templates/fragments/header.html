@@ -23,7 +23,11 @@
     <link rel="stylesheet" th:href="@{/css/skins/default-skin.min.css}">
 </head>
 <body>
-<div th:fragment="header(activeItem)">
+<div th:fragment="header(activeItem)" th:remove="tag">
+    <div th:replace="fragments/header :: headerWithCustomUrl(activeItem, ${#httpServletRequest.requestURI} )"></div>
+</div>
+
+<div th:fragment="headerWithCustomUrl(activeItem, url)" th:remove="tag">
     <div class="container-fluid" id="header">
         <div class="row p-0">
             <div class="navbar  navbar-toggleable navbar-inverse fixed-top">
@@ -124,7 +128,7 @@
                                     aria-labelledby="navbarDropdownMenuLink">
                                     <li class="dropdown-item" th:each="lang : ${new String[]{'uk', 'ru', 'en'}}">
                                         <!--/*@thymesVar id="lang" type="java.lang.String"*/-->
-                                        <a href="#" th:href="@{__${#httpServletRequest.requestURI}__(lang=${lang})}">
+                                        <a href="#" th:href="@{__${url}__(lang=${lang})}">
                                             <div class="row no-gutters">
                                                 <div class="col d-flex align-items-center justify-content-center"
                                                      th:text="#{header.lang.__${lang}__}">

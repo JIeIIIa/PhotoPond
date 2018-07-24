@@ -51,7 +51,7 @@ public class DriveServiceImpl implements DriveService {
     private Directory retrieveDirectory(String ownerLogin, String path) {
         LOG.traceEntry("Retrieve directory information for user = '{}' by path '{}'", ownerLogin, path);
         DriveUnit driveUnit = new DriveUnit(ownerLogin, path, CONSIDER_AS_ONE);
-        Directory directory = null;
+        Directory directory;
 
         try {
             directory = driveUnit.retrieveDirectory();
@@ -60,6 +60,8 @@ public class DriveServiceImpl implements DriveService {
             if (Directory.isRoot(path)) {
                 createRootDirectoryIfNotExists(driveUnit.retrieveOwner());
                 directory = driveUnit.retrieveDirectory();
+            } else {
+                throw e;
             }
         } catch (IllegalStateException e) {
             LOG.debug("Wrong data");

@@ -402,6 +402,41 @@ h1, h2, h3, h4, h5, h6 {
     text-transform: uppercase;
 }
 
+#errorPage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+#errorwrap {
+    color: #DDECF7;
+    text-shadow: 2px 2px 3px black, 0 0 1em #416d8f;
+}
+
+#errorwrap h1 {
+    color: #DDECF7;
+    font-size: 14rem;
+}
+
+#errorwrap h2 {
+    color: #DDECF7;
+    font-size: 5rem;
+}
+
+#errorwrap h3 {
+    color: #f1ffd2;
+}
+
+#errorwrap .accessDeniedTitle {
+    font-size: 8rem;
+}
+
+.wrap-text {
+    word-wrap: break-word;
+}
+
 .breadcrumb-item + .breadcrumb-item::before {
     content: none;
 }

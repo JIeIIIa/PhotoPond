@@ -32,8 +32,8 @@ public class DriveController {
 
     @RequestMapping(value = "/**", method = RequestMethod.GET)
     public ModelAndView directoryPage(ModelAndView modelAndView,
-                             @PathVariable("login") String userLogin,
-                             HttpServletRequest request) throws DriveException {
+                                      @PathVariable("login") String userLogin,
+                                      HttpServletRequest request) throws DriveException {
         String tail = getUriTail(request, userLogin);
 
         modelAndView.setViewName("/drive/directory");
@@ -44,9 +44,9 @@ public class DriveController {
 
     @RequestMapping(value = "/**", method = RequestMethod.POST)
     public ModelAndView createDirectory(
-                                        @PathVariable("login") String userLogin,
-                                        @NotNull @RequestParam("newDirectoryName") String newDirectoryName,
-                                        HttpServletRequest request) throws DriveException {
+            @PathVariable("login") String userLogin,
+            @NotNull @RequestParam("newDirectoryName") String newDirectoryName,
+            HttpServletRequest request) throws DriveException {
 
         String sourcePath = getUriTail(request, userLogin);
         DriveItemDTO createdDirectory = driveService.addDirectory(userLogin, sourcePath, newDirectoryName);
@@ -67,25 +67,22 @@ public class DriveController {
     @RequestMapping(value = "/**", method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity move(@PathVariable("login") String userLogin,
-                                             @NotNull @RequestBody DriveItemDTO elementDTO,
-                                             HttpServletRequest request) throws DriveException {
+                               @NotNull @RequestBody DriveItemDTO elementDTO,
+                               HttpServletRequest request) throws DriveException {
         if (!DriveItemType.DIR.equals(elementDTO.getType())) {
             LOG.trace("Bad request parameter: expected type is DIR");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .build();
         }
-        try {
-            String targetParentPath = getUriTail(elementDTO.getParentUri(), userLogin);
-            String sourcePath = getUriTail(request, userLogin);
-            driveService.moveDirectory(
-                    userLogin,
-                    sourcePath,
-                    buildPath(targetParentPath, elementDTO.getName())
-            );
-        } catch (DriveException | IllegalArgumentException e) {
-            return ResponseEntity.noContent().build();
-        }
+
+        String targetParentPath = getUriTail(elementDTO.getParentUri(), userLogin);
+        String sourcePath = getUriTail(request, userLogin);
+        driveService.moveDirectory(
+                userLogin,
+                sourcePath,
+                buildPath(targetParentPath, elementDTO.getName())
+        );
 
         return ResponseEntity.ok().build();
     }
@@ -94,12 +91,9 @@ public class DriveController {
     @RequestMapping(value = "/**", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity deleteDirectory(@PathVariable("login") String ownerLogin,
-                                     HttpServletRequest request) throws DriveException {
-        try {
-            driveService.deleteDirectory(ownerLogin, getUriTail(request, ownerLogin));
-        } catch (DriveException e) {
-            return ResponseEntity.noContent().build();
-        }
+                                          HttpServletRequest request) throws DriveException {
+
+        driveService.deleteDirectory(ownerLogin, getUriTail(request, ownerLogin));
 
         return ResponseEntity.ok().build();
     }

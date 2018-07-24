@@ -4,8 +4,8 @@
       lang="en">
 
 
-<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = 'PhotoPond - access denied')">
-    <title>PhotoPond - access denied</title>
+<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = 'PhotoPond - error')">
+    <title>PhotoPond - error</title>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
 
@@ -20,26 +20,23 @@
     <link rel="stylesheet" href="../../../css/skins/default-skin.min.css">
 </head>
 
-<body id="errorPage" class="notFoundPage">
+<body id="errorPage" class="commonErrorPage">
 
-<div th:replace="fragments/header :: header('accessDenied')">Static header</div>
-
-
+<div th:replace="fragments/header :: headerWithCustomUrl('errorPage', ${url} )">Static header</div>
 
 <div class="container-fluid mt-md-2 mt-sm-1" id="errorwrap">
     <div class="row text-center align-items-center justify-content-center">
-        <div class="col-12 mt-5">
-            <h1 class="accessDeniedTitle">ACCESS DENIED</h1>
+        <div class="col-12 col-sm-7" th:if="${status}">
+            <h1 th:text="${status}">status-code</h1>
         </div>
+        <div class="col" th:if="${error}">
+            <h2>Error</h2>
+            <h3 th:text="'('+${error}+')'">error ...</h3>
+            <h5 th:if="${timestamp}"><b>Occurred:</b> <span th:text="${#dates.format(timestamp, #messages.msg('date.format'))}">Timestamp</span></h5>
+        </div>
+
     </div>
     <div class="row mt-5">
-        <!--/*@thymesVar id="login" type="java.lang.String"*/-->
-        <div class="col-12 mt-5" th:if="${login}">
-            <div class="row">
-                <div class="col-1"><h5>Login:</h5></div>
-                <div class="offset-1 col-10"><h5 class="wrap-text" th:text="${login}">userLogin</h5></div>
-            </div>
-        </div>
         <!--/*@thymesVar id="url" type="java.lang.String"*/-->
         <div class="col-12 mt-2" th:if="${url}">
             <div class="row">
@@ -50,9 +47,17 @@
     </div>
 </div>
 
-<div>
 
-</div>
+<!--
+  // Hidden Exception Details  - this is not a recommendation, but here is
+  // how you hide an exception in the page using Thymeleaf
+  -->
+<div th:utext="'&lt;!--'" th:remove="tag"></div>
+<div th:utext="'Failed URL: ' +  ${url}" th:remove="tag">${url}</div>
+<div th:utext="'Trace: ' + ${trace}" th:remove="tag">${trace}</div>
+
+<div th:utext="'--&gt;'" th:remove="tag"></div>
+
 <div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">
     <!-- jQuery -->
     <script src="../../../libs/jquery/jquery-3.2.1.min.js"></script>

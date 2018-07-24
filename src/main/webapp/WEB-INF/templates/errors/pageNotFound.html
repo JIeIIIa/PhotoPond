@@ -4,8 +4,8 @@
       lang="en">
 
 
-<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = 'PhotoPond - access denied')">
-    <title>PhotoPond - access denied</title>
+<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = 'PhotoPond - page not found')">
+    <title>PhotoPond - page not found</title>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
 
@@ -22,23 +22,23 @@
 
 <body id="errorPage" class="notFoundPage">
 
-<div th:replace="fragments/header :: header('accessDenied')">Static header</div>
+<div th:replace="fragments/header :: header('pageNotFound')">Static header</div>
 
 
 
 <div class="container-fluid mt-md-2 mt-sm-1" id="errorwrap">
     <div class="row text-center align-items-center justify-content-center">
-        <div class="col-12 mt-5">
-            <h1 class="accessDeniedTitle">ACCESS DENIED</h1>
+        <div class="col-12 col-sm-7">
+            <h1>404</h1>
+        </div>
+        <div class="col">
+            <h2>Error</h2>
+            <h3>Sorry something went wrong! (</h3>
         </div>
     </div>
     <div class="row mt-5">
-        <!--/*@thymesVar id="login" type="java.lang.String"*/-->
-        <div class="col-12 mt-5" th:if="${login}">
-            <div class="row">
-                <div class="col-1"><h5>Login:</h5></div>
-                <div class="offset-1 col-10"><h5 class="wrap-text" th:text="${login}">userLogin</h5></div>
-            </div>
+        <div class="col-12 mt-5">
+            <p>FOR SOME REASON THE PAGE YOU REQUESTED COULD NOT BE FOUND ON OUR SERVER</p>
         </div>
         <!--/*@thymesVar id="url" type="java.lang.String"*/-->
         <div class="col-12 mt-2" th:if="${url}">

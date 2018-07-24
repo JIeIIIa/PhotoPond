@@ -8,17 +8,22 @@ import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.RequestDispatcher;
 import java.util.Map;
+import java.util.Optional;
+
+import static ua.kiev.prog.photopond.Utils.Utils.customPageNotFound;
 
 @Controller
 public class CustomErrorController implements ErrorController {
-    private static Logger log = LogManager.getLogger(CustomErrorController.class);
+    private static final Logger LOG = LogManager.getLogger(CustomErrorController.class);
 
-    private static final String ERROR_PATH=  "/error";
+    private static final String ERROR_PATH = "error";
 
     @Value("${includeStackTrace}")
     private boolean includeStackTrace;
@@ -31,17 +36,21 @@ public class CustomErrorController implements ErrorController {
     }
 
     @RequestMapping(value = ERROR_PATH)
-    public ModelAndView error(WebRequest request, HttpServletResponse response, ModelAndView modelAndView) {
+    public ModelAndView error(WebRequest request, ModelAndView modelAndView) {
 
         Map<String, Object> errorAttributes = getErrorAttributes(request, includeStackTrace);
         if (includeStackTrace) {
-            log.debug(errorAttributes);
+            LOG.debug(errorAttributes);
         } else {
-            log.debug(errorAttributes.get("message"));
+            LOG.debug(errorAttributes.get("message"));
         }
 
         modelAndView.addAllObjects(errorAttributes);
-
+        String url = Optional.ofNullable(
+                (String) (request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI, 0)))
+                .orElse("");
+        modelAndView.addObject("url", url);
+        modelAndView.setViewName("errors/commonError");
         return modelAndView;
     }
 
@@ -51,7 +60,6 @@ public class CustomErrorController implements ErrorController {
     }
 
     private Map<String, Object> getErrorAttributes(WebRequest request, boolean includeStackTrace) {
-//        RequestAttributes requestAttributes = new ServletRequestAttributes(request);
         return errorAttributes.getErrorAttributes(request, includeStackTrace);
     }
 
@@ -61,4 +69,10 @@ public class CustomErrorController implements ErrorController {
         throw new NullPointerException("from CustomErrorController");
     }
 
+    @RequestMapping(value = "/page-not-found", method = {RequestMethod.GET, RequestMethod.POST})
+    public ModelAndView pageNotFound(@RequestParam(name = "url", required = false) String url) {
+        LOG.debug("url = {}", url);
+
+        return customPageNotFound(url);
+    }
 }

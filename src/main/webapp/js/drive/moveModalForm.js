@@ -82,7 +82,7 @@ var moveModalForm = Vue.component('move-modal-form', {
             var ref = this;
             ref.loaderVisible = true;
             this.errorCode = '';
-            axios.get(url)
+            axios.get(url + "123")
                 .then(function (response) {
                     if (response.status === 200) {
                         ref.content = response.data;
