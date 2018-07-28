@@ -1,0 +1,23 @@
+.table-row {
+  &-enter, &-leave-to {
+    opacity: 0;
+    transform: translateX(-150%);
+    display: inline-flex;
+  }
+
+  &-enter-active {
+    transition: all 0.5s;
+    display: inline-flex;
+  }
+
+  &-leave-active {
+    transition: all .5s;
+    display: inline-flex;
+    position: absolute;
+  }
+
+  &-move {
+    display: inline-flex;
+    transition: all 0.5s;
+  }
+}

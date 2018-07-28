@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" th:href="@{/libs/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.css">
 
     <!--Font Awesome-->
     <link rel="stylesheet" href="../../../libs/font-awesome-free-5.1.1-web/css/all.css">
@@ -24,13 +24,13 @@
 </head>
 <body>
 <div th:fragment="header(activeItem)" th:remove="tag">
-    <div th:replace="fragments/header :: headerWithCustomUrl(activeItem, ${#httpServletRequest.requestURI} )"></div>
+    <div th:replace="fragments/header :: headerWithCustomUrl(${activeItem}, ${#httpServletRequest.requestURI} )"></div>
 </div>
 
 <div th:fragment="headerWithCustomUrl(activeItem, url)" th:remove="tag">
     <div class="container-fluid" id="header">
         <div class="row p-0">
-            <div class="navbar  navbar-toggleable navbar-inverse fixed-top">
+            <div class="navbar navbar-toggleable navbar-inverse fixed-top">
                 <div class="navbar-header">
                     <a class="navbar-brand pb-0" href="#" th:href="@{/}">
                         <div class="logo">
@@ -44,19 +44,19 @@
                     <div>&nbsp;</div>
                 </div>
 
-                <button class="navbar-toggler navbar-toggler-right mt-1" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                <button class="navbar-toggler navbar-toggler-right h-75" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="true"
                         aria-label="Toggle navigation">
                     <i class="fa fa-bars" aria-hidden="true"></i>
                 </button>
 
-                <div class="col offset-md-2 p-0 text-nowrap">
-                    <div class="navbar-inverse collapse navbar-collapse justify-content-end text-center" id="navbarSupportedContent">
-                        <ul class="nav navbar-nav">
-                            <li class="nav-item mr-sm-2 d-block"
-                                th:classappend="${activeItem} == 'home'?'active':''"
+                <div class="col offset-md-2 p-0 text-nowrap ">
+                    <div class="navbar-inverse collapse navbar-collapse justify-content-end text-center scroll-before-sm" id="navbarSupportedContent">
+                        <ul class="nav navbar-nav d-inline-flex align-items-center">
+                            <li class="nav-item font-weight-bold mr-sm-2"
                                 sec:authorize="isAuthenticated()">
-                                <a class="nav-link" href="#"
+                                <a class="nav-link  font-weight-bold" href="#"
+                                   th:classappend="${activeItem} == 'home'?'active':''"
                                    th:href="@{/user/{login}/drive(login=${#authentication.name})}"
                                    th:text="#{header.home}">
                                     Home
@@ -69,7 +69,8 @@
                             </li>
 
                             <li class="nav-item mr-sm-2" sec:authorize="isAnonymous()">
-                                <a class="btn bnt-primary btn-block btn-log my-1" href="#" th:href="@{/login}"
+                                <a class="btn btn-primary btn-block"
+                                   href="#" th:href="@{/login}"
                                    th:text="#{header.logIn}">
                                     Log In
                                 </a>
@@ -78,11 +79,11 @@
                             <li class="nav-item dropdown mr-sm-2" sec:authorize="isAuthenticated()">
                                 <a class="nav-link dropdown-toggle pr-0 py-0 h-100 d-inline-flex align-items-center justify-content-center"
                                    id="userNavbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    <div class="image-container">
+                                    <div class="image-container d-inline-flex align-items-center justify-content-center">
                                         <img src="../../../pic/no_avatar.jpg" th:src="@{/pic/no_avatar.png}">
                                     </div>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-right inverse-dropdown pull-left align-items-center text-left"
+                                <ul class="dropdown-menu dropdown-menu-right inverse-dropdown pull-left align-items-center text-left scroll-after-sm"
                                     aria-labelledby="userNavbarDropdownMenuLink">
                                     <li>
                                         <div class="dropdown-header">
@@ -124,11 +125,11 @@
                                          class="flag"
                                          th:alt="#{header.lang.__${currentLang}__}">
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-right inverse-dropdown pull-left align-items-center text-left"
+                                <ul class="dropdown-menu dropdown-menu-right inverse-dropdown pull-left align-items-center text-left scroll-after-sm"
                                     aria-labelledby="navbarDropdownMenuLink">
-                                    <li class="dropdown-item" th:each="lang : ${new String[]{'uk', 'ru', 'en'}}">
+                                    <li th:each="lang : ${new String[]{'uk', 'ru', 'en'}}">
                                         <!--/*@thymesVar id="lang" type="java.lang.String"*/-->
-                                        <a href="#" th:href="@{__${url}__(lang=${lang})}">
+                                        <a href="#" class="dropdown-item" th:href="@{__${url}__(lang=${lang})}">
                                             <div class="row no-gutters">
                                                 <div class="col d-flex align-items-center justify-content-center"
                                                      th:text="#{header.lang.__${lang}__}">
@@ -136,7 +137,8 @@
                                                 </div>
                                                 <div class="col-5 text-center">
                                                     <img src="../../../pic/flags/uk.png" alt="Ukr"
-                                                         th:src="@{/pic/flags/{name}(name=${lang}+'.png')}" th:alt="#{header.lang.__${lang}__}">
+                                                         th:src="@{/pic/flags/{name}(name=${lang}+'.png')}" th:alt="#{header.lang.__${lang}__}"
+                                                    class="small-flag">
                                                 </div>
                                             </div>
                                         </a>

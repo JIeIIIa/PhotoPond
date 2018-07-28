@@ -1,0 +1,20 @@
+@mixin make-scroll($breakpoints: $grid-breakpoints) {
+  @each $name, $breakpoint in $breakpoints {
+    @if ($breakpoint != 0) {
+      @media(max-width: $breakpoint - 1) {
+        .scroll-before-#{$name} {
+          max-height: 70vh;
+          overflow: auto;
+        }
+      }
+      @media(min-width: $breakpoint - 1) {
+        .scroll-after-#{$name} {
+          max-height: 70vh;
+          overflow: auto;
+        }
+      }
+    }
+  }
+}
+
+@include make-scroll();

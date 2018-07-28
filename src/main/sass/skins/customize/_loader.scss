@@ -1,0 +1,59 @@
+@mixin loader-element-animation($size, $border-color, $period, $position) {
+  height: $size;
+  width: $size;
+  border-radius: $size / 2;
+  border-top: solid 10px $border-color;
+  @if $position != 0 {
+    top: $position;
+    left: $position;
+  }
+  animation: spin $period infinite;
+  -webkit-animation: spin $period infinite;
+  animation-timing-function: linear;
+  -webkit-animation-timing-function: linear;
+}
+
+@keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@-webkit-keyframes spin {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+.loadIcon {
+  margin: 60px auto;
+  height: 120px;
+  width: 120px;
+  position: relative;
+
+  div {
+    position: absolute;
+
+    &:first-child {
+      @include loader-element-animation(120px, #237699, 2s, 0);
+    }
+
+    &:nth-child(2) {
+      @include loader-element-animation(90px, #6CC5EC, 1.5s, 15px);
+    }
+
+    &:nth-child(3) {
+      @include loader-element-animation(60px, #ACDFF6, 1s, 30px);
+    }
+
+    &:nth-child(4) {
+      @include loader-element-animation(30px, #D1EEFB, 0.5s, 45px);
+    }
+  }
+}

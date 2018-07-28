@@ -226,6 +226,32 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Sass compiler -->
+            <plugin>
+                <groupId>nl.geodienstencentrum.maven</groupId>
+                <artifactId>sass-maven-plugin</artifactId>
+                <version>3.5.4</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>update-stylesheets</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <resources>
+                        <resource>
+                            <!-- Set source and destination dirs -->
+                            <source>
+                                <directory>${project.basedir}/src/main/sass</directory>
+                            </source>
+                            <destination>${project.basedir}/src/main/webapp/css</destination>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
             <!--<plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>

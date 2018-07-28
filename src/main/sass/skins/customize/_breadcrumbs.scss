@@ -1,0 +1,5 @@
+.breadcrumb-item + .breadcrumb-item::before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: '\f101';
+}

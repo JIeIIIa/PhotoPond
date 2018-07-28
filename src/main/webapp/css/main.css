@@ -433,21 +433,12 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 8rem;
 }
 
-.wrap-text {
+.break-word-wrap {
     word-wrap: break-word;
 }
 
 .breadcrumb-item + .breadcrumb-item::before {
     content: none;
-}
-
-.scroll-area {
-    width: 100%;
-    /*height:100%;*/
-    /*margin-top:100px;*/
-    background-color: green;
-    float: left;
-    overflow-y: scroll;
 }
 
 .selected {

@@ -1,0 +1,68 @@
+.navbar-brand {
+  &:focus .logo-background,
+  &:hover .logo-background {
+    transform: scale(1, 0.6);
+    transition-duration: 300ms;
+  }
+
+  &:focus .logo,
+  &:hover .logo {
+    color: lighten($light-blue, 15%);
+  }
+}
+
+.logo {
+  color: $light-blue;
+  font-family: "Roboto Slab";
+  font-weight: 900;
+  font-size: 1.5rem;
+  overflow: hidden;
+  position: absolute;
+  display: inline-block;
+  top: 0;
+  width: 6rem;
+  height: 4.775rem;
+  z-index: 30;
+
+  .capitalLetter {
+    position: absolute;
+    font-size: 2.5em;
+    top: 0.2rem;
+    left: 0.7rem;
+    margin-top: -0.2em;
+    z-index: 40;
+  }
+
+  .pond {
+    position: absolute;
+    font-size: 1.5em;
+    top: 0.2rem;
+    left: 0.7rem;
+    margin-top: 0.4em;
+    margin-left: 0.5em;
+    letter-spacing: -0.1em;
+    z-index: 40;
+  }
+
+  .photo {
+    position: absolute;
+    top: 0.2rem;
+    left: 0.7rem;
+    font-size: 0.55em;
+    margin-left: 2.8em;
+    margin-top: 1.55em;
+    z-index: 40;
+  }
+}
+
+.logo-background {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  height: 5.7rem;
+  width: 5.7rem;
+  top: -0.5rem;
+
+  background-color: $main-background;
+  z-index: 30;
+}

@@ -43,12 +43,11 @@
                 <div class="col-12">
                     <ol class="breadcrumb mb-0">
                         <template v-for="(parent, index) in parentDirectories">
-                            <li class="breadcrumb-item secondary-color" v-if="index < parentDirectories.length - 1">
+                            <li class="breadcrumb-item content-disabled secondary-color" v-if="index < parentDirectories.length - 1">
                                 <a v-bind:href="parent.url" v-html="parent.name"
                                    data-toggle="tooltip" data-placement="bottom" v-bind:title="parent.tooltip"></a>
-                                <i class="fa fa-angle-double-right mx-2" aria-hidden="true"></i>
                             </li>
-                            <li class="breadcrumb-item primary-color active" v-else>
+                            <li class="breadcrumb-item content-disabled primary-color active" v-else>
                                 <span v-html="parent.name" data-toggle="tooltip" data-placement="bottom" v-bind:title="parent.tooltip"></span>
                             </li>
                         </template>
@@ -98,7 +97,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col d-inline-flex justify-content-end">
+                <div class="col d-inline-flex justify-content-end align-items-center">
                     <div class="btn-group-sm" role="group">
                         <button class="btn btn-outline-secondary border-0 dropdown-toggle"
                                 id="changeElementSize"
@@ -114,10 +113,10 @@
                         </div>
                     </div>
                     <div class="btn-group-sm">
-                        <div class="btn btn-sm btn-outline-secondary border-0">By name</div>
+                        <button class="btn btn-sm btn-outline-secondary border-0">By name</button>
                     </div>
                     <div>
-                        <i class="fa fa-arrow-up"></i>
+                        <i class="fa fa-arrow-up textArrow"></i>
                     </div>
                 </div>
             </div>

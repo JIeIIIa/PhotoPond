@@ -1,0 +1,69 @@
+#header {
+  .flag {
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+
+  .image-container {
+    height: 3.1rem;
+    width: 3.1rem;
+
+    > img {
+      max-width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .navbar .nav-item {
+    .nav-link {
+      padding-bottom: 0;
+      padding-top: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+
+      &.active {
+        color: #DDECF7;
+        border-bottom: 5px solid #798230;
+      }
+    }
+
+    .btn, .nav-link {
+      font-weight: $nav-link-font-weight;
+    }
+
+    .btn.btn-primary {
+      color: $lime-dark;
+      background-color: $link-blue;
+      text-transform: uppercase;
+      font-weight: 900;
+
+      &:hover, &:focus {
+        color: #384426;
+        background-color: #416d8f;
+        border-color: #416d8f;
+      }
+    }
+
+    .dropdown-menu {
+      background-color: lighten($dark-brown, 1%);
+      font-size: 1rem;
+
+      .dropdown-header {
+        color: $link-blue;
+
+        .login {
+          color: $light-blue;
+        }
+      }
+      
+      .dropdown-item {
+
+      }
+    }
+
+    .small-flag {
+      max-height: 2rem;
+    }
+  }
+}

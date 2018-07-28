@@ -1,0 +1,28 @@
+#headerwrap {
+  min-height: 40rem;
+  width: 100%;
+
+  /* чтоб изображение нормально выглядело на всех разрешениях */
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+
+  h1 {
+    font-size: 3.5em;
+    margin-top: 17rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #DDECF7;
+  }
+
+  h2 {
+    font-size: 1.5em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+  }
+
+}
+
+

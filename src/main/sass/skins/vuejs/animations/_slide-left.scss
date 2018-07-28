@@ -1,0 +1,10 @@
+.slide-left {
+  &-leave-active, &-enter-active {
+    transition: all 0.5s;
+  }
+
+  &-enter, &-leave-to {
+    display: inline-flex;
+    transform: translateX(-200%);
+  }
+}
