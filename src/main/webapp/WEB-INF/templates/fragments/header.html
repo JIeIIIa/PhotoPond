@@ -98,7 +98,8 @@
                                     </li>
                                     <li class="dropdown-divider"></li>
                                     <li>
-                                        <a class="dropdown-item" href="#" th:href="@{#}"
+                                        <a class="dropdown-item" href="#"
+                                           th:href="@{/user/{login}/settings(login=${#authentication.name})}"
                                            th:text="#{header.settings}">
                                             Settings
                                         </a>
