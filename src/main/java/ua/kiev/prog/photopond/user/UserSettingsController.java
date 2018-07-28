@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/user/{login}/settings")
 public class UserSettingsController {
-    public static final Logger LOG = LogManager.getLogger(UserSettingsController.class);
+    private static final Logger LOG = LogManager.getLogger(UserSettingsController.class);
 
     @RequestMapping("")
     public String allSettings(@PathVariable("login") String login) {

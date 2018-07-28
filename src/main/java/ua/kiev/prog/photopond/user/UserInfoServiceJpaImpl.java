@@ -11,6 +11,8 @@ import ua.kiev.prog.photopond.annotation.profile.DevOrProd;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
+
 @Service
 @DevOrProd
 @Transactional(readOnly = true)
@@ -50,7 +52,7 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
     private void cryptPassword(UserInfo user, String password) {
         LOG.debug("Crypt password for user {}", user.getLogin());
-        if (user != null && password != null) {
+        if (nonNull(user) && nonNull(password)) {
             user.setPassword(passwordEncoder.encode(password));
         }
     }
@@ -115,19 +117,27 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
     @Override
     @Transactional
-    public Optional<UserInfo> setNewPassword(String login, String newPassword) {
-        return Optional.ofNullable(
-                userInfoRepository.findByLogin(login)
-                        .map(u -> {
-                            cryptPassword(u, newPassword);
-                            userInfoRepository.save(u);
-                            LOG.debug("Password was changed");
-                            return u;
-                        })
-                        .orElseGet(() -> {
-                            LOG.warn("User with login = '{}' not found. Password wasn't changed.", login);
-                            return null;
-                        }));
+    public boolean setNewPassword(UserPasswordDTO passwordDTO) {
+        return updatePassword(passwordDTO.getLogin(), passwordDTO.getNewPassword());
+    }
+
+    @Override
+    public boolean resetPassword(String login, String password) {
+        return updatePassword(login, password);
+    }
+
+    private Boolean updatePassword(String login, String password) {
+        return userInfoRepository.findByLogin(login)
+                .map(u -> {
+                    cryptPassword(u, password);
+                    userInfoRepository.save(u);
+                    LOG.debug("Password was changed");
+                    return true;
+                })
+                .orElseGet(() -> {
+                    LOG.warn("User with login = '{}' not found. Password wasn't changed.", login);
+                    return false;
+                });
     }
 
     @Override

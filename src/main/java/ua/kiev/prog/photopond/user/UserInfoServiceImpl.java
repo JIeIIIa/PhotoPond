@@ -11,6 +11,8 @@ import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
+
 @Service
 @ConditionalOnMissingBean(UserInfoService.class)
 public class UserInfoServiceImpl implements UserInfoService {
@@ -51,7 +53,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     private void cryptPassword(UserInfo user, String password) {
         LOG.debug("Crypt password for user {}", user.getLogin());
-        if (user != null && password != null) {
+        if (nonNull(user) && nonNull(password)) {
             user.setPassword(passwordEncoder.encode(password));
         }
     }
@@ -105,15 +107,32 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public Optional<UserInfo> setNewPassword(String login, String newPassword) {
+    public boolean setNewPassword(UserPasswordDTO passwordDTO) {
+        return updatePassword(passwordDTO.getLogin(), passwordDTO.getNewPassword());
+    }
+
+    @Override
+    public boolean resetPassword(String login, String password) {
+        return updatePassword(login, password);
+    }
+
+    private Boolean updatePassword(String login, String password) {
         if (login == null) {
             LOG.warn("Try to change password for user with null login");
-            return Optional.empty();
+            return false;
         }
         Optional<UserInfo> user = userInfoRepository.findUserByLogin(login);
-        user.ifPresent(u -> cryptPassword(u, newPassword));
-        LOG.debug("Password was changed");
-        return user;
+
+        return user
+                .map(u -> {
+                    cryptPassword(u, password);
+                    userInfoRepository.update(u);
+                    LOG.debug("Password was changed");
+                    return true;
+                }).orElseGet(() -> {
+                    LOG.warn("User with login = '{}' not found. Password wasn't changed.", login);
+                    return false;
+                });
     }
 
     @Override

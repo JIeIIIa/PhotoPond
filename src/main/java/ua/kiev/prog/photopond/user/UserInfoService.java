@@ -22,5 +22,7 @@ public interface UserInfoService {
 
     Optional<UserInfo> update(UserInfo userInfo);
 
-    Optional<UserInfo> setNewPassword(String login, String newPassword);
+    boolean setNewPassword(UserPasswordDTO passwordDTO);
+
+    boolean resetPassword(String login, String password);
 }

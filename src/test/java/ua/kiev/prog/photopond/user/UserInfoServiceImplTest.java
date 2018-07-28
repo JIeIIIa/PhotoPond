@@ -3,6 +3,7 @@ package ua.kiev.prog.photopond.user;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -65,7 +66,7 @@ public class UserInfoServiceImplTest {
     }
 
     @Test
-    public void addUserSuccess() throws Exception {
+    public void addUserSuccess() {
         //Given
         UserInfo user = new UserInfo(USER_LOGIN, "password", UserRole.USER);
 
@@ -77,7 +78,7 @@ public class UserInfoServiceImplTest {
     }
 
     @Test
-    public void AddNullAsUser() throws Exception {
+    public void AddNullAsUser() {
         //When
         instance.addUser(null);
 
@@ -137,7 +138,7 @@ public class UserInfoServiceImplTest {
     @Test
     public void findByIdExistUser() {
         //Given
-        final Long id = 123L;
+        final long id = 123L;
         UserInfo user = new UserInfoBuilder().id(id).login(USER_LOGIN).password("password").role(UserRole.USER).build();
         when(userRepository.findById(id))
                 .thenReturn(Optional.of(user));
@@ -157,7 +158,7 @@ public class UserInfoServiceImplTest {
     @Test
     public void findByIdNotExistsUser() {
         //Given
-        final Long id = 123L;
+        final long id = 123L;
         when(userRepository.findById(id))
                 .thenReturn(Optional.empty());
 
@@ -193,25 +194,35 @@ public class UserInfoServiceImplTest {
     @Test
     public void updatePasswordSuccess() {
         //Given
-        UserInfo user = new UserInfo(USER_LOGIN, "somePassword", UserRole.USER);
+        String newPassword = "awesomePassword";
+        String oldPassword = "somePassword";
+        UserPasswordDTO passwordDTO = UserPasswordDTOBuilder.getInstance()
+                .login(USER_LOGIN)
+                .oldPassword(oldPassword)
+                .newPassword(newPassword)
+                .confirmNewPassword(newPassword)
+                .build();
+
+        UserInfo user = new UserInfo(USER_LOGIN, oldPassword, UserRole.USER);
+        UserInfo expectedUser = new UserInfo(USER_LOGIN, passwordEncoder.encode(newPassword), UserRole.USER);
+
         when(userRepository.findUserByLogin(USER_LOGIN))
                 .thenReturn(Optional.of(user));
-        String newPassword = "awesomePassword";
 
         //When
-        Optional<UserInfo> result = instance.setNewPassword(USER_LOGIN, newPassword);
+        boolean result = instance.setNewPassword(passwordDTO);
 
         //Then
-        assertThat(result)
-                .isNotNull()
-                .isPresent()
-                .hasValue(user)
-                .map(UserInfo::getPassword)
-                .get()
-                .isNotNull()
-                .matches(p -> passwordEncoder.matches(newPassword, p), "Password and encrypted password are mismatch");
+        assertThat(result).isTrue();
 
         verify(userRepository).findUserByLogin(USER_LOGIN);
+
+        ArgumentCaptor<UserInfo> captor = ArgumentCaptor.forClass(UserInfo.class);
+        verify(userRepository).update(captor.capture());
+        assertThat(captor.getValue())
+                .isNotNull()
+                .isEqualToIgnoringGivenFields(expectedUser, "password")
+                .matches(u -> passwordEncoder.matches(newPassword, u.getPassword()), "Password and encrypted password are mismatch");
     }
 
     @Test

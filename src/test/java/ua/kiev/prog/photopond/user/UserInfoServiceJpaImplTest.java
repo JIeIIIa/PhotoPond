@@ -196,23 +196,23 @@ public class UserInfoServiceJpaImplTest {
     @Test
     public void updatePasswordSuccess() {
         //Given
-        UserInfo user = new UserInfo(USER_LOGIN, "password", UserRole.USER);
+        String newPassword = "awesomePassword";
+        String oldPassword = "password";
+        UserPasswordDTO passwordDTO = UserPasswordDTOBuilder.getInstance()
+                .login(USER_LOGIN)
+                .oldPassword(oldPassword)
+                .newPassword(newPassword)
+                .confirmNewPassword(newPassword)
+                .build();
+        UserInfo user = new UserInfo(USER_LOGIN, oldPassword, UserRole.USER);
         when(userRepository.findByLogin(USER_LOGIN))
                 .thenReturn(Optional.of(user));
-        String newPassword = "awesomePassword";
 
         //When
-        Optional<UserInfo> result = instance.setNewPassword(USER_LOGIN, newPassword);
+        boolean result = instance.setNewPassword(passwordDTO);
 
         //Then
-        assertThat(result)
-                .isNotNull()
-                .isPresent()
-                .hasValue(user)
-                .map(UserInfo::getPassword)
-                .get()
-                .isNotNull()
-                .matches(p -> passwordEncoder.matches(newPassword, p), "Password and encrypted password are mismatch");
+        assertThat(result).isTrue();
 
         verify(userRepository).findByLogin(USER_LOGIN);
     }

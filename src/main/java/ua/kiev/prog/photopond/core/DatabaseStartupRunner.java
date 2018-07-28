@@ -46,7 +46,7 @@ public class DatabaseStartupRunner {
                         .build();
                 userInfoService.addUser(admin);
             } else {
-                userInfoService.setNewPassword(adminLogin, password);
+                userInfoService.resetPassword(adminLogin, password);
             }
             admin = userInfoService.findUserByLogin(adminLogin)
                     .orElseThrow(() -> new ExceptionInInitializerError("Failure retrieve 'SuperPhotoPondAdmin' user"));

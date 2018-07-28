@@ -184,23 +184,36 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void updatePasswordSuccess() {
         //Given
-        String password = "qwerty";
+        String login = "someUser";
+        String oldPassword = "password";
+        String newPassword = "qwerty";
+
+        UserPasswordDTO passwordDTO = UserPasswordDTOBuilder.getInstance()
+                .login(login)
+                .oldPassword(oldPassword)
+                .newPassword(newPassword)
+                .confirmNewPassword(newPassword)
+                .build();
+
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        UserInfo updatedUser = new UserInfoBuilder()
+        UserInfo expectedUser = new UserInfoBuilder()
                 .id(777)
-                .login("someUser123")
-                .password(password)
-                .role(UserRole.ADMIN)
+                .login(login)
+                .password(newPassword)
+                .role(UserRole.USER)
                 .build();
         //When
-        Optional<UserInfo> result = userInfoServiceJpaImpl.update(updatedUser);
+        boolean result = userInfoServiceJpaImpl.setNewPassword(passwordDTO);
 
         //Then
-        assertThat(result)
+        Optional<UserInfo> afterUpdate = userInfoServiceJpaImpl.findById(expectedUser.getId());
+
+        assertThat(result).isTrue();
+        assertThat(afterUpdate)
                 .isPresent()
                 .get()
-                .isEqualToIgnoringGivenFields(updatedUser, "password")
-                .matches(u -> passwordEncoder.matches(password, u.getPassword()));
+                .isEqualToIgnoringGivenFields(expectedUser, "password")
+                .matches(u -> passwordEncoder.matches(newPassword, u.getPassword()));
     }
 
     @Test
