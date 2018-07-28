@@ -15,4 +15,9 @@ public class WelcomeController {
         return "index";
     }
 
+    @RequestMapping("/about")
+    public String about() {
+        log.traceEntry("Request to about page");
+        return "about";
+    }
 }

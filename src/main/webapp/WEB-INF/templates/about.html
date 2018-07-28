@@ -1,0 +1,51 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = 'PhotoPond - about page')">
+    <title>PhotoPond - about page</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <title>PhotoPond - main page</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS with custom styles -->
+    <link rel="stylesheet" href="../../css/skins/skin.css">
+</head>
+
+<body>
+
+<div th:replace="fragments/header :: header('about')">Static header</div>
+
+<div class="container-fluid">
+    <div class="row text-center px-0">
+        <div>
+            <div class="col-md-8 offset-md-2 col-12">
+
+                <h1 class="font-weight-bold">ABOUT<br> mock page</h1>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus, adipisci aliquam cupiditate distinctio dolorem doloremque illo,
+                    inventore labore magnam minima molestiae, officia perspiciatis quam quod reiciendis reprehenderit repudiandae veniam vitae.</p>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">
+    <!-- jQuery -->
+    <script src="../../libs/jquery/jquery-3.2.1.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
+    <script src="../../libs/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="../../libs/vuejs/vue-2.5.16.js"></script>
+</div>
+
+</body>
+</html>

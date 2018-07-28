@@ -43,7 +43,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/", "/index", "/index.html", "/registration", "/registration.html").permitAll()
+                .antMatchers("/", "/index", "/index.html", "/registration", "/registration.html",
+                        "/about", "/about.html").permitAll()
                 .antMatchers("/css/**", "/libs/**", "/js/**", "/pic/**").permitAll()
                 .antMatchers("/test/**", "/testingAccessDenied").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/files/**").hasAnyRole("USER", "ADMIN")
@@ -55,7 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and();
         http.formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/authorized.html",true)
+                .defaultSuccessUrl("/authorized.html", true)
                 .failureUrl("/login?error=true")
                 .loginProcessingUrl("/j_spring_security_check")
                 .usernameParameter("j_login")
