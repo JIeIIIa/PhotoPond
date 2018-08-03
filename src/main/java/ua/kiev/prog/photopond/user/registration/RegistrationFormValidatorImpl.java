@@ -38,8 +38,8 @@ public class RegistrationFormValidatorImpl implements RegistrationFormValidator{
         String password = null;
 
         if (user == null) {
-            errors.rejectValue("userInfo.login", "NotNull.userInfo.login", "Incorrect login size");
-            errors.rejectValue("userInfo.password", "NotNull.userInfo.password", "Incorrect password size");
+            errors.rejectValue("userInfo.login", "NotNull.login", "Incorrect login size");
+            errors.rejectValue("userInfo.password", "NotNull.password", "Incorrect password size");
         } else {
             login = user.getLogin();
             password = user.getPassword();

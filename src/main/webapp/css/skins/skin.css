@@ -9178,6 +9178,15 @@ body {
     overflow: auto;
   }
 }
+.alert-container {
+  position: relative;
+}
+.alert-container .alert-dismissible .close.close-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 #errorPage {
   position: absolute;
   top: 0;

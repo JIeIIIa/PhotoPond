@@ -196,21 +196,21 @@ public class UserInfoServiceImplTest {
         //Given
         String newPassword = "awesomePassword";
         String oldPassword = "somePassword";
-        UserPasswordDTO passwordDTO = UserPasswordDTOBuilder.getInstance()
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
                 .login(USER_LOGIN)
                 .oldPassword(oldPassword)
-                .newPassword(newPassword)
-                .confirmNewPassword(newPassword)
+                .password(newPassword)
+                .passwordConfirmation(newPassword)
                 .build();
 
-        UserInfo user = new UserInfo(USER_LOGIN, oldPassword, UserRole.USER);
+        UserInfo user = new UserInfo(USER_LOGIN, passwordEncoder.encode(oldPassword), UserRole.USER);
         UserInfo expectedUser = new UserInfo(USER_LOGIN, passwordEncoder.encode(newPassword), UserRole.USER);
 
         when(userRepository.findUserByLogin(USER_LOGIN))
                 .thenReturn(Optional.of(user));
 
         //When
-        boolean result = instance.setNewPassword(passwordDTO);
+        boolean result = instance.setNewPassword(userInfoDTO);
 
         //Then
         assertThat(result).isTrue();
@@ -304,7 +304,7 @@ public class UserInfoServiceImplTest {
         UserInfo user = new UserInfoBuilder()
                 .id(id)
                 .login("oldUser")
-                .password("oldPassword")
+                .password("password")
                 .role(UserRole.USER).build();
         UserInfo newInformation = new UserInfoBuilder()
                 .id(id)

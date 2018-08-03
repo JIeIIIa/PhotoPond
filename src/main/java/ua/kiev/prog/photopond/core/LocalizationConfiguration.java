@@ -20,6 +20,7 @@ public class LocalizationConfiguration{
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasenames("/WEB-INF/i18n/messages", "/WEB-INF/i18n/validator");
         messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setUseCodeAsDefaultMessage(true);
         return messageSource;
     }
 

@@ -31,3 +31,11 @@ function dynamicSort(property, direction) {
         return result * sortOrder;
     }
 }
+
+function appendToUrl(url, part) {
+    if (url.endsWith('/')) {
+        return url + part;
+    } else {
+        return url + '/' + part;
+    }
+}

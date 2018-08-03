@@ -1,0 +1,9 @@
+.alert-container {
+  position: relative;
+
+  .alert-dismissible .close.close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}

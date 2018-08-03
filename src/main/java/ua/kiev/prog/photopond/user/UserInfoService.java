@@ -22,7 +22,7 @@ public interface UserInfoService {
 
     Optional<UserInfo> update(UserInfo userInfo);
 
-    boolean setNewPassword(UserPasswordDTO passwordDTO);
+    boolean setNewPassword(UserInfoDTO userInfoDTO);
 
     boolean resetPassword(String login, String password);
 }

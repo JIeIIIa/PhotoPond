@@ -198,18 +198,18 @@ public class UserInfoServiceJpaImplTest {
         //Given
         String newPassword = "awesomePassword";
         String oldPassword = "password";
-        UserPasswordDTO passwordDTO = UserPasswordDTOBuilder.getInstance()
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
                 .login(USER_LOGIN)
                 .oldPassword(oldPassword)
-                .newPassword(newPassword)
-                .confirmNewPassword(newPassword)
+                .password(newPassword)
+                .passwordConfirmation(newPassword)
                 .build();
-        UserInfo user = new UserInfo(USER_LOGIN, oldPassword, UserRole.USER);
+        UserInfo user = new UserInfo(USER_LOGIN, passwordEncoder.encode(oldPassword), UserRole.USER);
         when(userRepository.findByLogin(USER_LOGIN))
                 .thenReturn(Optional.of(user));
 
         //When
-        boolean result = instance.setNewPassword(passwordDTO);
+        boolean result = instance.setNewPassword(userInfoDTO);
 
         //Then
         assertThat(result).isTrue();

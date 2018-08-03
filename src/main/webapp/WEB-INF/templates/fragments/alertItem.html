@@ -25,14 +25,16 @@
 <div id="usersApp">
     <alert-item inline-template
                 th:fragment="alertItem" th:remove="tag">
-        <div>
-        <div class="alert" :class="'alert-' + alertType" v-for="(message, key) in messages">
-            <span v-if="message['text']"> {{ message['text'] }} </span>
-            <span v-if="message['code']"> (code: <b>{{ message['code'] }}</b>)</span>
-            <button type="button" class="close" aria-label="Close" v-on:click="close(key)">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
+        <div class="alert-container">
+            <div class="alert alert-dismissible" role="alert" :class="'alert-' + alertType" v-for="(message, key) in messages">
+                <div class="pr-5">
+                    <span v-if="message['text']"> {{ message['text'] }} </span>
+                    <span v-if="message['code']"> (code:&nbsp;<b>{{ message['code'] }}</b>)</span>
+                </div>
+                <button type="button" class="close close-btn" aria-label="Close" v-on:click="close(key)">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
         </div>
     </alert-item>
 </div>

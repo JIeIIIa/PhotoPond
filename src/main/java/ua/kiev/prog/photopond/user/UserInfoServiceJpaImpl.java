@@ -117,27 +117,26 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
     @Override
     @Transactional
-    public boolean setNewPassword(UserPasswordDTO passwordDTO) {
-        return updatePassword(passwordDTO.getLogin(), passwordDTO.getNewPassword());
+    public boolean setNewPassword(UserInfoDTO userInfoDTO) {
+        return userInfoRepository.findByLogin(userInfoDTO.getLogin())
+                .filter(u -> passwordEncoder.matches(userInfoDTO.getOldPassword(), u.getPassword()))
+                .map(u -> updatePassword(u, userInfoDTO.getPassword()))
+                .orElse(false);
+
     }
 
     @Override
     public boolean resetPassword(String login, String password) {
-        return updatePassword(login, password);
+        return userInfoRepository.findByLogin(login)
+                .map(u -> updatePassword(u, password))
+                .orElse(false);
     }
 
-    private Boolean updatePassword(String login, String password) {
-        return userInfoRepository.findByLogin(login)
-                .map(u -> {
-                    cryptPassword(u, password);
-                    userInfoRepository.save(u);
-                    LOG.debug("Password was changed");
-                    return true;
-                })
-                .orElseGet(() -> {
-                    LOG.warn("User with login = '{}' not found. Password wasn't changed.", login);
-                    return false;
-                });
+    private Boolean updatePassword(UserInfo userInfo, String password) {
+        cryptPassword(userInfo, password);
+        userInfoRepository.save(userInfo);
+        LOG.debug("Password was changed");
+        return true;
     }
 
     @Override

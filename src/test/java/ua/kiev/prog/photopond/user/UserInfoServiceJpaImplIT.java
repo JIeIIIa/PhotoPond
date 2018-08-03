@@ -36,6 +36,8 @@ public class UserInfoServiceJpaImplIT {
     @Autowired
     private UserInfoServiceJpaImpl userInfoServiceJpaImpl;
 
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Test
     public void existsUserByLoginSuccess() {
         //When
@@ -59,7 +61,6 @@ public class UserInfoServiceJpaImplIT {
         //Given
         String password = "strongPassword";
         UserInfo user = new UserInfoBuilder().login("newUser").password(password).role(UserRole.USER).build();
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         UserInfo expectedUser = new UserInfoBuilder().login("newUser").password(password).role(UserRole.USER).build();
 
         //When
@@ -75,7 +76,7 @@ public class UserInfoServiceJpaImplIT {
                 .contains(expectedUser);
         assertThat(createdUser)
                 .isPresent()
-                .hasValueSatisfying(u -> encoder.matches(expectedUser.getPassword(), u.getPassword()));
+                .hasValueSatisfying(u -> passwordEncoder.matches(expectedUser.getPassword(), u.getPassword()));
     }
 
 
@@ -107,7 +108,8 @@ public class UserInfoServiceJpaImplIT {
         //Then
         assertThat(foundUser)
                 .isNotNull()
-                .isEqualToComparingFieldByField(user);
+                .isEqualToIgnoringGivenFields(user, "password")
+                .matches(u -> passwordEncoder.matches(user.getPassword(), u.getPassword()));
     }
 
     @Test
@@ -149,8 +151,9 @@ public class UserInfoServiceJpaImplIT {
         assertThat(foundUser)
                 .isNotNull()
                 .isPresent()
-                .usingFieldByFieldValueComparator()
-                .hasValue(expectedUser);
+                .get()
+                .isEqualToIgnoringGivenFields(expectedUser, "password")
+                .matches(u -> passwordEncoder.matches(expectedUser.getPassword(), u.getPassword()));
     }
 
     @Test
@@ -178,6 +181,7 @@ public class UserInfoServiceJpaImplIT {
         assertThat(foundUsers)
                 .isNotNull()
                 .hasSameSizeAs(allUsers)
+                .usingElementComparatorIgnoringFields("password")
                 .containsExactlyInAnyOrder(allUsers);
     }
 
@@ -188,22 +192,21 @@ public class UserInfoServiceJpaImplIT {
         String oldPassword = "password";
         String newPassword = "qwerty";
 
-        UserPasswordDTO passwordDTO = UserPasswordDTOBuilder.getInstance()
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
                 .login(login)
                 .oldPassword(oldPassword)
-                .newPassword(newPassword)
-                .confirmNewPassword(newPassword)
+                .password(newPassword)
+                .passwordConfirmation(newPassword)
                 .build();
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         UserInfo expectedUser = new UserInfoBuilder()
                 .id(777)
                 .login(login)
-                .password(newPassword)
+                .password(passwordEncoder.encode(newPassword))
                 .role(UserRole.USER)
                 .build();
         //When
-        boolean result = userInfoServiceJpaImpl.setNewPassword(passwordDTO);
+        boolean result = userInfoServiceJpaImpl.setNewPassword(userInfoDTO);
 
         //Then
         Optional<UserInfo> afterUpdate = userInfoServiceJpaImpl.findById(expectedUser.getId());
@@ -220,7 +223,6 @@ public class UserInfoServiceJpaImplIT {
     public void updateWithPasswordNotNullSuccess() {
         //Given
         String newPassword = "newPassword";
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         UserInfo newInformation = new UserInfoBuilder()
                 .id(777L)
                 .login("user")
@@ -249,8 +251,8 @@ public class UserInfoServiceJpaImplIT {
                 .login("user")
                 .password(null)
                 .role(UserRole.ADMIN).build();
-        UserInfo expected = new UserInfo().copyFrom(newInformation);
-        expected.setPassword("password");
+        UserInfo expectedUser = new UserInfo().copyFrom(newInformation);
+        expectedUser.setPassword("password");
 
         //When
         Optional<UserInfo> result = userInfoServiceJpaImpl.update(newInformation);
@@ -258,7 +260,9 @@ public class UserInfoServiceJpaImplIT {
         //Then
         assertThat(result)
                 .isPresent()
-                .hasValue(expected);
+                .get()
+                .isEqualToIgnoringGivenFields(expectedUser, "password")
+                .matches(u -> passwordEncoder.matches(expectedUser.getPassword(), u.getPassword()));
     }
 
 
@@ -318,7 +322,8 @@ public class UserInfoServiceJpaImplIT {
         assertThat(deletedUser)
                 .isPresent()
                 .get()
-                .isEqualTo(user);
+                .isEqualToIgnoringGivenFields(user, "password")
+                .matches(u -> passwordEncoder.matches(user.getPassword(), u.getPassword()));
     }
 
     @Test
@@ -366,7 +371,9 @@ public class UserInfoServiceJpaImplIT {
         assertThat(allUsers)
                 .isNotNull()
                 .hasSize(1)
-                .containsExactly(user);
+                .first()
+                .isEqualToIgnoringGivenFields(user, "password")
+                .matches(u -> passwordEncoder.matches(user.getPassword(), u.getPassword()));
     }
 
     @Test
@@ -381,6 +388,8 @@ public class UserInfoServiceJpaImplIT {
         assertThat(allAdmin)
                 .isNotNull()
                 .hasSize(1)
-                .containsExactly(admin);
+                .first()
+                .isEqualToIgnoringGivenFields(admin, "password")
+                .matches(u -> passwordEncoder.matches(admin.getPassword(), u.getPassword()));
     }
 }

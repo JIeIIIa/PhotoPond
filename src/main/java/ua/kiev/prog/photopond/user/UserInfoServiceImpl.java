@@ -107,32 +107,26 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public boolean setNewPassword(UserPasswordDTO passwordDTO) {
-        return updatePassword(passwordDTO.getLogin(), passwordDTO.getNewPassword());
+    public boolean setNewPassword(UserInfoDTO userInfoDTO) {
+        return userInfoRepository.findUserByLogin(userInfoDTO.getLogin())
+                .filter(u -> passwordEncoder.matches(userInfoDTO.getOldPassword(), u.getPassword()))
+                .map(u -> updatePassword(u, userInfoDTO.getPassword()))
+                .orElse(false);
     }
 
     @Override
     public boolean resetPassword(String login, String password) {
-        return updatePassword(login, password);
+        return userInfoRepository.findUserByLogin(login)
+                .map(u -> updatePassword(u, password))
+                .orElse(false);
     }
 
-    private Boolean updatePassword(String login, String password) {
-        if (login == null) {
-            LOG.warn("Try to change password for user with null login");
-            return false;
-        }
-        Optional<UserInfo> user = userInfoRepository.findUserByLogin(login);
+    private Boolean updatePassword(UserInfo user, String password) {
+        cryptPassword(user, password);
+        userInfoRepository.update(user);
+        LOG.debug("Password was changed");
 
-        return user
-                .map(u -> {
-                    cryptPassword(u, password);
-                    userInfoRepository.update(u);
-                    LOG.debug("Password was changed");
-                    return true;
-                }).orElseGet(() -> {
-                    LOG.warn("User with login = '{}' not found. Password wasn't changed.", login);
-                    return false;
-                });
+        return true;
     }
 
     @Override

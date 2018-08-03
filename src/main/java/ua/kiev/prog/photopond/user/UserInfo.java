@@ -16,12 +16,12 @@ public class UserInfo implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Size(min = 4, max = 30)
+    @NotNull(message = "{NotNull.login}")
+    @Size(min = 4, max = 30, message = "{Size.login}")
     private String login;
 
-    @NotNull
-    @Size(min = 6, max = 65)
+    @NotNull(message = "{NotNull.password}")
+    @Size(min = 6, max = 65, message = "{Size.password}")
     @JsonIgnore
     private String password;
 

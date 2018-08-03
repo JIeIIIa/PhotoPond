@@ -21,13 +21,20 @@
 
 <div th:replace="fragments/header :: header('settings')">Static header</div>
 
-<div class="container-fluid">
+<div class="container-fluid" id="settings" v-cloak>
     <div class="row text-center px-0">
-            <div class="col-md-8 offset-md-2 col-12">
+        <div class="col-md-8 offset-md-2 col-12">
+            <h1 class="font-weight-bold">SETTINGS</h1>
+        </div>
+    </div>
 
-                <h1 class="font-weight-bold">SETTINGS<br> mock page</h1>
-
-            </div>
+    <div class="row">
+        <div class="col-md-8 col-sm-10 col-12 offset-md-2 offset-sm-1">
+            <change-password-card inline-template
+                                  id="changePasswordCard"
+                                  th:insert="~{settings/changePassword :: changePasswordCard}">
+            </change-password-card>
+        </div>
     </div>
 </div>
 
@@ -43,5 +50,13 @@
     <script src="../../../libs/vuejs/vue-2.5.16.js"></script>
 </div>
 
+<script src="../../../js/main.js"
+        th:src="@{/js/main.js}"></script>
+<script src="../../../js/settings/changePasswordCard.js"
+        th:src="@{/js/settings/changePasswordCard.js}"></script>
+<script src="../../../js/alertItem.js"
+        th:src="@{/js/alertItem.js}"></script>
+<script src="../../../js/settings/settings.js"
+        th:src="@{/js/settings/settings.js}"></script>
 </body>
 </html>

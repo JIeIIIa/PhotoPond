@@ -1,20 +1,25 @@
 <dataset>
+    <!-- password = "password" -->
     <usersinfo
             id="777"
             login="someUser"
-            password="password"
+            password="$2a$10$FZHMBv523fWnAjneEkPzSe6G30oGV7kL17Ncm5sUcoyL8IC6MqAAm"
             role="1"
     />
+
+    <!-- password = "qwerty123!" -->
     <usersinfo
             id="1"
             login="Administrator"
-            password="qwerty123!"
+            password="$2a$10$7859HY2YHXOhV/Kb3JQIDuXIBnMSM0yrArioRykSACRJLA8lGnrEe"
             role="0"
     />
+
+    <!-- password = "password" -->
     <usersinfo
             id="2"
             login="disabledUser"
-            password="password"
+            password="$2a$10$FZHMBv523fWnAjneEkPzSe6G30oGV7kL17Ncm5sUcoyL8IC6MqAAm"
             role="2"
     />
 </dataset>
