@@ -81,7 +81,7 @@
                                 <a class="nav-link dropdown-toggle pr-0 py-0 h-100 d-inline-flex align-items-center justify-content-center"
                                    id="userNavbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                     <div class="image-container d-inline-flex align-items-center justify-content-center">
-                                        <img src="../../../pic/no_avatar.jpg" th:src="@{/pic/no_avatar.png}">
+                                        <img src="../../../pic/no_avatar.jpg" th:src="@{/public/user/{login}/avatar(login=${#authentication.name})}">
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-right inverse-dropdown pull-left align-items-center text-left scroll-after-sm"

@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import ua.kiev.prog.photopond.annotation.ImportSecurityConfiguration;
 import ua.kiev.prog.photopond.configuration.UserInfoServiceMockConfiguration;
+import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 import ua.kiev.prog.photopond.security.SpringSecurityWebAuthenticationTestConfiguration;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoService;
@@ -31,6 +32,7 @@ import static ua.kiev.prog.photopond.user.registration.RegistrationController.RE
 @ImportSecurityConfiguration
 @ContextConfiguration(classes = {
         UserInfoServiceMockConfiguration.class,
+        WebMvcTestContextConfiguration.class,
         RegistrationControllerTestConfiguration.class,
         SpringSecurityWebAuthenticationTestConfiguration.class
 })

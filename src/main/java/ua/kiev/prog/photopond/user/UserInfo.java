@@ -2,6 +2,7 @@ package ua.kiev.prog.photopond.user;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -27,6 +28,12 @@ public class UserInfo implements Serializable {
 
     @Enumerated(EnumType.ORDINAL)
     private UserRole role;
+
+    @Lob
+    @Nullable
+    @Basic(fetch = FetchType.LAZY)
+    @Column(length = 1_048_576)         /*max length == 1Mb*/
+    private byte[] avatar;
 
     public UserInfo() {
         role = UserRole.USER;
@@ -74,6 +81,14 @@ public class UserInfo implements Serializable {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public byte[] getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
     }
 
     @JsonIgnore

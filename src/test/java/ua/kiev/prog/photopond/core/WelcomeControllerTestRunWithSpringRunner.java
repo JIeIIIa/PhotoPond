@@ -12,9 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import ua.kiev.prog.photopond.annotation.ImportSecurityConfiguration;
-import ua.kiev.prog.photopond.configuration.UserInfoServiceMockConfiguration;
+import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 import ua.kiev.prog.photopond.security.SpringSecurityWebAuthenticationTestConfiguration;
-import ua.kiev.prog.photopond.user.UserInfoService;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -22,13 +21,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = WelcomeController.class)
 @ImportSecurityConfiguration
 @ContextConfiguration(classes = {
-        UserInfoServiceMockConfiguration.class,
+        WebMvcTestContextConfiguration.class,
         SpringSecurityWebAuthenticationTestConfiguration.class
 })
 @ActiveProfiles({"dev", "unitTest", "securityWebAuthTestConfig"})
 public class WelcomeControllerTestRunWithSpringRunner {
-    @Autowired
-    UserInfoService userInfoService;
 
     @Autowired
     MockMvc mockMvc;

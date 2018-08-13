@@ -108,6 +108,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public boolean setNewPassword(UserInfoDTO userInfoDTO) {
+        LOG.traceEntry("Try to set new password for '{}'", userInfoDTO.getLogin());
         return userInfoRepository.findUserByLogin(userInfoDTO.getLogin())
                 .filter(u -> passwordEncoder.matches(userInfoDTO.getOldPassword(), u.getPassword()))
                 .map(u -> updatePassword(u, userInfoDTO.getPassword()))
@@ -116,9 +117,29 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public boolean resetPassword(String login, String password) {
+        LOG.traceEntry("Reset the password for '{}'", login);
         return userInfoRepository.findUserByLogin(login)
                 .map(u -> updatePassword(u, password))
                 .orElse(false);
+    }
+
+    @Override
+    public boolean updateAvatar(UserInfoDTO userInfoDTO) {
+        LOG.traceEntry("Update the avatar for '{}'", userInfoDTO.getLogin());
+        return userInfoRepository.findUserByLogin(userInfoDTO.getLogin())
+                .map(u -> {
+                    u.setAvatar(userInfoDTO.getAvatarAsBytes());
+                    return u;
+                })
+                .map(userInfoRepository::update).isPresent();
+    }
+
+    @Override
+    public byte[] retrieveAvatar(String login) {
+        LOG.traceEntry("Try to retrieve the avatar for '{}'", login);
+        return userInfoRepository.findUserByLogin(login)
+                .map(UserInfo::getAvatar)
+                .orElseGet(() -> new byte[0]);
     }
 
     private Boolean updatePassword(UserInfo user, String password) {

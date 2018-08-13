@@ -96,7 +96,7 @@ public class UserInfoServiceJpaImplIT {
     public void findByLoginExistsUser() {
         //Given
         UserInfo user = new UserInfoBuilder()
-                .id(777)
+                .id(777L)
                 .login("someUser")
                 .password("password")
                 .role(UserRole.USER)
@@ -138,7 +138,7 @@ public class UserInfoServiceJpaImplIT {
     public void findByIdExistUser() {
         //Given
         UserInfo expectedUser = new UserInfoBuilder()
-                .id(777)
+                .id(777L)
                 .login("someUser")
                 .password("password")
                 .role(UserRole.USER)
@@ -200,7 +200,7 @@ public class UserInfoServiceJpaImplIT {
                 .build();
 
         UserInfo expectedUser = new UserInfoBuilder()
-                .id(777)
+                .id(777L)
                 .login(login)
                 .password(passwordEncoder.encode(newPassword))
                 .role(UserRole.USER)
@@ -271,7 +271,7 @@ public class UserInfoServiceJpaImplIT {
         //Given
         UserInfo user = userInfoJpaRepository.findById(777L).orElseThrow(IllegalStateException::new);
         UserInfo newInformation = new UserInfoBuilder()
-                .id(777)
+                .id(777L)
                 .login("Administrator")
                 .password("newPassword")
                 .role(UserRole.ADMIN).build();
@@ -291,7 +291,7 @@ public class UserInfoServiceJpaImplIT {
     public void updateWithWrongId() {
         //Given
         UserInfo newInformation = new UserInfoBuilder()
-                .id(101010)
+                .id(101010L)
                 .login("newUser")
                 .password("password")
                 .build();

@@ -322,7 +322,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     @Test(expected = PictureFileException.class)
     public void moveBetweenDifferentUsers() {
         //Given
-        UserInfo anotherUser = new UserInfoBuilder().id(5).login("anotherUser").password("qwerty123!").build();
+        UserInfo anotherUser = new UserInfoBuilder().id(5L).login("anotherUser").password("qwerty123!").build();
         Directory anotherDirectory = new DirectoryBuilder().id(9L).owner(anotherUser).path("/somewhere").build();
 
         //When

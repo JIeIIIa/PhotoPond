@@ -3,20 +3,21 @@ package ua.kiev.prog.photopond.user;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ua.kiev.prog.photopond.core.BindingErrorDTO;
 import ua.kiev.prog.photopond.core.BindingErrorResolver;
 import ua.kiev.prog.photopond.core.BindingErrorResolverImpl;
+import ua.kiev.prog.photopond.transfer.ChangeAvatar;
 import ua.kiev.prog.photopond.transfer.ChangePassword;
 
-import java.util.List;
 import java.util.Locale;
+
+import static ua.kiev.prog.photopond.Utils.Utils.jsonHeader;
+import static ua.kiev.prog.photopond.Utils.Utils.textHeader;
 
 @Controller
 @RequestMapping("/user/{login}/settings")
@@ -46,17 +47,8 @@ public class UserSettingsController {
     @ResponseBody
     public ResponseEntity changePassword(@PathVariable("login") String login,
                                          @Validated(ChangePassword.class) @RequestBody UserInfoDTO userInfoDTO,
-                                         BindingResult bindingResult,
                                          Locale locale) {
         userInfoDTO.setLogin(login);
-        if (bindingResult.hasErrors()) {
-            List<BindingErrorDTO> errors = bindingErrorResolver.resolveAll(bindingResult.getAllErrors(), locale);
-
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .headers(jsonHeader())
-                    .body(errors);
-        }
 
         if (userInfoService.setNewPassword(userInfoDTO)) {
             return ResponseEntity
@@ -71,17 +63,40 @@ public class UserSettingsController {
         }
     }
 
-    private HttpHeaders jsonHeader() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
+    @RequestMapping(value = "/avatar", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity updateAvatar(@PathVariable("login") String login,
+                                       @Validated(ChangeAvatar.class) @ModelAttribute UserInfoDTO userInfoDTO,
+                                       Locale locale) {
+        userInfoDTO.setLogin(login);
 
-        return headers;
+        if (userInfoService.updateAvatar(userInfoDTO)) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .headers(textHeader())
+                    .body(bindingErrorResolver.resolveMessage("Success.user.avatar.change", null, locale));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .headers(textHeader())
+                    .body(bindingErrorResolver.resolveMessage("Errors.user.avatar.change", null, locale));
+        }
     }
 
-    private HttpHeaders textHeader() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
-
-        return headers;
+    @RequestMapping(value = "/avatar", method = RequestMethod.DELETE)
+    public ResponseEntity removeAvatar(@PathVariable("login") String login,
+                                       Locale locale) {
+        if (userInfoService.updateAvatar(
+                UserInfoDTOBuilder.getInstance().login(login).build()
+        )) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .headers(jsonHeader())
+                    .body(bindingErrorResolver.resolveMessage("Success.user.avatar.remove", null, locale));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .headers(jsonHeader())
+                    .body(bindingErrorResolver.resolveMessage("Errors.user.avatar.change", null, locale));
+        }
     }
 }

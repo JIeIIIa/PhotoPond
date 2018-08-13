@@ -3,25 +3,32 @@ package ua.kiev.prog.photopond.user;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.kiev.prog.photopond.annotation.profile.DevOrProd;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.nonNull;
+import static org.apache.commons.io.IOUtils.toByteArray;
 
 @Service
 @DevOrProd
 @Transactional(readOnly = true)
 public class UserInfoServiceJpaImpl implements UserInfoService {
     private static final Logger LOG = LogManager.getLogger(UserInfoServiceJpaImpl.class);
+    private static final String DEFAULT_AVATAR_FILENAME = "defaultAvatar.png";
 
     private final UserInfoJpaRepository userInfoRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
+
+    private byte[] defaultAvatar = loadDefaultAvatar();
 
     @Autowired
     public UserInfoServiceJpaImpl(UserInfoJpaRepository userInfoJpaRepository, BCryptPasswordEncoder passwordEncoder) {
@@ -30,6 +37,19 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    public void setDefaultAvatar(byte[] defaultAvatar) {
+        this.defaultAvatar = defaultAvatar;
+    }
+
+    private byte[] loadDefaultAvatar() {
+        ClassPathResource resource = new ClassPathResource(DEFAULT_AVATAR_FILENAME);
+        try (InputStream is = resource.getInputStream()) {
+            return LOG.traceExit("Default avatar was loaded from resources", toByteArray(is));
+        } catch (IOException e) {
+            LOG.warn("Failure loading default avatar from resources");
+            return new byte[0];
+        }
+    }
 
     @Override
     public Optional<UserInfo> findUserByLogin(String login) {
@@ -118,6 +138,7 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
     @Override
     @Transactional
     public boolean setNewPassword(UserInfoDTO userInfoDTO) {
+        LOG.traceEntry("Try to set new password for '{}'", userInfoDTO.getLogin());
         return userInfoRepository.findByLogin(userInfoDTO.getLogin())
                 .filter(u -> passwordEncoder.matches(userInfoDTO.getOldPassword(), u.getPassword()))
                 .map(u -> updatePassword(u, userInfoDTO.getPassword()))
@@ -127,9 +148,31 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
     @Override
     public boolean resetPassword(String login, String password) {
+        LOG.traceEntry("Reset the password for '{}'", login);
         return userInfoRepository.findByLogin(login)
                 .map(u -> updatePassword(u, password))
                 .orElse(false);
+    }
+
+    @Override
+    @Transactional
+    public boolean updateAvatar(UserInfoDTO userInfoDTO) {
+        LOG.traceEntry("Update the avatar for '{}'", userInfoDTO.getLogin());
+        return userInfoRepository.findByLogin(userInfoDTO.getLogin())
+                .map(u -> {
+                    u.setAvatar(userInfoDTO.getAvatarAsBytes());
+                    return u;
+                })
+                .map(userInfoRepository::saveAndFlush)
+                .isPresent();
+    }
+
+    @Override
+    public byte[] retrieveAvatar(String login) {
+        LOG.traceEntry("Try to retrieve the avatar for '{}'", login);
+        return userInfoRepository.findByLogin(login)
+                .map(UserInfo::getAvatar)
+                .orElse(this.defaultAvatar);
     }
 
     private Boolean updatePassword(UserInfo userInfo, String password) {

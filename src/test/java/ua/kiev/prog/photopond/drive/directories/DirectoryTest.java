@@ -21,7 +21,7 @@ public class DirectoryTest {
 
     @Before
     public void setUp() {
-        UserInfo owner = new UserInfoBuilder().id(123).login(OWNER_NAME).build();
+        UserInfo owner = new UserInfoBuilder().id(123L).login(OWNER_NAME).build();
         directory = new DirectoryBuilder().owner(owner).build();
     }
 

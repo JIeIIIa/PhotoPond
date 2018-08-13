@@ -29,11 +29,17 @@
     </div>
 
     <div class="row">
-        <div class="col-md-8 col-sm-10 col-12 offset-md-2 offset-sm-1">
+        <div class="col-md-8 col-sm-10 col-12 offset-md-2 offset-sm-1 mb-1">
             <change-password-card inline-template
                                   id="changePasswordCard"
                                   th:insert="~{settings/changePassword :: changePasswordCard}">
             </change-password-card>
+        </div>
+        <div class="col-md-8 col-sm-10 col-12 offset-md-2 offset-sm-1">
+            <change-avatar-card inline-template
+                                  id="changeAvatarCard"
+                                  th:insert="~{settings/changeAvatar :: changeAvatarCard}">
+            </change-avatar-card>
         </div>
     </div>
 </div>
@@ -54,6 +60,8 @@
         th:src="@{/js/main.js}"></script>
 <script src="../../../js/settings/changePasswordCard.js"
         th:src="@{/js/settings/changePasswordCard.js}"></script>
+<script src="../../../js/settings/changeAvatarCard.js"
+        th:src="@{/js/settings/changeAvatarCard.js}"></script>
 <script src="../../../js/alertItem.js"
         th:src="@{/js/alertItem.js}"></script>
 <script src="../../../js/settings/settings.js"

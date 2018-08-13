@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ua.kiev.prog.photopond.annotation.ImportSecurityConfiguration;
+import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
@@ -25,7 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = LoginController.class)
 @ImportSecurityConfiguration
-@ContextConfiguration(classes = SpringSecurityWebAuthenticationTestConfiguration.class)
+@ContextConfiguration(classes = {
+        WebMvcTestContextConfiguration.class,
+        SpringSecurityWebAuthenticationTestConfiguration.class
+})
 @ActiveProfiles({"dev", "securityWebAuthTestConfig"})
 public class LoginControllerTest {
     private static final String LOGIN_PROCESSING_URL = "/j_spring_security_check";

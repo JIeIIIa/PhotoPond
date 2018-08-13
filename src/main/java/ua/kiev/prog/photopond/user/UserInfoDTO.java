@@ -1,20 +1,20 @@
 package ua.kiev.prog.photopond.user;
 
-import ua.kiev.prog.photopond.transfer.ChangePassword;
-import ua.kiev.prog.photopond.transfer.Edit;
-import ua.kiev.prog.photopond.transfer.New;
+import org.springframework.web.multipart.MultipartFile;
+import ua.kiev.prog.photopond.transfer.*;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.IOException;
 
 @EqualPasswords(
         groups = {New.class, ChangePassword.class}, message = "{EqualPasswords}")
 public class UserInfoDTO implements ConfirmedPassword {
     private Long id;
 
-    @NotNull(message = "{NotNull.login}", groups = {New.class, ChangePassword.class, Edit.class})
+    @NotNull(message = "{NotNull.login}", groups = {New.class, Exist.class})
     @Size(min = 4, max = 30, message = "{Size.login}",
-            groups = {New.class, ChangePassword.class, Edit.class})
+            groups = {New.class, Exist.class})
     @UniqueLogin(groups = New.class)
     private String login;
 
@@ -30,8 +30,11 @@ public class UserInfoDTO implements ConfirmedPassword {
 
     private String passwordConfirmation;
 
-    @NotNull(message = "{NotNull.role}", groups = {Edit.class})
+    @NotNull(message = "{NotNull.role}", groups = {AdminEditing.class})
     private UserRole role;
+
+    @NotNull(message = "NotNull.avatar", groups = {ChangeAvatar.class})
+    private MultipartFile avatar;
 
     public Long getId() {
         return id;
@@ -79,6 +82,22 @@ public class UserInfoDTO implements ConfirmedPassword {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public MultipartFile getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(MultipartFile avatar) {
+        this.avatar = avatar;
+    }
+
+    public byte[] getAvatarAsBytes() {
+        try {
+            return avatar.getBytes();
+        } catch (IOException | NullPointerException e) {
+            return null;
+        }
     }
 
     @Override

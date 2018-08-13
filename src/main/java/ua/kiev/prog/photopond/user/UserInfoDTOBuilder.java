@@ -1,5 +1,7 @@
 package ua.kiev.prog.photopond.user;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class UserInfoDTOBuilder {
     private Long id;
 
@@ -12,6 +14,8 @@ public class UserInfoDTOBuilder {
     private String passwordConfirmation;
 
     private UserRole role;
+
+    private MultipartFile avatar;
 
     private UserInfoDTOBuilder() {
     }
@@ -50,6 +54,11 @@ public class UserInfoDTOBuilder {
         return this;
     }
 
+    public UserInfoDTOBuilder avatar(MultipartFile avatar) {
+        this.avatar = avatar;
+        return this;
+    }
+
     public UserInfoDTO build() {
         UserInfoDTO userInfoDTO = new UserInfoDTO();
         userInfoDTO.setId(id);
@@ -58,6 +67,7 @@ public class UserInfoDTOBuilder {
         userInfoDTO.setPassword(password);
         userInfoDTO.setPasswordConfirmation(passwordConfirmation);
         userInfoDTO.setRole(role);
+        userInfoDTO.setAvatar(avatar);
 
         return userInfoDTO;
     }

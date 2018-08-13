@@ -28,7 +28,7 @@ public class DirectoryBuilderTest {
     public void owner() {
         //Given
         UserInfo user = new UserInfoBuilder()
-                .id(123)
+                .id(123L)
                 .login("someUser")
                 .role(UserRole.ADMIN)
                 .build();
@@ -71,7 +71,7 @@ public class DirectoryBuilderTest {
     public void from() {
         //Given
         UserInfo user = new UserInfoBuilder()
-                .id(123)
+                .id(123L)
                 .login("someUser")
                 .role(UserRole.ADMIN)
                 .build();

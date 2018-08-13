@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ua.kiev.prog.photopond.configuration.UserInfoServiceMockConfiguration;
+import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +34,10 @@ import static ua.kiev.prog.photopond.user.UserRole.USER;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = UserAdministrationController.class, secure = false)
-@ContextConfiguration(classes = {UserInfoServiceMockConfiguration.class})
+@ContextConfiguration(classes = {
+        WebMvcTestContextConfiguration.class,
+        UserInfoServiceMockConfiguration.class
+})
 @ActiveProfiles("unitTest")
 public class UserAdministrationControllerTest {
     private static final String URL_PREFIX = "/administration/user";

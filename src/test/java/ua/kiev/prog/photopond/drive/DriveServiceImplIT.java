@@ -98,7 +98,7 @@ public class DriveServiceImplIT {
         instance = new DriveServiceImpl(directoryRepository, fileRepository, userInfoService);
 
         user = new UserInfoBuilder()
-                .id(2)
+                .id(2L)
                 .login("User")
                 .password("password")
                 .build();

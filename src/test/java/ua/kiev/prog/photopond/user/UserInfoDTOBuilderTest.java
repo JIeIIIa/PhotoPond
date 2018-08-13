@@ -1,9 +1,12 @@
 package ua.kiev.prog.photopond.user;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserInfoDTOBuilderTest {
@@ -19,7 +22,7 @@ public class UserInfoDTOBuilderTest {
                 .build();
 
         //Then
-        Assertions.assertThat(userInfoDTO.getId())
+        assertThat(userInfoDTO.getId())
                 .isEqualTo(id);
     }
 
@@ -34,7 +37,7 @@ public class UserInfoDTOBuilderTest {
                 .build();
 
         //Then
-        Assertions.assertThat(userInfoDTO.getId())
+        assertThat(userInfoDTO.getId())
                 .isEqualTo(id);
     }
 
@@ -49,7 +52,7 @@ public class UserInfoDTOBuilderTest {
                 .build();
 
         //Then
-        Assertions.assertThat(userInfoDTO.getOldPassword())
+        assertThat(userInfoDTO.getOldPassword())
                 .isEqualTo(oldPassword);
     }
 
@@ -64,7 +67,7 @@ public class UserInfoDTOBuilderTest {
                 .build();
 
         //Then
-        Assertions.assertThat(userInfoDTO.getPassword())
+        assertThat(userInfoDTO.getPassword())
                 .isEqualTo(password);
     }
 
@@ -79,7 +82,7 @@ public class UserInfoDTOBuilderTest {
                 .build();
 
         //Then
-        Assertions.assertThat(userInfoDTO.getPasswordConfirmation())
+        assertThat(userInfoDTO.getPasswordConfirmation())
                 .isEqualTo(passwordConfirmation);
     }
 
@@ -94,7 +97,28 @@ public class UserInfoDTOBuilderTest {
                 .build();
 
         //Then
-        Assertions.assertThat(userInfoDTO.getRole())
+        assertThat(userInfoDTO.getRole())
                 .isEqualTo(role);
+    }
+
+    @Test
+    public void avatar() {
+        //Given
+        MultipartFile avatarFile = new MockMultipartFile("avatar.jgp", new byte[]{1, 2, 3, 4, 5, 6, 7});
+        MultipartFile expected = new MockMultipartFile("avatar.jgp", new byte[]{1, 2, 3, 4, 5, 6, 7});
+        byte[] expectedAvatar = {1, 2, 3, 4, 5, 6, 7};
+
+        //When
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
+                .avatar(avatarFile)
+                .build();
+
+        //Then
+        assertThat(userInfoDTO.getAvatarAsBytes())
+                .isNotNull()
+                .isEqualTo(expectedAvatar);
+        assertThat(userInfoDTO.getAvatar())
+                .isNotNull()
+                .isEqualToComparingFieldByField(expected);
     }
 }

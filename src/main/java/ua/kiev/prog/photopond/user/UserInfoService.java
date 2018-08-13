@@ -25,4 +25,8 @@ public interface UserInfoService {
     boolean setNewPassword(UserInfoDTO userInfoDTO);
 
     boolean resetPassword(String login, String password);
+
+    boolean updateAvatar(UserInfoDTO userInfoDTO);
+
+    byte[] retrieveAvatar(String login);
 }

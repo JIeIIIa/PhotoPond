@@ -38,7 +38,7 @@ public class UserInfoServiceJpaImplTest {
     @Before
     public void setUp() {
         instance = new UserInfoServiceJpaImpl(userRepository, passwordEncoder);
-        mockUser = new UserInfoBuilder().id(777).login("mockUser").password("password").role(UserRole.USER).build();
+        mockUser = new UserInfoBuilder().id(777L).login("mockUser").password("password").role(UserRole.USER).build();
     }
 
     @Test
