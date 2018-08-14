@@ -17,6 +17,7 @@ import java.util.Optional;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.io.IOUtils.toByteArray;
+import static ua.kiev.prog.photopond.user.UserInfoDTOMapper.fromDto;
 
 @Service
 @DevOrProd
@@ -66,12 +67,8 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
             return;
         }
         LOG.debug("Add user:  {}", userDTO.getLogin());
-        UserInfo user = new UserInfoBuilder()
-                .login(userDTO.getLogin())
-                .role(userDTO.getRole())
-                .avatar(userDTO.getAvatarAsBytes())
-                .build();
-        cryptPassword(user, userDTO.getPassword());
+        UserInfo user = fromDto(userDTO);
+        cryptPassword(user, user.getPassword());
         userInfoRepository.saveAndFlush(user);
         LOG.traceExit("User {} was saved", user);
     }
