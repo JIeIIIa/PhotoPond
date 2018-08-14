@@ -11,6 +11,7 @@ import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -36,14 +37,19 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public void addUser(UserInfo user) {
-        LOG.debug("Add user:  " + user);
-        if (user == null) {
-            LOG.warn("Try to add null as user");
+    public void addUser(UserInfoDTO userDTO) {
+        if (isNull(userDTO)) {
+            LOG.warn("Try to add 'null' as user");
             return;
         }
+        LOG.debug("Add user:  {}", userDTO.getLogin());
         try {
-            cryptPassword(user, user.getPassword());
+            UserInfo user = new UserInfoBuilder()
+                    .login(userDTO.getLogin())
+                    .role(userDTO.getRole())
+                    .avatar(userDTO.getAvatarAsBytes())
+                    .build();
+            cryptPassword(user, userDTO.getPassword());
             userInfoRepository.addUser(user);
         } catch (AddToRepositoryException e) {
             LOG.warn("AddToRepositoryException was caught");
@@ -53,7 +59,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     private void cryptPassword(UserInfo user, String password) {
         LOG.debug("Crypt password for user {}", user.getLogin());
-        if (nonNull(user) && nonNull(password)) {
+        if (nonNull(password)) {
             user.setPassword(passwordEncoder.encode(password));
         }
     }

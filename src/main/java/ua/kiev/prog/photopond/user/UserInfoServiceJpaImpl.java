@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.io.IOUtils.toByteArray;
 
@@ -59,20 +60,25 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
     @Override
     @Transactional
-    public void addUser(UserInfo user) {
-        LOG.debug("Add user:  " + user);
-        if (user == null) {
-            LOG.warn("Try to add null as user");
+    public void addUser(UserInfoDTO userDTO) {
+        if (isNull(userDTO)) {
+            LOG.warn("Try to add 'null' as user");
             return;
         }
-        cryptPassword(user, user.getPassword());
-        userInfoRepository.save(user);
+        LOG.debug("Add user:  {}", userDTO.getLogin());
+        UserInfo user = new UserInfoBuilder()
+                .login(userDTO.getLogin())
+                .role(userDTO.getRole())
+                .avatar(userDTO.getAvatarAsBytes())
+                .build();
+        cryptPassword(user, userDTO.getPassword());
+        userInfoRepository.saveAndFlush(user);
         LOG.traceExit("User {} was saved", user);
     }
 
     private void cryptPassword(UserInfo user, String password) {
         LOG.debug("Crypt password for user {}", user.getLogin());
-        if (nonNull(user) && nonNull(password)) {
+        if (nonNull(password)) {
             user.setPassword(passwordEncoder.encode(password));
         }
     }

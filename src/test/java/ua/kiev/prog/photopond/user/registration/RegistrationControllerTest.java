@@ -16,6 +16,7 @@ import ua.kiev.prog.photopond.configuration.UserInfoServiceMockConfiguration;
 import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 import ua.kiev.prog.photopond.security.SpringSecurityWebAuthenticationTestConfiguration;
 import ua.kiev.prog.photopond.user.UserInfo;
+import ua.kiev.prog.photopond.user.UserInfoDTO;
 import ua.kiev.prog.photopond.user.UserInfoService;
 import ua.kiev.prog.photopond.user.UserRole;
 
@@ -73,10 +74,11 @@ public class RegistrationControllerTest {
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/user/" + targetUser.getLogin()));
 
-        ArgumentCaptor<UserInfo> argument = ArgumentCaptor.forClass(UserInfo.class);
+        ArgumentCaptor<UserInfoDTO> argument = ArgumentCaptor.forClass(UserInfoDTO.class);
         verify(userInfoService).addUser(argument.capture());
-        UserInfo createdUser = argument.getValue();
-        assertThat(createdUser).isEqualTo(targetUser);
+        UserInfoDTO createdUser = argument.getValue();
+        assertThat(createdUser.getLogin()).isEqualTo(targetUser.getLogin());
+        assertThat(createdUser.getPassword()).isEqualTo(targetUser.getPassword());
         assertThat(createdUser.getRole()).isEqualTo(UserRole.USER);
     }
 

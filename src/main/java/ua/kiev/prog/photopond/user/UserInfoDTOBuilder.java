@@ -18,6 +18,7 @@ public class UserInfoDTOBuilder {
     private MultipartFile avatar;
 
     private UserInfoDTOBuilder() {
+        role = UserRole.USER;
     }
     
     public static UserInfoDTOBuilder getInstance() {

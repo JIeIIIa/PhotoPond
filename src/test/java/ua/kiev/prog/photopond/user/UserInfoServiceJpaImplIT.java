@@ -60,11 +60,13 @@ public class UserInfoServiceJpaImplIT {
     public void addUserSuccess() {
         //Given
         String password = "strongPassword";
-        UserInfo user = new UserInfoBuilder().login("newUser").password(password).role(UserRole.USER).build();
+        UserInfoDTO userDTO = UserInfoDTOBuilder.getInstance()
+                .login("newUser").password(password).role(UserRole.USER)
+                .build();
         UserInfo expectedUser = new UserInfoBuilder().login("newUser").password(password).role(UserRole.USER).build();
 
         //When
-        userInfoServiceJpaImpl.addUser(user);
+        userInfoServiceJpaImpl.addUser(userDTO);
 
         //Then
         List<UserInfo> allUsers = userInfoJpaRepository.findAll();

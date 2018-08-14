@@ -3,6 +3,7 @@ package ua.kiev.prog.photopond.user;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,7 +15,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -72,13 +72,21 @@ public class UserInfoServiceJpaImplTest {
     @Test
     public void addUserSuccess() {
         //Given
-        UserInfo user = new UserInfo(USER_LOGIN, "password", UserRole.USER);
+        String password = "password";
+        UserInfoDTO userDTO = UserInfoDTOBuilder.getInstance()
+                .login(USER_LOGIN).password(password)
+                .build();
+        UserInfo user = new UserInfo(USER_LOGIN, password, UserRole.USER);
 
         //When
-        instance.addUser(user);
+        instance.addUser(userDTO);
 
         //Then
-        verify(userRepository).save(eq(user));
+        ArgumentCaptor<UserInfo> argument = ArgumentCaptor.forClass(UserInfo.class);
+        verify(userRepository).saveAndFlush(argument.capture());
+        assertThat(argument.getValue())
+                .isEqualToIgnoringGivenFields(user, "password")
+                .matches(u -> passwordEncoder.matches(user.getPassword(), u.getPassword()), "Password and encrypted password are mismatch");
     }
 
     @Test

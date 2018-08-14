@@ -68,13 +68,21 @@ public class UserInfoServiceImplTest {
     @Test
     public void addUserSuccess() {
         //Given
-        UserInfo user = new UserInfo(USER_LOGIN, "password", UserRole.USER);
+        String password = "password";
+        UserInfoDTO userDTO = UserInfoDTOBuilder.getInstance()
+                .login(USER_LOGIN).password(password).role(UserRole.USER)
+                .build();
+        UserInfo user = new UserInfo(USER_LOGIN, password, UserRole.USER);
 
         //When
-        instance.addUser(user);
+        instance.addUser(userDTO);
 
         //Then
-        verify(userRepository).addUser(eq(user));
+        ArgumentCaptor<UserInfo> argument = ArgumentCaptor.forClass(UserInfo.class);
+        verify(userRepository).addUser(argument.capture());
+        assertThat(argument.getValue())
+                .isEqualToIgnoringGivenFields(user, "password")
+                .matches(u -> passwordEncoder.matches(user.getPassword(), u.getPassword()), "Password and encrypted password are mismatch");
     }
 
     @Test

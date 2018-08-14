@@ -7,10 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import ua.kiev.prog.photopond.annotation.profile.Dev;
 import ua.kiev.prog.photopond.annotation.profile.Prod;
-import ua.kiev.prog.photopond.user.UserInfo;
-import ua.kiev.prog.photopond.user.UserInfoBuilder;
-import ua.kiev.prog.photopond.user.UserInfoService;
-import ua.kiev.prog.photopond.user.UserRole;
+import ua.kiev.prog.photopond.user.*;
 
 @Configuration
 public class DatabaseStartupRunner {
@@ -35,20 +32,20 @@ public class DatabaseStartupRunner {
         private void createUsers() {
             String password = generatePassword();
             String adminLogin = "PhotoPondSuperAdmin";
-            UserInfo admin;
+            UserInfoDTO adminDTO;
 
             if (!userInfoService.existsByLogin(adminLogin)) {
                 LOG.debug("Create user with UserRole.ADMIN");
-                admin = new UserInfoBuilder()
+                adminDTO = UserInfoDTOBuilder.getInstance()
                         .login(adminLogin)
                         .password(password)
                         .role(UserRole.ADMIN)
                         .build();
-                userInfoService.addUser(admin);
+                userInfoService.addUser(adminDTO);
             } else {
                 userInfoService.resetPassword(adminLogin, password);
             }
-            admin = userInfoService.findUserByLogin(adminLogin)
+            UserInfo admin = userInfoService.findUserByLogin(adminLogin)
                     .orElseThrow(() -> new ExceptionInInitializerError("Failure retrieve 'SuperPhotoPondAdmin' user"));
             LOG.info("    =======================================");
             LOG.info("              Default administrators ");
@@ -81,55 +78,51 @@ public class DatabaseStartupRunner {
         }
 
         private void createUsers() {
-            UserInfo admin;
-            if (!userInfoService.existsByLogin("admin")) {
-                admin = new UserInfoBuilder()
-                        .login("admin")
-                        .password("password")
-                        .role(UserRole.ADMIN)
-                        .build();
-                userInfoService.addUser(admin);
-            }
-            admin = userInfoService.findUserByLogin("admin")
-                    .orElseThrow(() -> new ExceptionInInitializerError("Failure retrieve 'admin' user"));
+            UserInfoDTO adminDTO = UserInfoDTOBuilder.getInstance()
+                    .login("admin")
+                    .password("password")
+                    .role(UserRole.ADMIN)
+                    .build();
+            createUserOrResetPassword(adminDTO);
 
-            UserInfo user;
-            if (!userInfoService.existsByLogin("user")) {
-                user = new UserInfoBuilder()
-                        .login("user")
-                        .password("useruser")
-                        .build();
-                userInfoService.addUser(user);
-            }
-            user = userInfoService.findUserByLogin("user")
-                    .orElseThrow(() -> new ExceptionInInitializerError("Failure retrieve 'user' user"));
+            UserInfoDTO userDTO = UserInfoDTOBuilder.getInstance()
+                    .login("user")
+                    .password("useruser")
+                    .build();
+            createUserOrResetPassword(userDTO);
 
-            UserInfo deactivatedUser;
-            if (!userInfoService.existsByLogin("nonActiveUser")) {
-                deactivatedUser = new UserInfoBuilder()
-                        .login("nonActiveUser")
-                        .password("useruser")
-                        .build();
-                userInfoService.addUser(deactivatedUser);
-            }
-            deactivatedUser = userInfoService.findUserByLogin("nonActiveUser")
-                    .orElseThrow(() -> new ExceptionInInitializerError("Failure retrieve 'nonActiveUser' user"));
+            UserInfoDTO deactivatedUserDTO = UserInfoDTOBuilder.getInstance()
+                    .login("nonActiveUser")
+                    .password("useruser")
+                    .role(UserRole.DEACTIVATED)
+                    .build();
+            createUserOrResetPassword(deactivatedUserDTO);
 
             LOG.info("    =======================================");
             LOG.info("                Available users ");
             LOG.info("    =======================================");
-            userInfoToLog(admin);
+            userInfoToLog(adminDTO);
             LOG.info("    ---------------------------------------");
-            userInfoToLog(user);
+            userInfoToLog(userDTO);
             LOG.info("    ---------------------------------------");
-            userInfoToLog(deactivatedUser);
+            userInfoToLog(deactivatedUserDTO);
             LOG.info("    =======================================");
+        }
+
+        private void createUserOrResetPassword(UserInfoDTO userDTO) {
+            if (userInfoService.existsByLogin(userDTO.getLogin())) {
+                userInfoService.resetPassword(userDTO.getLogin(), userDTO.getPassword());
+            } else {
+                userInfoService.addUser(userDTO);
+            }
+            userInfoService.findUserByLogin(userDTO.getLogin())
+                    .orElseThrow(() -> new ExceptionInInitializerError("Failure retrieve " + userDTO.getLogin() + " user"));
         }
     }
 
-    private static void userInfoToLog(UserInfo userInfo) {
-        LOG.info("         login   : " + userInfo.getLogin());
-        LOG.info("         password: " + userInfo.getPassword());
-        LOG.info("         role    : " + userInfo.getRole().name());
+    private static void userInfoToLog(UserInfoDTO userInfoDTO) {
+        LOG.info("         login   : " + userInfoDTO.getLogin());
+        LOG.info("         password: " + userInfoDTO.getPassword());
+        LOG.info("         role    : " + userInfoDTO.getRole().name());
     }
 }

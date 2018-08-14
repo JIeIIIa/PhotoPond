@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserInfoService {
-    void addUser(UserInfo user);
+    void addUser(UserInfoDTO user);
 
     Optional<UserInfo> findUserByLogin(String login);
 

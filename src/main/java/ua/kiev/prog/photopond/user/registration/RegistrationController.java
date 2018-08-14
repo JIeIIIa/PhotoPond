@@ -11,6 +11,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,7 +22,9 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
+import ua.kiev.prog.photopond.transfer.New;
 import ua.kiev.prog.photopond.user.UserInfo;
+import ua.kiev.prog.photopond.user.UserInfoDTO;
 import ua.kiev.prog.photopond.user.UserInfoService;
 import ua.kiev.prog.photopond.user.UserRole;
 
@@ -72,6 +75,7 @@ public class RegistrationController {
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
     public ModelAndView registrationNewUser(@Valid @ModelAttribute(REGISTRATION_FORM_NAME) RegistrationForm form,
+                                            @Validated(New.class) @ModelAttribute("userInfoDTO") UserInfoDTO userDTO,
                                             BindingResult bindingResult, ModelAndView modelAndView,
                                             HttpServletRequest request) throws AddToRepositoryException {
         log.traceEntry("Method = POST,   uri = '/registration'");
@@ -85,7 +89,7 @@ public class RegistrationController {
         UserInfo userInfo = form.getUserInfo();
 
         userInfo.setRole(UserRole.USER);
-        userInfoService.addUser(userInfo);
+        userInfoService.addUser(userDTO);
 
         log.debug("Redirect to user home page.");
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
