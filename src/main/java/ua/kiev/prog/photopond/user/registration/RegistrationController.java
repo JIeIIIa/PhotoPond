@@ -3,17 +3,13 @@ package ua.kiev.prog.photopond.user.registration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,93 +19,81 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 import ua.kiev.prog.photopond.transfer.New;
-import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoDTO;
+import ua.kiev.prog.photopond.user.UserInfoDTOBuilder;
 import ua.kiev.prog.photopond.user.UserInfoService;
 import ua.kiev.prog.photopond.user.UserRole;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+
+import static java.util.Collections.singletonList;
 
 
 @Controller
 public class RegistrationController {
-    static final String REGISTRATION_FORM_NAME = "registrationForm";
-    private static Logger log = LogManager.getLogger(RegistrationController.class);
+    private static final Logger LOG = LogManager.getLogger(RegistrationController.class);
+
+    static final String REGISTRATION_USER_ATTRIBUTE_NAME = "userDTO";
 
     private final UserInfoService userInfoService;
 
-    private final AuthenticationManager authenticationManager;
-
-    private final Validator validator;
-
     @Autowired
-    public RegistrationController(UserInfoService userInfoService, AuthenticationManager authenticationManager,
-                                  RegistrationFormValidator registrationFormValidator) {
+    public RegistrationController(UserInfoService userInfoService) {
         this.userInfoService = userInfoService;
-        this.authenticationManager = authenticationManager;
-        this.validator = registrationFormValidator;
-    }
-
-    @InitBinder(REGISTRATION_FORM_NAME)
-    private void initBinder(WebDataBinder binder) {
-        binder.addValidators(validator);
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public ModelAndView registrationPage() {
-        log.traceEntry("Method = GET,   uri = '/registration'");
+        LOG.traceEntry("Method = GET,   uri = '/registration'");
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("registration");
 
-        UserInfo user = new UserInfo();
-        user.setLogin("newUser");
-        user.setPassword("qwerty");
-        RegistrationForm form = new RegistrationForm(user);
-        form.setPasswordConfirmation(user.getPassword());
-
-        modelAndView.addObject(REGISTRATION_FORM_NAME, form);
-
+        UserInfoDTO user = UserInfoDTOBuilder.getInstance()
+                .login("newUser")
+                .password("qwerty")
+                .passwordConfirmation("qwerty")
+                .build();
+        modelAndView.addObject(REGISTRATION_USER_ATTRIBUTE_NAME, user);
         return modelAndView;
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public ModelAndView registrationNewUser(@Valid @ModelAttribute(REGISTRATION_FORM_NAME) RegistrationForm form,
-                                            @Validated(New.class) @ModelAttribute("userInfoDTO") UserInfoDTO userDTO,
+    public ModelAndView registrationNewUser(@Validated(New.class) @ModelAttribute(REGISTRATION_USER_ATTRIBUTE_NAME) UserInfoDTO userDTO,
                                             BindingResult bindingResult, ModelAndView modelAndView,
                                             HttpServletRequest request) throws AddToRepositoryException {
-        log.traceEntry("Method = POST,   uri = '/registration'");
+        LOG.traceEntry("Method = POST,   uri = '/registration'");
         if (bindingResult.hasErrors()) {
-            log.debug("Has errors in registration information. Redirect to /registration");
+            LOG.debug("Has errors in registration information. Redirect to /registration");
             modelAndView.setViewName("registration");
+            modelAndView.addObject(REGISTRATION_USER_ATTRIBUTE_NAME, userDTO);
+
             return modelAndView;
         }
 
-        log.trace("No error. Save user.");
-        UserInfo userInfo = form.getUserInfo();
+        LOG.trace("No error. Save user.");
 
-        userInfo.setRole(UserRole.USER);
+        userDTO.setRole(UserRole.USER);
         userInfoService.addUser(userDTO);
 
-        log.debug("Redirect to user home page.");
+        LOG.debug("Redirect to user home page.");
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
-                .path("/user/{login}")
+                .path("/user/{login}/drive")
                 .build()
-                .expand(userInfo.getLogin())
+                .expand(userDTO.getLogin())
                 .encode();
         modelAndView.setView(new RedirectView(uriComponents.toUriString(), true, true, false));
 
-        autoLogin(userInfo.getLogin(), userInfo.getPassword(), request);
+        autoLogin(userDTO.getLogin(), request);
 
         return modelAndView;
     }
 
-    private void autoLogin(String login, String password, HttpServletRequest request) {
-        log.traceEntry("Try to auto log in for user [ login = '{}' ]",  login);
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(login, password);
-        Authentication authentication = authenticationManager.authenticate(token);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+    private void autoLogin(String login, HttpServletRequest request) {
+        LOG.traceEntry("Try to auto log in for user [ login = '{}' ]", login);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(login, null,
+                singletonList(new SimpleGrantedAuthority(UserRole.USER.toString())));
+        SecurityContextHolder.getContext().setAuthentication(token);
         request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-        log.debug("Exit   New user [ login = '{}' ] was logged in.", login);
+        LOG.debug("Exit   New user [ login = '{}' ] was logged in.", login);
     }
 }

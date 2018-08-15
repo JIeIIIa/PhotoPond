@@ -99,7 +99,7 @@ public class BindingErrorResolverImpl implements BindingErrorResolver {
         }
 
         String defaultMessage = error.getDefaultMessage();
-        if (nonNull(defaultMessage)) {
+        if (nonNull(defaultMessage) && !defaultMessage.isEmpty()) {
             list.add(defaultMessage);
             if (defaultMessage.matches("\\{.+\\}")) {
                 list.add(defaultMessage.substring(1, defaultMessage.length() - 1));

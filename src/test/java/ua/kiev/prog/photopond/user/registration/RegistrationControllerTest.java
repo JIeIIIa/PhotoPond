@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ua.kiev.prog.photopond.user.registration.RegistrationController.REGISTRATION_FORM_NAME;
+import static ua.kiev.prog.photopond.user.registration.RegistrationController.REGISTRATION_USER_ATTRIBUTE_NAME;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = RegistrationController.class)
@@ -34,17 +34,16 @@ import static ua.kiev.prog.photopond.user.registration.RegistrationController.RE
 @ContextConfiguration(classes = {
         UserInfoServiceMockConfiguration.class,
         WebMvcTestContextConfiguration.class,
-        RegistrationControllerTestConfiguration.class,
         SpringSecurityWebAuthenticationTestConfiguration.class
 })
 
 @ActiveProfiles({"dev", "unitTest", "securityWebAuthTestConfig"})
 public class RegistrationControllerTest {
     private static final String REGISTRATION_URL = "/registration";
-    private static final String REGISTRATION_MODEL_NAME = "registration";
+    private static final String REGISTRATION_MODEL_VIEW_NAME = "registration";
 
-    private static final String LOGIN_ATTRIBUTE_NAME = "userInfo.login";
-    private static final String PASSWORD_ATTRIBUTE_NAME = "userInfo.password";
+    private static final String LOGIN_ATTRIBUTE_NAME = "login";
+    private static final String PASSWORD_ATTRIBUTE_NAME = "password";
     private static final String PASSWORD_CONFIRMATION_ATTRIBUTE_NAME = "passwordConfirmation";
 
     @Autowired
@@ -72,7 +71,7 @@ public class RegistrationControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/user/" + targetUser.getLogin()));
+                .andExpect(redirectedUrl("/user/" + targetUser.getLogin() + "/drive"));
 
         ArgumentCaptor<UserInfoDTO> argument = ArgumentCaptor.forClass(UserInfoDTO.class);
         verify(userInfoService).addUser(argument.capture());
@@ -85,11 +84,11 @@ public class RegistrationControllerTest {
     private void failureUserRegistration(MockHttpServletRequestBuilder post) throws Exception {
         mockMvc.perform(post)
                 .andExpect(status().isOk())
-                .andExpect(view().name(REGISTRATION_MODEL_NAME))
+                .andExpect(view().name(REGISTRATION_MODEL_VIEW_NAME))
                 .andDo(print())
                 .andExpect(model().hasErrors())
-                .andExpect(model().attributeExists(REGISTRATION_FORM_NAME))
-                .andExpect(model().attributeHasErrors(REGISTRATION_FORM_NAME));
+                .andExpect(model().attributeExists(REGISTRATION_USER_ATTRIBUTE_NAME))
+                .andExpect(model().attributeHasErrors(REGISTRATION_USER_ATTRIBUTE_NAME));
     }
 
     @Test

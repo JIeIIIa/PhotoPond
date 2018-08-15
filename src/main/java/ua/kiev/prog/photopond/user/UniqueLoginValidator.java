@@ -20,6 +20,6 @@ public class UniqueLoginValidator implements ConstraintValidator<UniqueLogin, St
     }
 
     public boolean isValid(String login, ConstraintValidatorContext context) {
-        return userInfoService.existsByLogin(login);
+        return !userInfoService.existsByLogin(login);
     }
 }

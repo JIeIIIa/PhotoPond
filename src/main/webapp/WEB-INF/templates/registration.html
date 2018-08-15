@@ -27,38 +27,51 @@
 
 <body>
 
-<div class="container">
+<object th:include="fragments/header :: header('registration')" th:remove="tag"></object>
 
-    <!--/*@thymesVar id="registrationForm" type="ua.kiev.prog.photopond.user.registration.RegistrationForm"*/-->
-    <form action="#" th:action="@{/registration}" th:object="${registrationForm}" method="post">
-        <table>
-            <td th:if="${#fields.hasErrors('userInfo')}" th:errors="*{userInfo}" style="visibility: hidden">UserInfo error</td>
-            <div th:field="*{userInfo}">
-                <tr>
-                    <td>Login:</td>
-                    <td><input type="text" th:field="*{userInfo.login}"/></td>
-                    <td th:if="${#fields.hasErrors('userInfo.login')}" th:errors="*{userInfo.login}">Login Error</td>
-                </tr>
-                <tr>
-                    <td>Password:</td>
-                    <td><input type="text" th:field="*{userInfo.password}"/></td>
-                    <td th:if="${#fields.hasErrors('userInfo.password')}" th:errors="*{userInfo.password}">Password Error</td>
-                </tr>
-            </div>
-            <tr>
-                <td>Password confirmation:</td>
-                <td>
-                    <input type="text" th:field="*{passwordConfirmation}" /></td>
-                    <td th:if="${#fields.hasErrors('passwordConfirmation')}" th:errors="*{passwordConfirmation}">Password and confirmation are different</td>
-            </tr>
-            <tr>
-                <td>
-                    <button type="submit">Submit</button>
-                </td>
-            </tr>
-        </table>
-    </form>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+                <form class="form-horizontal" action="#" th:action="@{/registration}" th:object="${userDTO}" method="POST">
+                    <div class="form-group">
+                        <label th:for="*{login}" class="control-label" th:text="#{user.login}">
+                            Login
+                        </label>
+                        <input class="form-control" type="text"
+                               placeholder="Login" th:placeholder="#{user.login}"
+                               th:field="*{login}">
+                        <h4 th:if="${#fields.hasErrors('login')}" th:errors="*{login}">Login Error</h4>
+                    </div>
+                    <div class="form-group">
+                        <label th:for="*{password}" class="control-label" th:text="#{user.password}">
+                            Password
+                        </label>
+                        <input class="form-control" type="text"
+                               placeholder="Password" th:placeholder="#{user.password}"
+                               th:field="*{password}"/>
+                        <h4 th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</h4>
+                    </div>
 
+                    <div class="form-group">
+                        <label th:for="*{passwordConfirmation}" class="control-label" th:text="#{user.passwordConfirmation}">
+                            Confirmation
+                        </label>
+                        <input class="form-control" type="text"
+                               placeholder="Confirmation" th:placeholder="#{user.passwordConfirmation}"
+                               th:field="*{passwordConfirmation}"/>
+                        <h4 th:if="${#fields.hasGlobalErrors()}">
+                            <span th:each="err : ${#fields.globalErrors()}" th:text="${err}">...</span>
+                        </h4>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success form-control"
+                                th:text="#{btn.registration}">
+                            Register
+                        </button>
+                    </div>
+                </form>
+        </div>
+    </div>
 </div>
 
 <div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">
