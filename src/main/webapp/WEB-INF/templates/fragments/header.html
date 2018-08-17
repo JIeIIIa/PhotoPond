@@ -77,6 +77,14 @@
                                 </a>
                             </li>
 
+                            <li class="nav-item mr-sm-2" sec:authorize="isAnonymous()" th:if="${activeItem != 'registration'}">
+                                <a class="btn btn-outline-warning btn-block"
+                                   href="#" th:href="@{/registration}"
+                                   th:text="#{header.signUp}">
+                                    SignUp
+                                </a>
+                            </li>
+
                             <li class="nav-item dropdown mr-sm-2" sec:authorize="isAuthenticated()">
                                 <a class="nav-link dropdown-toggle pr-0 py-0 h-100 d-inline-flex align-items-center justify-content-center"
                                    id="userNavbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">

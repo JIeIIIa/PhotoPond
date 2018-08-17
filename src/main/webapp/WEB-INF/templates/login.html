@@ -1,12 +1,12 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{auth.title})">
+<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{authPages.title})">
     <title>PhotoPond - authorization</title>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
 
-    <title>PhotoPond - main page</title>
+    <title>PhotoPond - authorization</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -25,21 +25,51 @@
 <object th:include="fragments/header :: header('login')" th:remove="tag"></object>
 
 <div class="container-fluid">
-    <div class="form-group">
-        <div class="col-md-8 offset-md-2">
-            <form class="form-horizontal" th:action="@{/j_spring_security_check}" method="POST">
-                <div class="form-group">
-                    <label for="j_login" class="control-label" th:text="#{auth.login}">Login</label>
-                    <input class="form-control" type="text" placeholder="Login" th:placeholder="#{auth.login}" id="j_login" name="j_login">
+    <div class="row">
+        <div class="col-10 offset-1 col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header card-info text-center">
+                    <h2 class="card-title font-weight-bold"
+                        th:text="#{authPages.card.header}">
+                        Authorization
+                    </h2>
                 </div>
-                <div class="form-group">
-                    <label for="j_password" class="control-label" th:text="#{auth.password}">Password</label>
-                    <input class="form-control" type="Password" placeholder="password" th:placeholder="#{auth.password}" id="j_password" name="j_password">
+                <div class="card-block">
+                    <form class="form" th:action="@{/j_spring_security_check}" method="POST">
+                        <div class="form-group">
+                            <label for="j_login" class="control-label"
+                                   th:text="#{user.login}">
+                                Login
+                            </label>
+                            <input class="form-control" type="text"
+                                   placeholder="Login" th:placeholder="#{user.login}"
+                                   id="j_login" name="j_login">
+                        </div>
+                        <div class="form-group">
+                            <label for="j_password" class="control-label"
+                                   th:text="#{user.password}">
+                                Password
+                            </label>
+                            <input class="form-control" type="Password"
+                                   placeholder="Password" th:placeholder="#{user.password}"
+                                   id="j_password" name="j_password">
+                        </div>
+                        <div class="form-group row">
+                            <button type="submit" class="btn btn-success form-control col-8 offset-2"
+                                    th:text="#{btn.logIn}">
+                                Log In
+                            </button>
+                        </div>
+                        <div class="form-group text-center">
+                            <span th:text="#{authPages.noAccount}">Don’t have an account?</span>
+                            <a th:href="@{/registration}"
+                               th:text="#{btn.registration}">
+                                Sing up
+                            </a>
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-default form-control">Войти</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
