@@ -20,7 +20,7 @@ import ua.kiev.prog.photopond.drive.pictures.PictureFileException;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileRepository;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoBuilder;
-import ua.kiev.prog.photopond.user.UserInfoService;
+import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -46,7 +46,7 @@ public class DriveServiceImplTest {
     private PictureFileRepository fileRepository;
 
     @MockBean
-    private UserInfoService userInfoService;
+    private UserInfoJpaRepository userInfoRepository;
 
     private DriveService instance;
 
@@ -56,7 +56,7 @@ public class DriveServiceImplTest {
 
     @Before
     public void setUp() {
-        instance = new DriveServiceImpl(directoryRepository, fileRepository, userInfoService);
+        instance = new DriveServiceImpl(directoryRepository, fileRepository, userInfoRepository);
         user = new UserInfoBuilder()
                 .id(123L)
                 .login("someUser")
@@ -95,7 +95,7 @@ public class DriveServiceImplTest {
                 .thenReturn(singletonList(root));
         when(directoryRepository.save(any(Directory.class)))
                 .thenAnswer(answer -> answer.getArguments()[0]);
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.of(user));
 
         //When
@@ -121,7 +121,7 @@ public class DriveServiceImplTest {
                 .thenReturn(emptyList());
         when(directoryRepository.save(any(Directory.class)))
                 .thenThrow(new DirectoryException());
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.of(user));
 
         //When
@@ -142,7 +142,7 @@ public class DriveServiceImplTest {
         //Given
         when(directoryRepository.countByOwner(user)).thenReturn(1L);
         when(directoryRepository.findByOwnerAndPath(user, SEPARATOR)).thenReturn(singletonList(root));
-        when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.of(user));
+        when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.of(user));
 
         List<DriveItemDTO> expected = emptyList();
 
@@ -179,7 +179,7 @@ public class DriveServiceImplTest {
 
         when(directoryRepository.findTopLevelSubDirectories(new DirectoryBuilder().from(directories[2]).build()))
                 .thenReturn(new LinkedList<>());
-        when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.of(user));
+        when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.of(user));
 
         //When
         List<DriveItemDTO> content = instance.retrieveContent(user.getLogin(), directories[2].getPath(), true);
@@ -214,7 +214,7 @@ public class DriveServiceImplTest {
 
         when(directoryRepository.findTopLevelSubDirectories(new DirectoryBuilder().from(directories[1]).build()))
                 .thenReturn(singletonList(new DirectoryBuilder().from(directories[2]).build()));
-        when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.of(user));
+        when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.of(user));
 
         //When
         List<DriveItemDTO> result = instance.retrieveContent(user.getLogin(), directories[1].getPath(), true);
@@ -230,7 +230,7 @@ public class DriveServiceImplTest {
         Directory expected = new DirectoryBuilder().path(buildPath(root.getPath(), "first")).owner(user).build();
         DriveItemDTO expectedDTO = toDTO(new DirectoryBuilder().path(buildPath(root.getPath(), "first")).owner(user).build());
 
-        when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.ofNullable(user));
+        when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.ofNullable(user));
         when(directoryRepository.exists(user, expected.getPath())).thenReturn(false);
         when(directoryRepository.save(any(Directory.class))).thenAnswer(
                 invocationOnMock -> invocationOnMock.getArguments()[0]
@@ -247,7 +247,7 @@ public class DriveServiceImplTest {
     @Test(expected = DriveException.class)
     public void addDirectoryWhenLoginFailure() {
         //Given
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.empty());
 
         //When
@@ -264,7 +264,7 @@ public class DriveServiceImplTest {
     public void addDirectoryWhenDirectoryAlreadyExists() {
         //Given
         String newDirectoryPath = buildPath(root.getPath(), "existsDirectory");
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.exists(user, newDirectoryPath)).thenReturn(true);
 
@@ -283,7 +283,7 @@ public class DriveServiceImplTest {
         //Given
         Directory expected = new DirectoryBuilder().path(buildPath(root.getPath(), "first")).owner(user).build();
 
-        when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.ofNullable(user));
+        when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.ofNullable(user));
         when(directoryRepository.exists(user, expected.getPath())).thenReturn(false);
         when(directoryRepository.save(any(Directory.class))).thenThrow(new DirectoryException());
 
@@ -306,7 +306,7 @@ public class DriveServiceImplTest {
         String targetPath = target.getPath();
         Directory expected = new DirectoryBuilder().owner(user).path(buildPath(target.getPath(), source.getName())).build();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, source.getPath()))
                 .thenReturn(singletonList(source));
@@ -342,7 +342,7 @@ public class DriveServiceImplTest {
         String targetPath = target.getPath();
         Directory expected = new DirectoryBuilder().owner(user).path(buildPath(target.getPath(), source.getName())).build();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, source.getPath()))
                 .thenReturn(singletonList(source));
@@ -376,7 +376,7 @@ public class DriveServiceImplTest {
         Directory target = new DirectoryBuilder().owner(user).path("/another").build();
         String targetPath = target.getPath();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
 
         //When
@@ -391,7 +391,7 @@ public class DriveServiceImplTest {
         Directory target = new DirectoryBuilder().owner(user).path("/first/second").build();
         String targetPath = target.getPath();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, source.getPath()))
                 .thenReturn(emptyList());
@@ -411,7 +411,7 @@ public class DriveServiceImplTest {
         Directory target = new DirectoryBuilder().owner(user).path("/another").build();
         String targetPath = target.getPath();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, source.getPath()))
                 .thenReturn(singletonList(source));
@@ -432,7 +432,7 @@ public class DriveServiceImplTest {
         String targetPath = buildPath(parent.getPath(), "newName");
         Directory expected = new DirectoryBuilder().owner(user).path(targetPath).build();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, source.getPath()))
                 .thenReturn(singletonList(source));
@@ -469,7 +469,7 @@ public class DriveServiceImplTest {
         String targetPath = buildPath(parent.getPath(), "newName");
         Directory expected = new DirectoryBuilder().owner(user).path(targetPath).build();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, source.getPath()))
                 .thenReturn(singletonList(source));
@@ -503,7 +503,7 @@ public class DriveServiceImplTest {
         Directory parent = new DirectoryBuilder().owner(user).path("/first").build();
         String targetPath = buildPath(source.parentPath(), "another");
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, source.getPath()))
                 .thenReturn(emptyList());
@@ -520,7 +520,7 @@ public class DriveServiceImplTest {
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, sourcePath))
                 .thenReturn(singletonList(source));
@@ -536,14 +536,14 @@ public class DriveServiceImplTest {
     @Test(expected = DriveException.class)
     public void deleteDirectoryWhenOwnerNotExist() {
         //Given
-        when(userInfoService.findUserByLogin(anyString()))
+        when(userInfoRepository.findByLogin(anyString()))
                 .thenReturn(Optional.empty());
 
         //When
         try {
             instance.deleteDirectory(user.getLogin(), "/someDirectory");
         } catch (DriveException e) {
-            verify(userInfoService).findUserByLogin(user.getLogin());
+            verify(userInfoRepository).findByLogin(user.getLogin());
             verify(directoryRepository, never()).findByOwnerAndPath(any(UserInfo.class), anyString());
             verify(directoryRepository, never()).delete(any(Directory.class));
 
@@ -557,7 +557,7 @@ public class DriveServiceImplTest {
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, sourcePath))
                 .thenReturn(emptyList());
@@ -587,7 +587,7 @@ public class DriveServiceImplTest {
                 .build();
 
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, path))
                 .thenReturn(singletonList(directory));
@@ -601,7 +601,7 @@ public class DriveServiceImplTest {
         assertThat(result)
                 .isNotNull()
                 .isEqualTo(DATA);
-        verify(userInfoService).findUserByLogin(user.getLogin());
+        verify(userInfoRepository).findByLogin(user.getLogin());
         verify(directoryRepository).findByOwnerAndPath(user, path);
         verify(fileRepository).findByDirectoryAndFilename(directory, filename);
     }
@@ -619,7 +619,7 @@ public class DriveServiceImplTest {
                 .build();
 
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, path))
                 .thenReturn(singletonList(directory));
@@ -641,7 +641,7 @@ public class DriveServiceImplTest {
         String filename = "awesomeFile.jpg";
         String filePath = buildPath(directory.getPath(), filename);
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, path))
                 .thenReturn(singletonList(directory));
@@ -660,7 +660,7 @@ public class DriveServiceImplTest {
         String filename = "awesomeFile.jpg";
         String filePath = buildPath(directory.getPath(), filename);
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, path))
                 .thenReturn(singletonList(directory));
@@ -684,7 +684,7 @@ public class DriveServiceImplTest {
                 .build();
         DriveItemDTO expectedDTO = toDTO(expected);
 
-        when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.of(user));
+        when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.of(user));
         when(directoryRepository.findByOwnerAndPath(user, directory.getPath())).thenReturn(singletonList(directory));
         when(fileRepository.save(any(PictureFile.class))).thenAnswer(
                 invocationOnMock -> invocationOnMock.getArguments()[0]
@@ -694,7 +694,7 @@ public class DriveServiceImplTest {
         DriveItemDTO result = instance.addPictureFile(user.getLogin(), directory.getPath(), file);
 
         //Then
-        verify(userInfoService).findUserByLogin(user.getLogin());
+        verify(userInfoRepository).findByLogin(user.getLogin());
         verify(fileRepository).save(expected);
         assertThat(result)
                 .isNotNull()
@@ -711,7 +711,7 @@ public class DriveServiceImplTest {
         when(file.getOriginalFilename()).thenReturn(originalFilename);
         when(file.getBytes()).thenThrow(new IOException());
 
-        when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.of(user));
+        when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.of(user));
         when(directoryRepository.findByOwnerAndPath(user, directory.getPath())).thenReturn(singletonList(directory));
 
         //When
@@ -719,7 +719,7 @@ public class DriveServiceImplTest {
             instance.addPictureFile(user.getLogin(), directory.getPath(), file);
         } catch (DriveException e) {
             //Then
-            verify(userInfoService).findUserByLogin(user.getLogin());
+            verify(userInfoRepository).findByLogin(user.getLogin());
             verify(fileRepository, never()).save(any(PictureFile.class));
 
             throw e;
@@ -736,7 +736,7 @@ public class DriveServiceImplTest {
         when(file.getOriginalFilename()).thenReturn(originalFilename);
         when(file.getBytes()).thenReturn(originalFilename.getBytes());
 
-        when(userInfoService.findUserByLogin(user.getLogin())).thenReturn(Optional.of(user));
+        when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.of(user));
         when(directoryRepository.findByOwnerAndPath(user, directory.getPath())).thenReturn(singletonList(directory));
         when(fileRepository.save(any(PictureFile.class))).thenThrow(new PictureFileException());
 
@@ -745,7 +745,7 @@ public class DriveServiceImplTest {
             instance.addPictureFile(user.getLogin(), directory.getPath(), file);
         } catch (DriveException e) {
             //Then
-            verify(userInfoService).findUserByLogin(user.getLogin());
+            verify(userInfoRepository).findByLogin(user.getLogin());
             verify(fileRepository).save(any(PictureFile.class));
 
             throw e;
@@ -770,7 +770,7 @@ public class DriveServiceImplTest {
                 .data(filename.getBytes())
                 .build();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, sourceDirectory.getPath()))
                 .thenReturn(singletonList(sourceDirectory));
@@ -801,7 +801,7 @@ public class DriveServiceImplTest {
         Directory targetDirectory = new DirectoryBuilder().owner(user).path("/another").build();
         String filename = "awesomeFilename.jpg";
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, sourceDirectory.getPath()))
                 .thenReturn(singletonList(sourceDirectory));
@@ -838,7 +838,7 @@ public class DriveServiceImplTest {
                 .data(filename.getBytes())
                 .build();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, sourceDirectory.getPath()))
                 .thenReturn(singletonList(sourceDirectory));
@@ -865,7 +865,7 @@ public class DriveServiceImplTest {
         Directory targetDirectory = new DirectoryBuilder().owner(user).path("/another").build();
         String filename = "awesomeFilename.jpg";
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, sourceDirectory.getPath()))
                 .thenReturn(singletonList(sourceDirectory));
@@ -901,7 +901,7 @@ public class DriveServiceImplTest {
                 .data(filename.getBytes())
                 .build();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, sourceDirectory.getPath()))
                 .thenReturn(singletonList(sourceDirectory));
@@ -934,7 +934,7 @@ public class DriveServiceImplTest {
                 .data(originalFilename.getBytes())
                 .build();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, directory.getPath()))
                 .thenReturn(singletonList(directory));
@@ -945,7 +945,7 @@ public class DriveServiceImplTest {
         instance.deletePictureFile(user.getLogin(), buildPath(directory.getPath(), originalFilename));
 
         //Then
-        verify(userInfoService).findUserByLogin(user.getLogin());
+        verify(userInfoRepository).findByLogin(user.getLogin());
         verify(fileRepository).findByDirectoryAndFilename(directory, originalFilename);
         verify(fileRepository).delete(deletedFile);
     }
@@ -957,7 +957,7 @@ public class DriveServiceImplTest {
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         String originalFilename = "awesomeFile.jpg";
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, directory.getPath()))
                 .thenReturn(singletonList(directory));
@@ -969,7 +969,7 @@ public class DriveServiceImplTest {
             instance.deletePictureFile(user.getLogin(), buildPath(directory.getPath(), originalFilename));
         } catch (DriveException e) {
             //Then
-            verify(userInfoService).findUserByLogin(user.getLogin());
+            verify(userInfoRepository).findByLogin(user.getLogin());
             verify(fileRepository).findByDirectoryAndFilename(directory, originalFilename);
             verify(fileRepository, never()).delete(any(PictureFile.class));
 
@@ -989,7 +989,7 @@ public class DriveServiceImplTest {
                 .data(originalFilename.getBytes())
                 .build();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, directory.getPath()))
                 .thenReturn(singletonList(directory));
@@ -1021,7 +1021,7 @@ public class DriveServiceImplTest {
                 .data(originalFilename.getBytes())
                 .build();
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, directory.getPath()))
                 .thenReturn(singletonList(directory));
@@ -1050,7 +1050,7 @@ public class DriveServiceImplTest {
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         String originalFilename = "awesomeFile.jpg";
 
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.ofNullable(user));
         when(directoryRepository.findByOwnerAndPath(user, directory.getPath()))
                 .thenReturn(singletonList(directory));

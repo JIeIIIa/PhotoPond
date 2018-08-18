@@ -16,7 +16,7 @@ import ua.kiev.prog.photopond.drive.pictures.PictureFileBuilder;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileException;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileRepository;
 import ua.kiev.prog.photopond.user.UserInfo;
-import ua.kiev.prog.photopond.user.UserInfoService;
+import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -37,15 +37,15 @@ public class DriveServiceImpl implements DriveService {
 
     private final PictureFileRepository fileRepository;
 
-    private final UserInfoService userInfoService;
+    private final UserInfoJpaRepository userInfoRepository;
 
     @Autowired
     public DriveServiceImpl(DirectoryDiskAndDatabaseRepository directoryRepository,
                             PictureFileRepository fileRepository,
-                            UserInfoService userInfoService) {
+                            UserInfoJpaRepository userInfoRepository) {
         this.directoryRepository = directoryRepository;
         this.fileRepository = fileRepository;
-        this.userInfoService = userInfoService;
+        this.userInfoRepository = userInfoRepository;
     }
 
     private Directory retrieveDirectory(String ownerLogin, String path) {
@@ -301,7 +301,7 @@ public class DriveServiceImpl implements DriveService {
 
         UserInfo retrieveOwner() {
             if (this.owner == null) {
-                this.owner = userInfoService.findUserByLogin(this.ownerLogin)
+                this.owner = userInfoRepository.findByLogin(this.ownerLogin)
                         .orElseThrow(() -> new DriveException(new IllegalArgumentException("User with login '" + this.ownerLogin + "' not found")));
             }
             return this.owner;

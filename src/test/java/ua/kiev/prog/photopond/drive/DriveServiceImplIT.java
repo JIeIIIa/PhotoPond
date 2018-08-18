@@ -31,7 +31,7 @@ import ua.kiev.prog.photopond.drive.pictures.PictureFileJpaRepository;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileRepository;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoBuilder;
-import ua.kiev.prog.photopond.user.UserInfoService;
+import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 import ua.kiev.prog.photopond.user.UserInfoServiceJpaImplITConfiguration;
 
 import java.io.File;
@@ -73,7 +73,7 @@ public class DriveServiceImplIT {
     private TestEntityManager entityManager;
 
     @Autowired
-    private UserInfoService userInfoService;
+    private UserInfoJpaRepository userInfoRepository;
 
     @Autowired
     private DirectoryDiskAndDatabaseRepository directoryRepository;
@@ -95,7 +95,7 @@ public class DriveServiceImplIT {
 
     @Before
     public void setUp() throws IOException {
-        instance = new DriveServiceImpl(directoryRepository, fileRepository, userInfoService);
+        instance = new DriveServiceImpl(directoryRepository, fileRepository, userInfoRepository);
 
         user = new UserInfoBuilder()
                 .id(2L)

@@ -17,7 +17,7 @@ import java.util.Optional;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.io.IOUtils.toByteArray;
-import static ua.kiev.prog.photopond.user.UserInfoDTOMapper.fromDto;
+import static ua.kiev.prog.photopond.user.UserInfoMapper.fromDto;
 
 @Service
 @DevOrProd
@@ -54,9 +54,10 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
     }
 
     @Override
-    public Optional<UserInfo> findUserByLogin(String login) {
+    public Optional<UserInfoDTO> findUserByLogin(String login) {
         LOG.debug("login = '{}'", login);
-        return LOG.traceExit(userInfoRepository.findByLogin(login));
+        return LOG.traceExit(userInfoRepository.findByLogin(login))
+                .map(UserInfoMapper::toDto);
     }
 
     @Override

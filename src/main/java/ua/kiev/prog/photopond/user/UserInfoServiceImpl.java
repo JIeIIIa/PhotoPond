@@ -31,9 +31,10 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public Optional<UserInfo> findUserByLogin(String login) {
+    public Optional<UserInfoDTO> findUserByLogin(String login) {
         LOG.debug("login = '{}'", login);
-        return userInfoRepository.findUserByLogin(login);
+        return userInfoRepository.findUserByLogin(login)
+                .map(UserInfoMapper::toDto);
     }
 
     @Override

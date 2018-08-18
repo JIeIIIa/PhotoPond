@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ua.kiev.prog.photopond.user.UserInfo;
-import ua.kiev.prog.photopond.user.UserInfoService;
+import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 import ua.kiev.prog.photopond.user.UserRole;
 
 import java.util.Collection;
@@ -25,13 +25,13 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class UserDetailsServiceImplTest {
     @Mock
-    private UserInfoService userInfoService;
+    private UserInfoJpaRepository userInfoRepository;
 
     private UserDetailsService userDetailsService;
 
     @Before
     public void setUp() {
-        userDetailsService = new UserDetailsServiceImpl(userInfoService);
+        userDetailsService = new UserDetailsServiceImpl(userInfoRepository);
     }
 
     private boolean compare(UserInfo that, UserDetails other) {
@@ -46,7 +46,7 @@ public class UserDetailsServiceImplTest {
     @Test
     public void successAuthenticate() {
         UserInfo user = new UserInfo("user", "password", UserRole.USER);
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.of(user));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getLogin());
@@ -54,7 +54,7 @@ public class UserDetailsServiceImplTest {
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
         SimpleGrantedAuthority checkedAuthority = new SimpleGrantedAuthority(user.getRole().toString().toUpperCase());
 
-        verify(userInfoService).findUserByLogin(eq(user.getLogin()));
+        verify(userInfoRepository).findByLogin(eq(user.getLogin()));
         assertThat(compare(user, userDetails)).isTrue();
         assertThat(authorities.size()).isEqualTo(1);
         assertThat(authorities.contains(checkedAuthority)).isTrue();
@@ -63,7 +63,7 @@ public class UserDetailsServiceImplTest {
 
     @Test(expected = UsernameNotFoundException.class)
     public void userNotFound() {
-        when(userInfoService.findUserByLogin("someLogin"))
+        when(userInfoRepository.findByLogin("someLogin"))
                 .thenReturn(Optional.empty());
 
         userDetailsService.loadUserByUsername("someLogin");
@@ -72,7 +72,7 @@ public class UserDetailsServiceImplTest {
     @Test
     public void disabledUser() {
         UserInfo user = new UserInfo("disabledUser", "password", UserRole.DEACTIVATED);
-        when(userInfoService.findUserByLogin(user.getLogin()))
+        when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.of(user));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getLogin());

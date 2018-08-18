@@ -97,7 +97,7 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void findByLoginExistsUser() {
         //Given
-        UserInfo user = new UserInfoBuilder()
+        UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
                 .id(777L)
                 .login("someUser")
                 .password("password")
@@ -105,19 +105,21 @@ public class UserInfoServiceJpaImplIT {
                 .build();
 
         //When
-        UserInfo foundUser = userInfoServiceJpaImpl.findUserByLogin(user.getLogin()).orElseThrow(IllegalStateException::new);
+        Optional<UserInfoDTO> foundUser = userInfoServiceJpaImpl.findUserByLogin(expected.getLogin());
 
         //Then
         assertThat(foundUser)
                 .isNotNull()
-                .isEqualToIgnoringGivenFields(user, "password")
-                .matches(u -> passwordEncoder.matches(user.getPassword(), u.getPassword()));
+                .isPresent()
+                .get()
+                .isEqualToIgnoringGivenFields(expected, "password")
+                .matches(u -> passwordEncoder.matches(expected.getPassword(), u.getPassword()));
     }
 
     @Test
     public void findByLoginNotExistsUser() {
         //When
-        Optional<UserInfo> foundUser = userInfoServiceJpaImpl.findUserByLogin("unknownUser");
+        Optional<UserInfoDTO> foundUser = userInfoServiceJpaImpl.findUserByLogin("unknownUser");
 
         //Then
         assertThat(foundUser)
@@ -128,7 +130,7 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void findByLoginWhenLoginIsNull() {
         //When
-        Optional<UserInfo> user = userInfoServiceJpaImpl.findUserByLogin(null);
+        Optional<UserInfoDTO> user = userInfoServiceJpaImpl.findUserByLogin(null);
 
         //Then
         assertThat(user)

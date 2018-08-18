@@ -100,15 +100,17 @@ public class UserInfoServiceImplTest {
         UserInfo user = new UserInfo(USER_LOGIN, "password", UserRole.USER);
         when(userRepository.findUserByLogin(USER_LOGIN))
                 .thenReturn(Optional.of(user));
+        UserInfoDTO expected = UserInfoMapper.toDto(user);
 
         //When
-        Optional<UserInfo> result = instance.findUserByLogin(USER_LOGIN);
+        Optional<UserInfoDTO> result = instance.findUserByLogin(USER_LOGIN);
 
         //Then
         assertThat(result)
                 .isNotNull()
                 .isPresent()
-                .hasValue(user);
+                .get()
+                .isEqualToComparingFieldByField(expected);
         verify(userRepository).findUserByLogin(USER_LOGIN);
     }
 
@@ -120,7 +122,7 @@ public class UserInfoServiceImplTest {
                 .thenReturn(Optional.empty());
 
         //When
-        Optional<UserInfo> result = instance.findUserByLogin(USER_LOGIN);
+        Optional<UserInfoDTO> result = instance.findUserByLogin(USER_LOGIN);
 
         //Then
         assertThat(result)
@@ -135,7 +137,7 @@ public class UserInfoServiceImplTest {
         when(userRepository.findUserByLogin(null)).thenReturn(Optional.empty());
 
         //When
-        Optional<UserInfo> user = instance.findUserByLogin(null);
+        Optional<UserInfoDTO> user = instance.findUserByLogin(null);
 
         //Then
         assertThat(user)

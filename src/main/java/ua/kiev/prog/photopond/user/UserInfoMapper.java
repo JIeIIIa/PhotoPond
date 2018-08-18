@@ -1,9 +1,11 @@
 package ua.kiev.prog.photopond.user;
 
-public class UserInfoDTOMapper {
+public class UserInfoMapper {
     public static UserInfoDTO toDto(UserInfo userInfo) {
         return UserInfoDTOBuilder.getInstance()
+                .id(userInfo.getId())
                 .login(userInfo.getLogin())
+                .password(userInfo.getPassword())
                 .role(userInfo.getRole())
                 .build();
     }

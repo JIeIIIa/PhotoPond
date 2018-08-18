@@ -102,15 +102,17 @@ public class UserInfoServiceJpaImplTest {
         UserInfo user = new UserInfo(USER_LOGIN, "qwerty123!", UserRole.USER);
         when(userRepository.findByLogin(USER_LOGIN))
                 .thenReturn(Optional.of(user));
+        UserInfoDTO expected = UserInfoMapper.toDto(user);
 
         //When
-        Optional<UserInfo> result = instance.findUserByLogin(USER_LOGIN);
+        Optional<UserInfoDTO> result = instance.findUserByLogin(USER_LOGIN);
 
         //Then
         assertThat(result)
                 .isNotNull()
                 .isPresent()
-                .hasValue(user);
+                .get()
+                .isEqualToComparingFieldByField(expected);
         verify(userRepository).findByLogin(USER_LOGIN);
     }
 
@@ -122,7 +124,7 @@ public class UserInfoServiceJpaImplTest {
                 .thenReturn(Optional.empty());
 
         //When
-        Optional<UserInfo> result = instance.findUserByLogin(USER_LOGIN);
+        Optional<UserInfoDTO> result = instance.findUserByLogin(USER_LOGIN);
 
         //Then
         assertThat(result)
@@ -138,7 +140,7 @@ public class UserInfoServiceJpaImplTest {
         when(userRepository.findByLogin(null)).thenReturn(Optional.empty());
 
         //When
-        Optional<UserInfo> user = instance.findUserByLogin(null);
+        Optional<UserInfoDTO> user = instance.findUserByLogin(null);
 
         //Then
         assertThat(user)
