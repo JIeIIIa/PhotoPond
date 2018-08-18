@@ -172,14 +172,14 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void findAllUsers() {
         //Given
-        UserInfo[] allUsers = {
-                new UserInfoBuilder().id(777L).login("someUser").password("password").role(UserRole.USER).build(),
-                new UserInfoBuilder().id(1L).login("Administrator").password("qwerty123!").role(UserRole.ADMIN).build(),
-                new UserInfoBuilder().id(2L).login("disabledUser").password("password").role(UserRole.DEACTIVATED).build(),
+        UserInfoDTO[] allUsers = {
+                UserInfoDTOBuilder.getInstance().id(777L).login("someUser").password("password").role(UserRole.USER).build(),
+                UserInfoDTOBuilder.getInstance().id(1L).login("Administrator").password("qwerty123!").role(UserRole.ADMIN).build(),
+                UserInfoDTOBuilder.getInstance().id(2L).login("disabledUser").password("password").role(UserRole.DEACTIVATED).build(),
         };
 
         //When
-        List<UserInfo> foundUsers = userInfoServiceJpaImpl.findAllUsers();
+        List<UserInfoDTO> foundUsers = userInfoServiceJpaImpl.findAllUsers();
 
         //Then
         assertThat(foundUsers)

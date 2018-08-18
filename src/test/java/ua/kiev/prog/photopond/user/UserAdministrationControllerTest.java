@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,18 +18,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ua.kiev.prog.photopond.configuration.UserInfoServiceMockConfiguration;
 import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ua.kiev.prog.photopond.user.UserRole.ADMIN;
-import static ua.kiev.prog.photopond.user.UserRole.USER;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = UserAdministrationController.class, secure = false)
@@ -50,18 +46,11 @@ public class UserAdministrationControllerTest {
 
     @Test
     public void getAllUsers() throws Exception {
-        UserInfo userOne = new UserInfo("One", "qwerty", USER);
-        UserInfo userTwo = new UserInfo("Two", "asdfgh", ADMIN);
-        List<UserInfo> usersList = Arrays.asList(userOne, userTwo);
-        when(userInfoService.findAllUsers()).thenReturn(usersList);
-
         MockHttpServletRequestBuilder get = get(URL_PREFIX);
 
         mockMvc.perform(get)
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("usersList", usersList))
                 .andExpect(MockMvcResultMatchers.view().name("/users/allUsers"));
-        Mockito.verify(userInfoService, times(1)).findAllUsers();
     }
 
     @Test

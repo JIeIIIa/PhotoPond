@@ -189,18 +189,24 @@ public class UserInfoServiceJpaImplTest {
         //Given
         UserInfo user = new UserInfoBuilder().id(1L).login(USER_LOGIN).password("qwerty123!").role(UserRole.USER).build();
         UserInfo anotherUser = new UserInfoBuilder().id(2L).login("anotherUser").password("qwerty123!").role(UserRole.ADMIN).build();
+        UserInfoDTO[] expected = {
+                UserInfoDTOBuilder.getInstance().id(1L).login(USER_LOGIN).password("qwerty123!").role(UserRole.USER).build(),
+                UserInfoDTOBuilder.getInstance().id(2L).login("anotherUser").password("qwerty123!").role(UserRole.ADMIN).build()
+        };
+
         when(userRepository.findAll()).thenReturn(
                 asList(user, anotherUser)
         );
 
         //When
-        List<UserInfo> allUsers = instance.findAllUsers();
+        List<UserInfoDTO> allUsers = instance.findAllUsers();
 
         //Then
         assertThat(allUsers)
                 .isNotNull()
                 .hasSize(2)
-                .containsExactlyInAnyOrder(user, anotherUser);
+                .usingFieldByFieldElementComparator()
+                .containsExactlyInAnyOrder(expected);
     }
 
     @Test

@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @ConditionalOnMissingBean(UserInfoService.class)
@@ -74,9 +75,12 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public List<UserInfo> findAllUsers() {
+    public List<UserInfoDTO> findAllUsers() {
         LOG.trace("Find all users");
-        return userInfoRepository.findAllUsers();
+        return userInfoRepository.findAllUsers()
+                .stream()
+                .map(UserInfoMapper::toDto)
+                .collect(toList());
     }
 
     @Override

@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static ua.kiev.prog.photopond.user.UserInfoMapper.fromDto;
 
@@ -90,9 +91,12 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
     }
 
     @Override
-    public List<UserInfo> findAllUsers() {
+    public List<UserInfoDTO> findAllUsers() {
         LOG.traceEntry("Find all users");
-        return userInfoRepository.findAll();
+        return userInfoRepository.findAll()
+                .stream()
+                .map(UserInfoMapper::toDto)
+                .collect(toList());
     }
 
     @Override

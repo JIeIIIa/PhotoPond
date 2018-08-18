@@ -8,7 +8,7 @@ public interface UserInfoService {
 
     Optional<UserInfoDTO> findUserByLogin(String login);
 
-    List<UserInfo> findAllUsers();
+    List<UserInfoDTO> findAllUsers();
 
     Optional<UserInfo> findById(long id);
 

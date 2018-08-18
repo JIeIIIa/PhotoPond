@@ -33,19 +33,16 @@ public class UserAdministrationController {
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public ModelAndView viewAllUsers(ModelAndView modelAndView) {
-        LOG.trace("Retrieve list of users");
-        List<UserInfo> users = userInfoService.findAllUsers();
-        LOG.debug("Add list of users in modelAndView");
-        modelAndView.addObject("usersList", users);
+        LOG.traceEntry();
         modelAndView.setViewName("/users/allUsers");
 
         return modelAndView;
     }
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public ResponseEntity<List<UserInfo>> retrieveAllUsers() {
+    public ResponseEntity<List<UserInfoDTO>> retrieveAllUsers() {
         LOG.traceEntry();
-        List<UserInfo> users = userInfoService.findAllUsers();
+        List<UserInfoDTO> users = userInfoService.findAllUsers();
 
         return new ResponseEntity<>(users, getHttpJsonHeaders(), HttpStatus.OK);
     }
