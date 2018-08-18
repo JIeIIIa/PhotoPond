@@ -167,7 +167,10 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public List<UserInfo> findAllByRole(UserRole role) {
-        return LOG.traceExit(userInfoRepository.findAllByRole(role));
+    public List<UserInfoDTO> findAllByRole(UserRole role) {
+        return LOG.traceExit(userInfoRepository.findAllByRole(role)
+                .stream()
+                .map(UserInfoMapper::toDto)
+                .collect(toList()));
     }
 }

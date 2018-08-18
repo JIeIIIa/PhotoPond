@@ -427,6 +427,13 @@ public class UserInfoServiceImplTest {
         //Given
         UserInfo user = new UserInfoBuilder().id(1L).login("awesomeUser").password("qwerty123!").role(UserRole.USER).build();
         UserInfo anotherUser = new UserInfoBuilder().id(2L).login("someUser").password("qwerty123!").role(UserRole.USER).build();
+        UserInfoDTO[] expectedUsers = {
+                UserInfoDTOBuilder.getInstance()
+                        .id(1L).login("awesomeUser").password("qwerty123!").role(UserRole.USER).build(),
+                UserInfoDTOBuilder.getInstance()
+                        .id(2L).login("someUser").password("qwerty123!").role(UserRole.USER).build()
+        };
+
         when(userRepository.findAllByRole(UserRole.USER))
                 .thenReturn(asList(
                         user,
@@ -434,30 +441,33 @@ public class UserInfoServiceImplTest {
                 );
 
         //When
-        List<UserInfo> allUsers = instance.findAllByRole(UserRole.USER);
+        List<UserInfoDTO> allUsers = instance.findAllByRole(UserRole.USER);
 
         //Then
         assertThat(allUsers)
                 .isNotNull()
                 .hasSize(2)
-                .contains(user, anotherUser);
+                .usingFieldByFieldElementComparator()
+                .contains(expectedUsers);
     }
 
     @Test
     public void findByRoleAllAdmin() {
         //Given
         UserInfo admin = new UserInfoBuilder().id(1L).login("Administrator").password("qwerty123!").role(UserRole.ADMIN).build();
-        UserInfo expectedUser = new UserInfo().copyFrom(admin);
+        UserInfoDTO expectedUser = UserInfoDTOBuilder.getInstance()
+                .id(1L).login("Administrator").password("qwerty123!").role(UserRole.ADMIN).build();
         when(userRepository.findAllByRole(UserRole.ADMIN))
                 .thenReturn(singletonList(admin));
 
         //When
-        List<UserInfo> allAdmin = instance.findAllByRole(UserRole.ADMIN);
+        List<UserInfoDTO> allAdmin = instance.findAllByRole(UserRole.ADMIN);
 
         //Then
         assertThat(allAdmin)
                 .isNotNull()
                 .hasSize(1)
+                .usingFieldByFieldElementComparator()
                 .containsExactly(expectedUser);
     }
 }

@@ -366,10 +366,11 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void findByRoleAllUsers() {
         //Given
-        UserInfo user = new UserInfoBuilder().id(777L).login("someUser").password("password").role(UserRole.USER).build();
+        UserInfoDTO user = UserInfoDTOBuilder.getInstance()
+                .id(777L).login("someUser").password("password").role(UserRole.USER).build();
 
         //When
-        List<UserInfo> allUsers = userInfoServiceJpaImpl.findAllByRole(UserRole.USER);
+        List<UserInfoDTO> allUsers = userInfoServiceJpaImpl.findAllByRole(UserRole.USER);
 
         //Then
         assertThat(allUsers)
@@ -383,10 +384,11 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void findByRoleAllAdmin() {
         //Given
-        UserInfo admin = new UserInfoBuilder().id(1L).login("Administrator").password("qwerty123!").role(UserRole.ADMIN).build();
+        UserInfoDTO admin = UserInfoDTOBuilder.getInstance()
+                .id(1L).login("Administrator").password("qwerty123!").role(UserRole.ADMIN).build();
 
         //When
-        List<UserInfo> allAdmin = userInfoServiceJpaImpl.findAllByRole(UserRole.ADMIN);
+        List<UserInfoDTO> allAdmin = userInfoServiceJpaImpl.findAllByRole(UserRole.ADMIN);
 
         //Then
         assertThat(allAdmin)

@@ -12,7 +12,7 @@ public interface UserInfoService {
 
     Optional<UserInfoDTO> findById(long id);
 
-    List<UserInfo> findAllByRole(UserRole role);
+    List<UserInfoDTO> findAllByRole(UserRole role);
 
     boolean existsByLogin(String login);
 
