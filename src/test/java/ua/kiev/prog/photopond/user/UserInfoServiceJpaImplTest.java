@@ -153,17 +153,20 @@ public class UserInfoServiceJpaImplTest {
         //Given
         final Long id = 321L;
         UserInfo user = new UserInfoBuilder().id(id).login(USER_LOGIN).password("qwerty123!").role(UserRole.USER).build();
+        UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
+                .id(id).login(user.getLogin()).password(user.getPassword()).role(user.getRole()).build();
         when(userRepository.findById(id))
                 .thenReturn(Optional.of(user));
 
         //When
-        Optional<UserInfo> result = instance.findById(id);
+        Optional<UserInfoDTO> result = instance.findById(id);
 
         //Then
         assertThat(result)
                 .isNotNull()
                 .isPresent()
-                .hasValue(user);
+                .get()
+                .isEqualToComparingFieldByField(expected);
         verify(userRepository).findById(id);
     }
 
@@ -175,7 +178,7 @@ public class UserInfoServiceJpaImplTest {
                 .thenReturn(Optional.empty());
 
         //When
-        Optional<UserInfo> result = instance.findById(id);
+        Optional<UserInfoDTO> result = instance.findById(id);
 
         //Then
         assertThat(result)

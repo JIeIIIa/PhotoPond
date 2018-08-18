@@ -10,7 +10,7 @@ public interface UserInfoService {
 
     List<UserInfoDTO> findAllUsers();
 
-    Optional<UserInfo> findById(long id);
+    Optional<UserInfoDTO> findById(long id);
 
     List<UserInfo> findAllByRole(UserRole role);
 

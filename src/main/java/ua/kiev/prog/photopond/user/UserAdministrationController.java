@@ -82,17 +82,19 @@ public class UserAdministrationController {
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
-    public ResponseEntity<UserInfo> getUser(@PathVariable("id") long id) {
+    public ResponseEntity<UserInfoDTO> getUser(@PathVariable("id") long id) {
         LOG.trace("Get user by [id = " + id + "]");
 
-        Optional<UserInfo> userInfo = userInfoService.findById(id);
-        if (!userInfo.isPresent()) {
-            LOG.debug("User with [id = " + id + "] not found");
-            return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
-        }
+        return userInfoService.findById(id)
+                .map(u -> {
+                    LOG.debug("User with [id = " + id + "] was found");
+                    return new ResponseEntity<>(u, getHttpJsonHeaders(), HttpStatus.OK);
+                })
+                .orElseGet(() -> {
+                    LOG.debug("User with [id = " + id + "] not found");
+                    return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
+                });
 
-        LOG.debug("User with [id = " + id + "] was found");
-        return new ResponseEntity<>(userInfo.get(), getHttpJsonHeaders(), HttpStatus.OK);
     }
 
     private HttpHeaders getHttpJsonHeaders() {

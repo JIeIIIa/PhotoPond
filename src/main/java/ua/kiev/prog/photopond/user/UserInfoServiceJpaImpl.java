@@ -138,9 +138,9 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
 
     @Override
-    public Optional<UserInfo> findById(long id) {
+    public Optional<UserInfoDTO> findById(long id) {
         LOG.traceEntry("Get user by [ id = {} ]", id);
-        return userInfoRepository.findById(id);
+        return userInfoRepository.findById(id).map(UserInfoMapper::toDto);
     }
 
     @Override

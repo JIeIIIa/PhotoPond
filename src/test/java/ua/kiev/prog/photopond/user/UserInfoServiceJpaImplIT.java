@@ -141,7 +141,7 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void findByIdExistUser() {
         //Given
-        UserInfo expectedUser = new UserInfoBuilder()
+        UserInfoDTO expectedUser = UserInfoDTOBuilder.getInstance()
                 .id(777L)
                 .login("someUser")
                 .password("password")
@@ -149,7 +149,7 @@ public class UserInfoServiceJpaImplIT {
                 .build();
 
         //When
-        Optional<UserInfo> foundUser = userInfoServiceJpaImpl.findById(777);
+        Optional<UserInfoDTO> foundUser = userInfoServiceJpaImpl.findById(777);
 
         //Then
         assertThat(foundUser)
@@ -163,7 +163,7 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void findByIdNotExistsUser() {
         //When
-        Optional<UserInfo> foundUser = userInfoServiceJpaImpl.findById(123);
+        Optional<UserInfoDTO> foundUser = userInfoServiceJpaImpl.findById(123);
 
         //Then
         assertThat(foundUser).isNotPresent();
@@ -203,7 +203,7 @@ public class UserInfoServiceJpaImplIT {
                 .passwordConfirmation(newPassword)
                 .build();
 
-        UserInfo expectedUser = new UserInfoBuilder()
+        UserInfoDTO expectedUser = UserInfoDTOBuilder.getInstance()
                 .id(777L)
                 .login(login)
                 .password(passwordEncoder.encode(newPassword))
@@ -213,7 +213,7 @@ public class UserInfoServiceJpaImplIT {
         boolean result = userInfoServiceJpaImpl.setNewPassword(userInfoDTO);
 
         //Then
-        Optional<UserInfo> afterUpdate = userInfoServiceJpaImpl.findById(expectedUser.getId());
+        Optional<UserInfoDTO> afterUpdate = userInfoServiceJpaImpl.findById(expectedUser.getId());
 
         assertThat(result).isTrue();
         assertThat(afterUpdate)

@@ -112,9 +112,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public Optional<UserInfo> findById(long id) {
+    public Optional<UserInfoDTO> findById(long id) {
         LOG.trace("Get user by [id = " + id + "]");
-        return LOG.traceExit(userInfoRepository.findById(id));
+        return LOG.traceExit(userInfoRepository.findById(id).map(UserInfoMapper::toDto));
     }
 
     @Override
