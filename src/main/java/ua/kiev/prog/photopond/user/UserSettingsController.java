@@ -54,12 +54,12 @@ public class UserSettingsController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(textHeader())
-                    .body(bindingErrorResolver.resolveMessage("Success.user.password.change", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.password.change.success", null, locale));
         } else {
             return ResponseEntity
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .headers(textHeader())
-                    .body(bindingErrorResolver.resolveMessage("Errors.user.password.change", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.password.change.error", null, locale));
         }
     }
 
@@ -73,12 +73,12 @@ public class UserSettingsController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(textHeader())
-                    .body(bindingErrorResolver.resolveMessage("Success.user.avatar.change", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.avatar.change.success", null, locale));
         } else {
             return ResponseEntity
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .headers(textHeader())
-                    .body(bindingErrorResolver.resolveMessage("Errors.user.avatar.change", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.avatar.change.error", null, locale));
         }
     }
 
@@ -91,12 +91,12 @@ public class UserSettingsController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(jsonHeader())
-                    .body(bindingErrorResolver.resolveMessage("Success.user.avatar.remove", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.avatar.remove.success", null, locale));
         } else {
             return ResponseEntity
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .headers(jsonHeader())
-                    .body(bindingErrorResolver.resolveMessage("Errors.user.avatar.change", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.avatar.change.error", null, locale));
         }
     }
 }

@@ -41,7 +41,7 @@
                         </th>
                         <th class="col-md-4 col-5 text-center">
                             <div class="d-flex" v-on:click="sortBy('login')" style="cursor: pointer;">
-                                <span th:text="#{userInfo.login}">Login</span>
+                                <span th:text="#{user.login}">Login</span>
                                 <i class="textArrow fa"
                                    :class="{'fa-arrow-up' : isAsc, 'fa-arrow-down' : isDesc}"
                                    v-if="isSortedByField('login')"></i>
@@ -49,7 +49,7 @@
                         </th>
                         <th class="col-md-3 col-3 text-center">
                             <div class="d-flex" v-on:click="sortBy('role')" style="cursor: pointer;">
-                                <span th:text="#{userInfo.role}">Role</span>
+                                <span th:text="#{user.role}">Role</span>
                                 <i class="textArrow fa"
                                    :class="{'fa-arrow-up' : isAsc, 'fa-arrow-down' : isDesc}"
                                    v-if="isSortedByField('role')"></i>
