@@ -20,7 +20,7 @@ public interface UserInfoService {
 
     Optional<UserInfo> delete(long id);
 
-    Optional<UserInfo> update(UserInfo userInfo);
+    Optional<UserInfoDTO> updateBaseInformation(UserInfoDTO userInfo);
 
     boolean setNewPassword(UserInfoDTO userInfoDTO);
 

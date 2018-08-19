@@ -1,5 +1,7 @@
 package ua.kiev.prog.photopond.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.web.multipart.MultipartFile;
 import ua.kiev.prog.photopond.transfer.*;
 
@@ -10,30 +12,37 @@ import java.io.IOException;
 @EqualPasswords(
         groups = {New.class, ChangePassword.class}, message = "{EqualPasswords}")
 public class UserInfoDTO implements ConfirmedPassword {
+    @JsonView(value = {Exist.class})
     private Long id;
 
     @NotNull(message = "{NotNull.login}", groups = {New.class, Exist.class})
     @Size(min = 4, max = 30, message = "{Size.login}",
             groups = {New.class, Exist.class})
     @UniqueLogin(groups = New.class)
+    @JsonView(value = {AdminEditing.class})
     private String login;
 
     @NotNull(message = "{NotNull.oldPassword}", groups = {ChangePassword.class})
     @Size(min = 6, max = 65, message = "{Size.password}",
             groups = {ChangePassword.class})
+    @JsonView(value = {ChangePassword.class})
     private String oldPassword;
 
     @NotNull(message = "{NotNull.password}", groups = {New.class, ChangePassword.class})
     @Size(min = 6, max = 65, message = "{Size.password}",
             groups = {New.class, ChangePassword.class})
+    @JsonView(value = {ChangePassword.class})
     private String password;
 
+    @JsonView(value = {ChangePassword.class})
     private String passwordConfirmation;
 
     @NotNull(message = "{NotNull.role}", groups = {AdminEditing.class})
+    @JsonView(value = {AdminEditing.class})
     private UserRole role;
 
     @NotNull(message = "NotNull.avatar", groups = {ChangeAvatar.class})
+    @JsonIgnore
     private MultipartFile avatar;
 
     public Long getId() {
@@ -92,6 +101,7 @@ public class UserInfoDTO implements ConfirmedPassword {
         this.avatar = avatar;
     }
 
+    @JsonIgnore
     public byte[] getAvatarAsBytes() {
         try {
             return avatar.getBytes();

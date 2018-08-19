@@ -45,7 +45,7 @@ public class UserSettingsController {
 
     @RequestMapping(value = "/password", method = RequestMethod.PUT)
     @ResponseBody
-    public ResponseEntity changePassword(@PathVariable("login") String login,
+    public ResponseEntity<String> changePassword(@PathVariable("login") String login,
                                          @Validated(ChangePassword.class) @RequestBody UserInfoDTO userInfoDTO,
                                          Locale locale) {
         userInfoDTO.setLogin(login);
@@ -64,7 +64,7 @@ public class UserSettingsController {
     }
 
     @RequestMapping(value = "/avatar", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity updateAvatar(@PathVariable("login") String login,
+    public ResponseEntity<String> updateAvatar(@PathVariable("login") String login,
                                        @Validated(ChangeAvatar.class) @ModelAttribute UserInfoDTO userInfoDTO,
                                        Locale locale) {
         userInfoDTO.setLogin(login);
@@ -83,7 +83,7 @@ public class UserSettingsController {
     }
 
     @RequestMapping(value = "/avatar", method = RequestMethod.DELETE)
-    public ResponseEntity removeAvatar(@PathVariable("login") String login,
+    public ResponseEntity<String> removeAvatar(@PathVariable("login") String login,
                                        Locale locale) {
         if (userInfoService.updateAvatar(
                 UserInfoDTOBuilder.getInstance().login(login).build()

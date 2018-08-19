@@ -226,40 +226,41 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void updateWithPasswordNotNullSuccess() {
         //Given
-        String newPassword = "newPassword";
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
                 .id(777L)
                 .login("user")
-                .password(newPassword)
+                .password("newPassword")
                 .role(UserRole.ADMIN).build();
-        UserInfo expected = new UserInfo().copyFrom(newInformation);
-        expected.setPassword(passwordEncoder.encode(newInformation.getPassword()));
+        UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
+                .source(newInformation)
+                .password("password")
+                .build();
 
         //When
-        Optional<UserInfo> result = userInfoServiceJpaImpl.update(newInformation);
+        Optional<UserInfoDTO> result = userInfoServiceJpaImpl.updateBaseInformation(newInformation);
 
         //Then
         assertThat(result)
                 .isPresent()
                 .get()
                 .isEqualToIgnoringGivenFields(expected, "password")
-                .matches(u -> passwordEncoder.matches(newPassword, u.getPassword()));
+                .matches(u -> passwordEncoder.matches(expected.getPassword(), u.getPassword()));
     }
 
     @Test
     public void updateWithPasswordIsNullSuccess() {
         //Given
         long id = 777L;
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
                 .id(id)
                 .login("user")
                 .password(null)
                 .role(UserRole.ADMIN).build();
-        UserInfo expectedUser = new UserInfo().copyFrom(newInformation);
+        UserInfoDTO expectedUser = UserInfoDTOBuilder.getInstance().source(newInformation).build();
         expectedUser.setPassword("password");
 
         //When
-        Optional<UserInfo> result = userInfoServiceJpaImpl.update(newInformation);
+        Optional<UserInfoDTO> result = userInfoServiceJpaImpl.updateBaseInformation(newInformation);
 
         //Then
         assertThat(result)
@@ -274,14 +275,14 @@ public class UserInfoServiceJpaImplIT {
     public void updateWhenExistsSameLogin() {
         //Given
         UserInfo user = userInfoJpaRepository.findById(777L).orElseThrow(IllegalStateException::new);
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
                 .id(777L)
                 .login("Administrator")
                 .password("newPassword")
                 .role(UserRole.ADMIN).build();
 
         //When
-        Optional<UserInfo> userAfterUpdate = userInfoServiceJpaImpl.update(newInformation);
+        Optional<UserInfoDTO> userAfterUpdate = userInfoServiceJpaImpl.updateBaseInformation(newInformation);
 
         //Then
         Optional<UserInfo> userCheck = userInfoJpaRepository.findById(777L);
@@ -294,23 +295,20 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void updateWithWrongId() {
         //Given
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
                 .id(101010L)
                 .login("newUser")
                 .password("password")
                 .build();
 
         //When
-        Optional<UserInfo> userAfterUpdate = userInfoServiceJpaImpl.update(newInformation);
+        Optional<UserInfoDTO> userAfterUpdate = userInfoServiceJpaImpl.updateBaseInformation(newInformation);
 
         //Then
         List<UserInfo> allUsers = userInfoJpaRepository.findAll();
 
         assertThat(userAfterUpdate).isNotPresent();
-        assertThat(allUsers)
-                .hasSize(3)
-                .doesNotContain(newInformation);
-
+        assertThat(allUsers).hasSize(3);
     }
 
     @Test

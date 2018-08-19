@@ -93,22 +93,24 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public Optional<UserInfo> update(UserInfo userInfo) {
-        LOG.trace("Update user with {id = " + userInfo.getId() + "]");
-        Optional<UserInfo> userById = userInfoRepository.findById(userInfo.getId());
+    public Optional<UserInfoDTO> updateBaseInformation(UserInfoDTO userInfoDTO) {
+        LOG.trace("Update user with {id = " + userInfoDTO.getId() + "]");
+        Optional<UserInfo> userById = userInfoRepository.findById(userInfoDTO.getId());
         if (!userById.isPresent()) {
-            LOG.debug("User with id = {} not found", userInfo.getId());
+            LOG.debug("User with id = {} not found", userInfoDTO.getId());
             return Optional.empty();
         }
-        boolean existsUserWithSameLogin = userInfoRepository.existsByLogin(userInfo.getLogin(), userInfo.getId());
+        boolean existsUserWithSameLogin = userInfoRepository.existsByLogin(userInfoDTO.getLogin(), userInfoDTO.getId());
         LOG.trace("[ existsUserWithSameLogin = {} ]", existsUserWithSameLogin);
         if (existsUserWithSameLogin) {
-            LOG.debug("User with login = '{}' is already exists", userInfo.getLogin());
+            LOG.debug("User with login = '{}' is already exists", userInfoDTO.getLogin());
             return Optional.empty();
         }
-        cryptPassword(userInfo, userInfo.getPassword());
-        return Optional.ofNullable(userInfoRepository.update(userInfo));
+        UserInfo userInfo = userById.get();
+        userInfo.setLogin(userInfoDTO.getLogin());
+        userInfo.setRole(userInfoDTO.getRole());
 
+        return Optional.ofNullable(UserInfoMapper.toDto(userInfoRepository.update(userInfo)));
     }
 
     @Override

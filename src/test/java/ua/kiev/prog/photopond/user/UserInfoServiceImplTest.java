@@ -247,14 +247,22 @@ public class UserInfoServiceImplTest {
     @Test
     public void updateWithPasswordNotNullSuccess() {
         //Given
-        UserInfo user = new UserInfo(USER_LOGIN, "somePassword", UserRole.USER);
+        UserInfo user = new UserInfoBuilder()
+                .id(123L)
+                .login(USER_LOGIN)
+                .password("somePassword")
+                .role(UserRole.USER)
+                .build();
         String newPassword = "newPassword";
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
+                .id(123L)
                 .login("newLogin")
                 .password(newPassword)
                 .role(UserRole.ADMIN).build();
-        UserInfo expected = new UserInfo().copyFrom(newInformation);
-        expected.setPassword(passwordEncoder.encode(newInformation.getPassword()));
+        UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
+                .source(newInformation)
+                .password(user.getPassword())
+                .build();
 
         when(userRepository.existsByLogin(newInformation.getLogin(), newInformation.getId()))
                 .thenReturn(false);
@@ -271,26 +279,33 @@ public class UserInfoServiceImplTest {
                 });
 
         //When
-        Optional<UserInfo> result = instance.update(newInformation);
+        Optional<UserInfoDTO> result = instance.updateBaseInformation(newInformation);
 
         //Then
         assertThat(result)
                 .isPresent()
                 .get()
-                .isEqualToIgnoringGivenFields(expected, "password")
-                .matches(u -> passwordEncoder.matches(newPassword, u.getPassword()));
+                .isEqualToComparingFieldByField(expected);
     }
 
     @Test
     public void updateWithPasswordIsNullSuccess() {
         //Given
-        UserInfo user = new UserInfo(USER_LOGIN, "somePassword", UserRole.USER);
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfo user = new UserInfoBuilder()
+                .id(123L)
+                .login(USER_LOGIN)
+                .password("somePassword")
+                .role(UserRole.USER)
+                .build();
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
+                .id(123L)
                 .login("user")
                 .password(null)
                 .role(UserRole.ADMIN).build();
-        UserInfo expected = new UserInfo().copyFrom(newInformation);
-        expected.setPassword(user.getPassword());
+        UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
+                .source(newInformation)
+                .password(user.getPassword())
+                .build();
 
         when(userRepository.existsByLogin(newInformation.getLogin(), newInformation.getId()))
                 .thenReturn(false);
@@ -307,12 +322,13 @@ public class UserInfoServiceImplTest {
                 });
 
         //When
-        Optional<UserInfo> result = instance.update(newInformation);
+        Optional<UserInfoDTO> result = instance.updateBaseInformation(newInformation);
 
         //Then
         assertThat(result)
                 .isPresent()
-                .hasValue(expected);
+                .get()
+                .isEqualToComparingFieldByField(expected);
     }
 
     @Test
@@ -325,16 +341,17 @@ public class UserInfoServiceImplTest {
                 .login("oldUser")
                 .password("password")
                 .role(UserRole.USER).build();
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
                 .id(id)
                 .login(userLogin)
                 .password("newPassword")
-                .role(UserRole.ADMIN).build();
+                .role(UserRole.ADMIN)
+                .build();
         when(userRepository.findById(id)).thenReturn(Optional.ofNullable(user));
         when(userRepository.existsByLogin(userLogin, id)).thenReturn(true);
 
         //When
-        Optional<UserInfo> userAfterUpdate = instance.update(newInformation);
+        Optional<UserInfoDTO> userAfterUpdate = instance.updateBaseInformation(newInformation);
 
         //Then
         assertThat(userAfterUpdate).isNotPresent();
@@ -345,7 +362,7 @@ public class UserInfoServiceImplTest {
     public void updateWithWrongId() {
         //Given
         long id = 101010;
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
                 .id(id)
                 .login("newUser")
                 .password("password")
@@ -353,7 +370,7 @@ public class UserInfoServiceImplTest {
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
         //When
-        Optional<UserInfo> userAfterUpdate = instance.update(newInformation);
+        Optional<UserInfoDTO> userAfterUpdate = instance.updateBaseInformation(newInformation);
 
         //Then
         assertThat(userAfterUpdate).isNotPresent();

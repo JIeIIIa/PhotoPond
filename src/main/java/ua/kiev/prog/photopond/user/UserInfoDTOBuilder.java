@@ -60,6 +60,18 @@ public class UserInfoDTOBuilder {
         return this;
     }
 
+    public UserInfoDTOBuilder source(UserInfoDTO userInfoDTO) {
+        id = userInfoDTO.getId();
+        login = userInfoDTO.getLogin();
+        oldPassword = userInfoDTO.getOldPassword();
+        password = userInfoDTO.getPassword();
+        passwordConfirmation = userInfoDTO.getPasswordConfirmation();
+        role = userInfoDTO.getRole();
+        avatar = userInfoDTO.getAvatar();
+
+        return this;
+    }
+
     public UserInfoDTO build() {
         UserInfoDTO userInfoDTO = new UserInfoDTO();
         userInfoDTO.setId(id);

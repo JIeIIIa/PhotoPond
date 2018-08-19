@@ -111,31 +111,29 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
     @Override
     @Transactional
-    public Optional<UserInfo> update(UserInfo userInfo) {
-        LOG.traceEntry("Update user with { id = '{}' ]", userInfo.getId());
+    public Optional<UserInfoDTO> updateBaseInformation(UserInfoDTO userInfoDTO) {
+        LOG.traceEntry("Update user with { id = '{}' ]", userInfoDTO.getId());
 
-        long countUsersWithSameLogin = userInfoRepository.countByLoginAndIdNot(userInfo.getLogin(), userInfo.getId());
+        long countUsersWithSameLogin = userInfoRepository.countByLoginAndIdNot(userInfoDTO.getLogin(), userInfoDTO.getId());
         LOG.trace("[ countUsersWithSameLogin = {} ]", countUsersWithSameLogin);
         if (countUsersWithSameLogin > 0) {
             LOG.debug("There is {} user(-s) with login = '{}' already exists",
                     countUsersWithSameLogin,
-                    userInfo.getLogin());
+                    userInfoDTO.getLogin());
             return Optional.empty();
         }
 
-        Optional<UserInfo> updated = userInfoRepository.findById(userInfo.getId())
-                .map(u -> copyUserInfo(u, userInfo))
-                .map(userInfoRepository::save);
+        Optional<UserInfoDTO> updated = userInfoRepository.findById(userInfoDTO.getId())
+                .map(u -> {
+                    u.setLogin(userInfoDTO.getLogin());
+                    u.setRole(userInfoDTO.getRole());
+                    return u;
+                })
+                .map(userInfoRepository::saveAndFlush)
+                .map(UserInfoMapper::toDto);
 
         return LOG.traceExit("Information after update:   {}", updated);
     }
-
-    private UserInfo copyUserInfo(UserInfo source, UserInfo newInformation) {
-        cryptPassword(newInformation, newInformation.getPassword());
-        source.copyFrom(newInformation);
-        return source.copyFrom(newInformation);
-    }
-
 
     @Override
     public Optional<UserInfoDTO> findById(long id) {

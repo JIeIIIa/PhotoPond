@@ -243,58 +243,61 @@ public class UserInfoServiceJpaImplTest {
     public void updateWithPasswordNotNullSuccess() {
         //Given
         String newPassword = "newPassword";
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
                 .id(mockUser.getId())
                 .login("user")
                 .password(newPassword)
                 .role(UserRole.ADMIN).build();
-        UserInfo expected = new UserInfo().copyFrom(newInformation);
-        expected.setPassword(passwordEncoder.encode(newInformation.getPassword()));
+        UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
+                .source(newInformation)
+                .password(mockUser.getPassword())
+                .build();
 
         when(userRepository.countByLoginAndIdNot(newInformation.getLogin(), newInformation.getId()))
                 .thenReturn(0L);
         when(userRepository.findById(mockUser.getId()))
                 .thenReturn(Optional.ofNullable(mockUser));
-        when(userRepository.save(any(UserInfo.class)))
+        when(userRepository.saveAndFlush(any(UserInfo.class)))
                 .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
 
         //When
-        Optional<UserInfo> result = instance.update(newInformation);
+        Optional<UserInfoDTO> result = instance.updateBaseInformation(newInformation);
 
         //Then
         assertThat(result)
                 .isPresent()
                 .get()
-                .isEqualToIgnoringGivenFields(expected, "password")
-                .matches(u -> passwordEncoder.matches(newPassword, u.getPassword()));
+                .isEqualToComparingFieldByField(expected);
     }
 
     @Test
     public void updateWithPasswordIsNullSuccess() {
         //Given
-        long id = 777L;
-        UserInfo newInformation = new UserInfoBuilder()
-                .id(id)
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
+                .id(mockUser.getId())
                 .login("user")
                 .password(null)
                 .role(UserRole.ADMIN).build();
-        UserInfo expected = new UserInfo().copyFrom(newInformation);
-        expected.setPassword(mockUser.getPassword());
+        UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
+                .source(newInformation)
+                .password(mockUser.getPassword())
+                .build();
 
         when(userRepository.countByLoginAndIdNot(newInformation.getLogin(), newInformation.getId()))
                 .thenReturn(0L);
         when(userRepository.findById(mockUser.getId()))
                 .thenReturn(Optional.ofNullable(mockUser));
-        when(userRepository.save(any(UserInfo.class)))
+        when(userRepository.saveAndFlush(any(UserInfo.class)))
                 .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
 
         //When
-        Optional<UserInfo> result = instance.update(newInformation);
+        Optional<UserInfoDTO> result = instance.updateBaseInformation(newInformation);
 
         //Then
         assertThat(result)
                 .isPresent()
-                .hasValue(expected);
+                .get()
+                .isEqualToComparingFieldByField(expected);
     }
 
     @Test
@@ -302,7 +305,7 @@ public class UserInfoServiceJpaImplTest {
         //Given
         String userLogin = "user";
         long id = 777L;
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
                 .id(id)
                 .login(userLogin)
                 .password("newPassword")
@@ -310,7 +313,7 @@ public class UserInfoServiceJpaImplTest {
         when(userRepository.countByLoginAndIdNot(userLogin, id)).thenReturn(1L);
 
         //When
-        Optional<UserInfo> userAfterUpdate = instance.update(newInformation);
+        Optional<UserInfoDTO> userAfterUpdate = instance.updateBaseInformation(newInformation);
 
         //Then
         assertThat(userAfterUpdate).isNotPresent();
@@ -321,7 +324,7 @@ public class UserInfoServiceJpaImplTest {
     public void updateWithWrongId() {
         //Given
         long id = 101010;
-        UserInfo newInformation = new UserInfoBuilder()
+        UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
                 .id(id)
                 .login("newUser")
                 .password("password")
@@ -329,7 +332,7 @@ public class UserInfoServiceJpaImplTest {
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
         //When
-        Optional<UserInfo> userAfterUpdate = instance.update(newInformation);
+        Optional<UserInfoDTO> userAfterUpdate = instance.updateBaseInformation(newInformation);
 
         //Then
         assertThat(userAfterUpdate).isNotPresent();

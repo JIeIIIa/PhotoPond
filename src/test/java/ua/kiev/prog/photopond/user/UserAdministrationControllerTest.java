@@ -55,45 +55,58 @@ public class UserAdministrationControllerTest {
 
     @Test
     public void updateExistsUserSameIdInPathAndModelVariables() throws Exception {
-        UserInfo user = new UserInfo("someUser", "password");
-        user.setId(10);
-        updateUserSuccess(10, user);
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
+                .id(10L)
+                .login("someUser")
+                .password("password")
+                .build();
+
+        updateUserSuccess(10, userInfoDTO);
     }
 
 
     @Test
     public void updateExistsUserDifferentIdInPathAndModelVariables() throws Exception {
-        UserInfo user = new UserInfo("someUser", "password");
-        user.setId(22);
-        updateUserSuccess(77, user);
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
+                .id(22L)
+                .login("someUser")
+                .password("password")
+                .build();
+
+        updateUserSuccess(77, userInfoDTO);
     }
 
-    private void updateUserSuccess(int pathId, UserInfo user) throws Exception {
-        when(userInfoService.update(any()))
+    private void updateUserSuccess(int pathId, UserInfoDTO userDTO) throws Exception {
+        when(userInfoService.updateBaseInformation(any()))
                 .thenAnswer(
-                        (Answer<Optional<UserInfo>>) invocationOnMock -> Optional.ofNullable((UserInfo) invocationOnMock.getArguments()[0])
+                        (Answer<Optional<UserInfoDTO>>) invocationOnMock -> Optional.ofNullable((UserInfoDTO) invocationOnMock.getArguments()[0])
                 );
         String expectedJsonContent = "{\"id\":" + pathId + ",\"login\":\"someUser\",\"role\":\"USER\"}";
 
         MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post(URL_PREFIX + "/" + pathId)
-                .content(buildJsonContent(user))
+                .content(buildJsonContent(userDTO))
                 .contentType(MediaType.APPLICATION_JSON);
-        if (user.getId() != pathId) {
-            post.param("id", String.valueOf(user.getId()));
+        if (userDTO.getId() != pathId) {
+            post.param("id", String.valueOf(userDTO.getId()));
         }
 
         mockMvc.perform(post)
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.content().json(expectedJsonContent))
+                .andExpect(MockMvcResultMatchers.content().json(expectedJsonContent, true))
                 .andDo(print());
     }
 
     @Test
     public void updateNotExistsUser() throws Exception {
-        when(userInfoService.update(any(UserInfo.class)))
+        when(userInfoService.updateBaseInformation(any(UserInfoDTO.class)))
                 .thenReturn(Optional.empty());
-        UserInfo user = new UserInfoBuilder().id(77L).login("user").password("password").role(ADMIN).build();
+        UserInfoDTO user = UserInfoDTOBuilder.getInstance()
+                .id(77L)
+                .login("user")
+                .password("password")
+                .role(ADMIN)
+                .build();
         MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post(URL_PREFIX + "/77")
                 .content(buildJsonContent(user))
                 .contentType(MediaType.APPLICATION_JSON);
@@ -122,7 +135,7 @@ public class UserAdministrationControllerTest {
 
     @Test
     public void deleteNotExistsUser() throws Exception {
-        when(userInfoService.update(any(UserInfo.class)))
+        when(userInfoService.updateBaseInformation(any(UserInfoDTO.class)))
                 .thenReturn(null);
 
         MockHttpServletRequestBuilder delete = MockMvcRequestBuilders.delete(URL_PREFIX + "/77");
@@ -133,15 +146,7 @@ public class UserAdministrationControllerTest {
                 .andDo(print());
     }
 
-    private String buildJsonContent(UserInfo user) throws JsonProcessingException {
-        if (user.getPassword() == null) {
-            return new ObjectMapper().writeValueAsString(user);
-        } else {
-            return "{\"id\": " + user.getId() +
-                    ", \"login\": \"" + user.getLogin() + "\"" +
-                    ", \"password\": \"" + user.getPassword() + "\"" +
-                    ", \"role\": \"" + user.getRole().name() + "\"}";
-        }
-
+    private String buildJsonContent(UserInfoDTO userDTO) throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(userDTO);
     }
 }
