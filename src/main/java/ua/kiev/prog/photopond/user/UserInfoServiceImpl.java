@@ -84,12 +84,12 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public Optional<UserInfo> delete(long id) {
+    public Optional<UserInfoDTO> delete(long id) {
         LOG.debug("Delete user with [id = " + id + "]");
         Optional<UserInfo> deletedUser = userInfoRepository.findById(id);
         deletedUser.ifPresent(u -> userInfoRepository.delete(u.getId()));
 
-        return LOG.traceExit(deletedUser);
+        return LOG.traceExit(deletedUser.map(UserInfoMapper::toDto));
     }
 
     @Override

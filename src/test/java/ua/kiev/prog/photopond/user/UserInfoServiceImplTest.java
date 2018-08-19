@@ -382,18 +382,25 @@ public class UserInfoServiceImplTest {
     public void deleteExistsUser() {
         //Given
         UserInfo user = new UserInfoBuilder().id(777L).login("user").password("qwerty123!").role(UserRole.USER).build();
+        UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
+                .id(777L)
+                .login("user")
+                .password("qwerty123!")
+                .role(UserRole.USER)
+                .build();
         when(userRepository.findById(777L)).thenReturn(
                 Optional.ofNullable(user)
         );
 
         //When
-        Optional<UserInfo> deletedUser = instance.delete(777L);
+        Optional<UserInfoDTO> deletedUser = instance.delete(777L);
 
         //Then
         assertThat(deletedUser)
                 .isNotNull()
                 .isPresent()
-                .hasValue(user);
+                .get()
+                .isEqualToComparingFieldByField(expected);
         verify(userRepository).delete(777L);
     }
 
@@ -404,7 +411,7 @@ public class UserInfoServiceImplTest {
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
         //When
-        Optional<UserInfo> deletedUser = instance.delete(id);
+        Optional<UserInfoDTO> deletedUser = instance.delete(id);
 
         //Then
         assertThat(deletedUser)

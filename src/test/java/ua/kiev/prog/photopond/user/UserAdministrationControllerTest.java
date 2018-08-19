@@ -118,10 +118,13 @@ public class UserAdministrationControllerTest {
 
     @Test
     public void deleteExistsUser() throws Exception {
-        UserInfo user = new UserInfo("someUser", "password");
-        user.setId(77);
-        when(userInfoService.delete(user.getId()))
-                .thenReturn(Optional.of(user));
+        UserInfoDTO userDTO = UserInfoDTOBuilder.getInstance()
+                .id(77L)
+                .login("someUser")
+                .password("password")
+                .build();
+        when(userInfoService.delete(userDTO.getId()))
+                .thenReturn(Optional.of(userDTO));
         String jsonContent = "{\"id\":77,\"login\":\"someUser\",\"role\":\"USER\"}";
 
         MockHttpServletRequestBuilder delete = MockMvcRequestBuilders.delete(URL_PREFIX + "/77");

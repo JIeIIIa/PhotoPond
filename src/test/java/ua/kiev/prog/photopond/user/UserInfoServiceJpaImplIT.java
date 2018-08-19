@@ -314,24 +314,25 @@ public class UserInfoServiceJpaImplIT {
     @Test
     public void deleteExistsUser() {
         //Given
-        UserInfo user = new UserInfoBuilder().id(777L).login("someUser").password("password").role(UserRole.USER).build();
+        UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
+                .id(777L).login("someUser").password("password").role(UserRole.USER).build();
 
         //When
-        Optional<UserInfo> deletedUser = userInfoServiceJpaImpl.delete(777);
+        Optional<UserInfoDTO> deletedUser = userInfoServiceJpaImpl.delete(777);
 
         //Then
         assertThat(userInfoJpaRepository.findById(777L)).isNotPresent();
         assertThat(deletedUser)
                 .isPresent()
                 .get()
-                .isEqualToIgnoringGivenFields(user, "password")
-                .matches(u -> passwordEncoder.matches(user.getPassword(), u.getPassword()));
+                .isEqualToIgnoringGivenFields(expected, "password")
+                .matches(u -> passwordEncoder.matches(expected.getPassword(), u.getPassword()));
     }
 
     @Test
     public void deleteWithFailureId() {
         //When
-        Optional<UserInfo> deletedUser = userInfoServiceJpaImpl.delete(101010);
+        Optional<UserInfoDTO> deletedUser = userInfoServiceJpaImpl.delete(101010);
 
         //Then
         assertThat(deletedUser)

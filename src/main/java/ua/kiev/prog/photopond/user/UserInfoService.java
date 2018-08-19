@@ -18,7 +18,7 @@ public interface UserInfoService {
 
     boolean existsWithAdminRole();
 
-    Optional<UserInfo> delete(long id);
+    Optional<UserInfoDTO> delete(long id);
 
     Optional<UserInfoDTO> updateBaseInformation(UserInfoDTO userInfo);
 

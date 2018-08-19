@@ -101,12 +101,12 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
 
     @Override
     @Transactional
-    public Optional<UserInfo> delete(long id) {
+    public Optional<UserInfoDTO> delete(long id) {
         LOG.traceEntry("Delete user with [ id = '{}' ]", id);
         Optional<UserInfo> deletedUser = userInfoRepository.findById(id);
         deletedUser.ifPresent(userInfoRepository::delete);
 
-        return LOG.traceExit(deletedUser);
+        return LOG.traceExit(deletedUser.map(UserInfoMapper::toDto));
     }
 
     @Override

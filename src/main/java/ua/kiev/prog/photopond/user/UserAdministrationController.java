@@ -19,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 import ua.kiev.prog.photopond.transfer.AdminEditing;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/administration")
@@ -51,17 +50,19 @@ public class UserAdministrationController {
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<UserInfo> deleteUser(@PathVariable("id") long id) {
+    @JsonView(value = {AdminEditing.class})
+    public ResponseEntity<UserInfoDTO> deleteUser(@PathVariable("id") long id) {
         LOG.trace("Delete user by [id = " + id + "]");
 
-        Optional<UserInfo> userInfo = userInfoService.delete(id);
-
-        if (!userInfo.isPresent()) {
-            LOG.debug("Error: User with [id = " + id + "] not deleted");
-            return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
-        }
-        LOG.debug("User with [id = " + id + "] was deleted");
-        return new ResponseEntity<>(userInfo.get(), getHttpJsonHeaders(), HttpStatus.OK);
+        return userInfoService.delete(id)
+                .map(u -> {
+                    LOG.debug("User with [id = " + id + "] was deleted");
+                    return new ResponseEntity<>(u, getHttpJsonHeaders(), HttpStatus.OK);
+                })
+                .orElseGet(() -> {
+                    LOG.debug("Error: User with [id = " + id + "] not deleted");
+                    return new ResponseEntity<>(getHttpJsonHeaders(), HttpStatus.NO_CONTENT);
+                });
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.POST)
