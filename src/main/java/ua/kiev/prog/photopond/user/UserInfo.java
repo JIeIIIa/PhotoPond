@@ -23,7 +23,6 @@ public class UserInfo implements Serializable {
 
     @NotNull(message = "{NotNull.password}")
     @Size(min = 6, max = 65, message = "{Size.password}")
-    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.ORDINAL)
