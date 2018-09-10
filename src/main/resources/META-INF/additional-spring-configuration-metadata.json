@@ -1,0 +1,31 @@
+{
+  "properties": [
+    {
+      "name": "server.port.https",
+      "type": "java.lang.Integer",
+      "description": "Server HTTPS port."
+    },
+    {
+      "name": "includeStackTrace",
+      "type": "java.lang.Boolean",
+      "description": "Include stacktrace when errors occur.",
+      "defaultValue": "false"
+    },
+    {
+      "name": "application.location",
+      "type": "java.lang.String",
+      "description": "Path to root application folder on disk."
+    },
+    {
+      "name": "folders.basedir.location",
+      "type": "java.lang.String",
+      "description": "Path to folder with users directories."
+    },
+    {
+      "name": "folders.basedir.refresh",
+      "type": "java.lang.Boolean",
+      "description": "Clear folder with users directories on start application.",
+      "defaultValue": "false"
+    }
+  ]
+}
