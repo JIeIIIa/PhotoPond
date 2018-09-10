@@ -20,19 +20,21 @@ public class WelcomeControllerIT {
     @Autowired
     MockMvc mockMvc;
 
+    private static final String SERVER_ADDRESS = "https://localhost";
+
     @Test
     public void mappedRoot() throws Exception {
-        checkIndex("/");
+        checkIndex(SERVER_ADDRESS + "/");
     }
 
     @Test
     public void mappedIndex() throws Exception {
-        checkIndex("/index");
+        checkIndex(SERVER_ADDRESS + "/index");
     }
 
     @Test
     public void mappedIndexHtml() throws Exception {
-        checkIndex("/index.html");
+        checkIndex(SERVER_ADDRESS + "/index.html");
     }
 
     private void checkIndex(String url) throws Exception {

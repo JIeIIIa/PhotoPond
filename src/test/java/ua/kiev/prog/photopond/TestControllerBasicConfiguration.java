@@ -10,6 +10,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 public class TestControllerBasicConfiguration {
     protected MockMvc mockMvc;
 
+    private static final String SERVER_ADDRESS = "https://localhost";
+
     protected void configure(Object... controllers) {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setPrefix("/WEB-INF/templates/");
@@ -21,7 +23,7 @@ public class TestControllerBasicConfiguration {
     }
 
     protected void matchViewNameAfterGetRequest(String url, String viewName) throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(url))
+        mockMvc.perform(MockMvcRequestBuilders.get(SERVER_ADDRESS + url))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name(viewName));
     }

@@ -39,7 +39,9 @@ import static ua.kiev.prog.photopond.user.registration.RegistrationController.RE
 
 @ActiveProfiles({"dev", "unitTest", "securityWebAuthTestConfig"})
 public class RegistrationControllerTest {
-    private static final String REGISTRATION_URL = "/registration";
+    private static final String SERVER_ADDRESS = "https://localhost";
+
+    private static final String REGISTRATION_URL = SERVER_ADDRESS + "/registration";
     private static final String REGISTRATION_MODEL_VIEW_NAME = "registration";
 
     private static final String LOGIN_ATTRIBUTE_NAME = "login";

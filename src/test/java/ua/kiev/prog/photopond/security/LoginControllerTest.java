@@ -32,7 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 @ActiveProfiles({"dev", "securityWebAuthTestConfig"})
 public class LoginControllerTest {
-    private static final String LOGIN_PROCESSING_URL = "/j_spring_security_check";
+    private static final String SERVER_ADDRESS = "https://localhost";
+
+    private static final String LOGIN_PROCESSING_URL = SERVER_ADDRESS + "/j_spring_security_check";
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,9 +54,9 @@ public class LoginControllerTest {
     @Test
     public void requiresAuthentication() throws Exception {
         mockMvc
-                .perform(get("/user/user"))
+                .perform(get(SERVER_ADDRESS + "/user/user"))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrlPattern("http:/*/login"))
+                .andExpect(redirectedUrl(SERVER_ADDRESS + "/login"))
                 .andDo(print());
     }
 
@@ -62,7 +64,7 @@ public class LoginControllerTest {
     @WithMockUser(username = "someUser")
     public void accessDeny() throws Exception {
         mockMvc
-                .perform(get("/user/user"))
+                .perform(get(SERVER_ADDRESS + "/user/user"))
                 .andExpect(status().isUnauthorized())
                 .andDo(print());
     }
@@ -72,7 +74,7 @@ public class LoginControllerTest {
         mockMvc
                 .perform(formLogin(LOGIN_PROCESSING_URL)
                         .user("j_login", "userTest")
-                        .password("j_password", "invalid")  )
+                        .password("j_password", "invalid"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login?error=true"))
                 .andExpect(unauthenticated())
@@ -82,7 +84,6 @@ public class LoginControllerTest {
 
     @Test
     public void authenticationSuccessTest() throws Exception {
-
         ResultActions requestResult = mockMvc.perform(formLogin(LOGIN_PROCESSING_URL)
                 .user("j_login", "userTest")
                 .password("j_password", "passwordTest"));
@@ -97,7 +98,7 @@ public class LoginControllerTest {
     @Test
     @WithMockUser("userR")
     public void redirectAfterSuccessAuthorization() throws Exception {
-        mockMvc.perform(get("/authorized.html"))
+        mockMvc.perform(get(SERVER_ADDRESS + "/authorized.html"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/user/userR/drive"));
     }

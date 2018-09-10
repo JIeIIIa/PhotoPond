@@ -3,14 +3,14 @@ package ua.kiev.prog.photopond.core;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ua.kiev.prog.photopond.TestControllerBasicConfiguration;
 
 @RunWith(MockitoJUnitRunner.class)
-public class WelcomeControllerTest extends TestControllerBasicConfiguration{
+public class WelcomeControllerTest extends TestControllerBasicConfiguration {
 
     private static final String ROOT_VIEW_NAME = "index";
 
