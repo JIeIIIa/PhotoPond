@@ -39,7 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         log.debug("Configure HttpSecurity.");
-
+        http.requiresChannel().anyRequest().requiresSecure();
         http.csrf()
                 .disable()
                 .authorizeRequests()

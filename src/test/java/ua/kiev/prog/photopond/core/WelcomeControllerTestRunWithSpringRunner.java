@@ -32,6 +32,8 @@ public class WelcomeControllerTestRunWithSpringRunner {
 
     private static final String ROOT_VIEW_NAME = "index";
 
+    private static final String SERVER_ADDRESS = "https://localhost";
+
     @Test
     public void rootUrlTest() throws Exception {
         matchViewNameAfterGetRequest("/", ROOT_VIEW_NAME);
@@ -68,14 +70,14 @@ public class WelcomeControllerTestRunWithSpringRunner {
 
     @Test
     public void indexWithBadSuffixUrlTest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("index.hhttmmll"))
+        mockMvc.perform(MockMvcRequestBuilders.get(SERVER_ADDRESS + "/index.hhttmmll"))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrlPattern("http:/*/login"))
+                .andExpect(redirectedUrl(SERVER_ADDRESS + "/login"))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     private void matchViewNameAfterGetRequest(String url, String viewName) throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get(url))
+        mockMvc.perform(MockMvcRequestBuilders.get(SERVER_ADDRESS + url))
                 .andExpect(status().isOk())
                 .andExpect(view().name(viewName));
     }
