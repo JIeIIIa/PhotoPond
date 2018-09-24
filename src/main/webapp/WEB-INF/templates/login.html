@@ -21,6 +21,24 @@
     <link rel="stylesheet" href="../../css/main.css">
     <link rel="stylesheet" href="../../css/skins/default-skin.min.css">
 </head>
+
+<script type="text/javascript">
+    if (window.location.hash && window.location.hash == '#_=_') {
+        if (window.history && history.pushState) {
+            window.history.pushState("", document.title, window.location.pathname);
+        } else {
+            // Prevent scrolling by storing the page's current scroll offset
+            var scroll = {
+                top: document.body.scrollTop,
+                left: document.body.scrollLeft
+            };
+            window.location.hash = '';
+            // Restore the scroll offset, should be flicker free
+            document.body.scrollTop = scroll.top;
+            document.body.scrollLeft = scroll.left;
+        }
+    }
+</script>
 <body>
 <object th:include="fragments/header :: header('login')" th:remove="tag"></object>
 
@@ -60,12 +78,34 @@
                                 Log In
                             </button>
                         </div>
+                    </form>
+                    <form class="form">
                         <div class="form-group text-center">
                             <span th:text="#{authPages.noAccount}">Don’t have an account?</span>
                             <a th:href="@{/registration}"
                                th:text="#{btn.registration}">
                                 Sing up
                             </a>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-8 offset-2 p-0">
+                                <a class="btn btn-block btn-social btn-facebook"
+                                   th:href="@{${T(ua.kiev.prog.photopond.facebook.FBRequestMappingConstants).AUTHENTICATION_WITH_FACEBOOK_URL}}">
+                                    <i class="fab fa-facebook"></i>Log in with Facebook
+                                </a>
+                                <!--/*@thymesVar id="fbAuthError" type="java.lang.String"*/-->
+                                <div class="col-12" th:if="${fbAuthError}">
+                                    <div th:text="${fbAuthError}">Facebook authorization error!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="form-control col-8 offset-2 p-0">
+                                <a class="btn btn-block btn-social btn-twitter"
+                                   th:href="@{#}">
+                                    <i class="fab fa-twitter"></i> Log in with Twitter
+                                </a>
+                            </div>
                         </div>
                     </form>
                 </div>

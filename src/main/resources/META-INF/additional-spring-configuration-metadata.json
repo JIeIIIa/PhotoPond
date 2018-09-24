@@ -26,6 +26,16 @@
       "type": "java.lang.Boolean",
       "description": "Clear folder with users directories on start application.",
       "defaultValue": "false"
+    },
+    {
+      "name": "facebook.application.id",
+      "type": "java.lang.String",
+      "description": "Facebook application id."
+    },
+    {
+      "name": "facebook.application.secret",
+      "type": "java.lang.String",
+      "description": "Facebook application secret to use in requests."
     }
   ]
 }
