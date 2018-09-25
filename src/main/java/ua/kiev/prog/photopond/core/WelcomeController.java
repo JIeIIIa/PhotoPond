@@ -20,4 +20,10 @@ public class WelcomeController {
         log.traceEntry("Request to about page");
         return "about";
     }
+
+    @RequestMapping("/public/privacyPolicy")
+    public String privacyPolicy() {
+        log.traceEntry("Request to privacy policy page");
+        return "privacyPolicy";
+    }
 }
