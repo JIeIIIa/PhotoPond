@@ -27,13 +27,13 @@ import static ua.kiev.prog.photopond.Utils.Utils.customPageNotFound;
 import static ua.kiev.prog.photopond.Utils.Utils.jsonHeader;
 
 @ControllerAdvice
-public class MainExceptionController {
-    private static final Logger LOG = LogManager.getLogger(MainExceptionController.class);
+public class MainControllerAdvice {
+    private static final Logger LOG = LogManager.getLogger(MainControllerAdvice.class);
 
     private final BindingErrorResolver bindingErrorResolver;
 
     @Autowired
-    public MainExceptionController(BindingErrorResolver bindingErrorResolver) {
+    public MainControllerAdvice(BindingErrorResolver bindingErrorResolver) {
         this.bindingErrorResolver = bindingErrorResolver;
     }
 

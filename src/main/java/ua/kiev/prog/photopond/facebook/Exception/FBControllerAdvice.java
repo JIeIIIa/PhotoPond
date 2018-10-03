@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import static ua.kiev.prog.photopond.facebook.FBRequestMappingConstants.ACCOUNT_VIEW_URL;
 
 @ControllerAdvice
-public class FBExceptionController {
+public class FBControllerAdvice {
 
-    private static final Logger LOG = LogManager.getLogger(FBExceptionController.class);
+    private static final Logger LOG = LogManager.getLogger(FBControllerAdvice.class);
 
     @ExceptionHandler(value = {FBAccountAlreadyAssociateException.class})
     public ModelAndView accountAlreadyAssociate(RedirectAttributes redirectAttributes) {

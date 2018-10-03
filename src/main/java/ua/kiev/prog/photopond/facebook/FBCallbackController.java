@@ -22,16 +22,16 @@ import static ua.kiev.prog.photopond.facebook.FBConstants.FB_REDIRECT_URL;
 import static ua.kiev.prog.photopond.facebook.FBRequestMappingConstants.ACCOUNT_VIEW_URL;
 
 @Controller
-public class FBExternalResponseController {
+public class FBCallbackController {
 
-    private static final Logger LOG = LogManager.getLogger(FBExternalResponseController.class);
+    private static final Logger LOG = LogManager.getLogger(FBCallbackController.class);
 
     private final FBService fbService;
 
     private final BindingErrorResolver bindingErrorResolver;
 
     @Autowired
-    public FBExternalResponseController(FBService fbService, BindingErrorResolver bindingErrorResolver) {
+    public FBCallbackController(FBService fbService, BindingErrorResolver bindingErrorResolver) {
         this.fbService = fbService;
         this.bindingErrorResolver = bindingErrorResolver;
     }
