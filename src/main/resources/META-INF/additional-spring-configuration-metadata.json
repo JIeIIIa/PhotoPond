@@ -36,6 +36,17 @@
       "name": "facebook.application.secret",
       "type": "java.lang.String",
       "description": "Facebook application secret to use in requests."
+    },
+    {
+      "name": "twitter.consumer.key",
+      "type": "java.lang.String",
+      "description": "Twitter consumer key for application."
+    },
+    {
+      "name": "twitter.consumer.secret",
+      "type": "java.lang.String",
+      "description": "Twitter consumer secret for application."
     }
+
   ]
 }
