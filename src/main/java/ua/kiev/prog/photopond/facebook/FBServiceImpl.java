@@ -85,6 +85,7 @@ public class FBServiceImpl implements FBService {
         FacebookClient.AccessToken accessToken = changeCodeToExtendedAccessToken(code);
         Optional<User> user = retrieveUser(accessToken);
 
+        //todo: accessToken should be updated in database
         return user
                 .flatMap(u -> fbUserJpaRepository.findByFbId(u.getId()))
                 .map(FBUser::getUserInfo)

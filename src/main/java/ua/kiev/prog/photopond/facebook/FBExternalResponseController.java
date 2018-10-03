@@ -96,7 +96,7 @@ public class FBExternalResponseController {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setView(new RedirectView("/login", true, true, true));
-        redirectAttributes.addFlashAttribute("FBAuthError", "Facebook authorization error");
+        redirectAttributes.addFlashAttribute("fbAuthError", "Facebook authorization error");
 
         return modelAndView;
     }
