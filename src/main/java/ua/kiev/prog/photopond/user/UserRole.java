@@ -8,6 +8,6 @@ public enum UserRole {
 
     @Override
     public String toString() {
-        return "Role_" + name();
+        return "ROLE_" + name();
     }
 }
