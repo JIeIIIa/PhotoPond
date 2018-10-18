@@ -16,40 +16,13 @@ var app = new Vue({
     },
     computed: {
         elementsWithUri() {
-            return this.elements.map(function(item) {
+            return this.elements.map(function (item) {
                 item.data.uri = item.data.parentUri + '/' + item.data.name;
                 return item;
             })
         },
         sortedElements() {
             return this.elementsWithUri;
-        },
-        baseApiUrl() {
-            var baseApiUrl = this.url.split('/');
-            if (baseApiUrl.length > 5) {
-                baseApiUrl[3] = 'api';
-                baseApiUrl[5] = 'directory';
-            }
-            baseApiUrl = baseApiUrl.join('/');
-            console.log('baseApiUrl:   ' + baseApiUrl);
-
-            return baseApiUrl;
-        },
-        uploadFileApiUrl() {
-            var result = this.baseApiUrl.split('/');
-            if (result.length > 5) {
-                result[5] = 'files';
-            }
-
-            return result.join('/');
-        },
-        childDirectoriesUrl() {
-            var result = this.baseApiUrl.split('/');
-            if (result.length > 5) {
-                result[5] = 'directories';
-            }
-
-            return result.join('/');
         },
         parentDirectories() {
             var splitUrl = this.url.split('/');
@@ -88,6 +61,16 @@ var app = new Vue({
             });
             return count;
         },
+        selectedFileCount() {
+            var count = 0;
+            var ref = this;
+            this.elements.forEach(function (item) {
+                if (item.selected && ref.isFile(item)) {
+                    count++;
+                }
+            });
+            return count;
+        },
         hasDirectory() {
             for (var i = 0; i < this.elements.length; i++) {
                 if (this.isDirectory(this.elements[i])) {
@@ -117,7 +100,7 @@ var app = new Vue({
         loadDirectoryData() {
             var ref = this;
             // ref.showLoader = true;
-            axios.get(this.baseApiUrl)
+            axios.get(apiUrl('directory'))
                 .then(function (response) {
                     if (response.status === 200) {
                         response.data.forEach(function (item) {
@@ -168,7 +151,7 @@ var app = new Vue({
 
             var ref = this;
 
-            axios.post(this.uploadFileApiUrl, formData, {
+            axios.post(apiUrl('files'), formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -194,7 +177,7 @@ var app = new Vue({
             this.clearErrorCode();
             console.log(directoryName);
             var ref = this;
-            var url = this.baseApiUrl;
+            var url = apiUrl('directory');
             ref.dialogOperationInProgress = true;
 
             axios.post(url,
@@ -279,7 +262,7 @@ var app = new Vue({
             this.errorCode = "-1";
             var count = this.selectedItemCount;
 
-            this.elements.forEach(function(item, index, object) {
+            this.elements.forEach(function (item, index, object) {
                 if (!item.selected) {
                     return;
                 }
@@ -292,7 +275,7 @@ var app = new Vue({
                             ref.makeError(errMsg, response.status);
                         }
                         count--;
-                        if(count === 0) {
+                        if (count === 0) {
                             $("#deleteItems #confirmModalForm").modal('hide');
                         }
                     })
@@ -300,13 +283,13 @@ var app = new Vue({
                         var errMsg = "Response on rename = " + ref.editedValue;
                         ref.makeError(errMsg, reason.response.status);
                         count--;
-                        if(count === 0) {
+                        if (count === 0) {
                             $("#deleteItems #confirmModalForm").modal('hide');
                         }
                     });
             });
         },
-        onMove(){
+        onMove() {
             if (this.selectedItemCount < 1) {
                 console.log('Moving failure');
                 return;
@@ -314,9 +297,9 @@ var app = new Vue({
 
             console.log("moving:   ");
             console.log(this.selectedItemCount);
-            this.editedValue = this.baseApiUrl;
+            this.editedValue = apiUrl('directory');
             // this.$refs.moveModalForm.currentUrl = ;
-            this.$refs.moveModalForm.loadSubDirectories(this.childDirectoriesUrl);
+            this.$refs.moveModalForm.loadSubDirectories(apiUrl('directories'));
             $('#moveItems .moveModalForm').modal('show');
         },
         onMoveConfirm(parentUrl) {
@@ -325,13 +308,13 @@ var app = new Vue({
             ref.operationInProgress = true;
             var count = this.selectedItemCount;
 
-            this.elements.forEach(function(item, index, object) {
+            this.elements.forEach(function (item, index, object) {
                 if (!item.selected) {
                     return;
                 }
                 if (targetParentUrl === item.data.parentUri) {
                     count--;
-                    if(count === 0) {
+                    if (count === 0) {
                         $('#moveItems .moveModalForm').modal('hide');
                     }
                     return;
@@ -350,7 +333,7 @@ var app = new Vue({
                             ref.makeError(errMsg, response.status);
                         }
                         count--;
-                        if(count === 0) {
+                        if (count === 0) {
                             $('#moveItems .moveModalForm').modal('hide');
                         }
                     })
@@ -358,11 +341,51 @@ var app = new Vue({
                         var errMsg = "Response on moving = " + item.data.uri;
                         ref.makeError(errMsg, reason.response.status);
                         count--;
-                        if(count === 0) {
+                        if (count === 0) {
                             $('#moveItems .moveModalForm').modal('hide');
                         }
                     });
             });
+        },
+        onTweet() {
+            this.editedValue = '';
+            this.clearErrorCode();
+            this.dialogOperationInProgress = false;
+            $('#createTweetMessage .singleTextareaModalForm').modal('show');
+        },
+        onTweetSuccess() {
+            var ref = this;
+
+            console.log('Create tweet...\n');
+            var paths = [];
+            this.elements.forEach(function (item, index, object) {
+                if (!item.selected || ref.isDirectory(item)) {
+                    return;
+                }
+
+                paths.push(item.data.uri);
+            });
+            var sendObject = {
+                'paths': paths,
+                'message': ref.editedValue
+            };
+            ref.dialogOperationInProgress = true;
+
+            axios.post(shortApiUrl('tweet'),
+                JSON.stringify(sendObject),
+                {headers: {"Content-Type": "application/json"}})
+                .then(function (response) {
+                    if (response.status === 200) {
+                        $('#createTweetMessage .singleTextareaModalForm').modal('hide');
+                    } else {
+                        alert('Error');
+                    }
+                    ref.dialogOperationInProgress = false;
+                })
+                .catch(function (reason) {
+                    alert('Caught Error!');
+                    ref.dialogOperationInProgress = false;
+                });
         }
     },
     created: function () {

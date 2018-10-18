@@ -3,13 +3,10 @@ package ua.kiev.prog.photopond.twitter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -66,12 +63,5 @@ public class TwitterController {
         LOG.trace("{} redirect to {}", AUTHENTICATION_WITH_TWITTER_URL, loginUrl);
 
         return new ModelAndView(new RedirectView(loginUrl, true, true));
-    }
-
-    @RequestMapping(value = "/user/{login}/twitter", method = RequestMethod.GET)
-    @ResponseBody
-    public ResponseEntity testSendPicture(@PathVariable("login") String userLogin) {
-
-        return ResponseEntity.ok(twitterService.testPostPicture(userLogin));
     }
 }

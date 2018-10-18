@@ -93,6 +93,14 @@
                                             id="deleteBtn" v-on:click="onDelete">
                                         <i class="far fa-trash-alt"></i>
                                     </button>
+
+                                    <button type="button" class="btn btn-twitter"
+                                            v-bind:class="{disabled: selectedFileCount > 1}"
+                                            data-toggle="tooltip" data-placement="bottom" title="Share with Twitter"
+                                            id="twitterShareBtn" v-on:click="onTweet">
+                                        <i class="fab fa-twitter"></i>
+                                        <span>Tweet</span>
+                                    </button>
                                 </div>
                             </transition>
                         </div>
@@ -221,6 +229,19 @@
         <div th:insert="~{drive/moveModalForm :: moveModalForm}"></div>
     </move-modal-form>
 
+    <single-textarea-modal-form inline-template
+                                id="createTweetMessage"
+                                th:attr="custom-header='Creating new tweet',
+                                        error-message=#{admin.allUsers.deleting.error},
+                                        success-button-title='Tweet',
+                                        message='Add message'"
+                                v-bind:operation-in-progress="dialogOperationInProgress"
+                                v-bind:error-code="errorCode"
+                                v-model:value="editedValue"
+                                v-on:clear-error-code="clearErrorCode"
+                                v-on:success="onTweetSuccess">
+        <div th:insert="~{fragments/singleTextareaModalForm :: singleTextareaModalForm}"></div>
+    </single-textarea-modal-form>
 </div>
 
 <div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">
@@ -234,10 +255,12 @@
     <!-- Vue.js -->
     <script src="../../../libs/vuejs/vue-2.5.16.js"></script>
 </div>
+<script src="../../../js/main.js" th:src="@{/js/main.js}"></script>
 <script src="../../../js/userDirectory.js" th:src="@{/js/userDirectory.js}"></script>
 
 <script src="../../../js/alertItem.js" th:src="@{/js/alertItem.js}"></script>
 <script src="../../../js/singleInputModalForm.js" th:src="@{/js/singleInputModalForm.js}"></script>
+<script src="../../../js/singleTextareaModalForm.js" th:src="@{/js/singleTextareaModalForm.js}"></script>
 <script src="../../../js/confirmModalForm.js" th:src="@{/js/confirmModalForm.js}"></script>
 <script src="../../../js/drive/moveModalForm.js" th:src="@{/js/drive/moveModalForm.js}"></script>
 <script src="../../../js/drive/directory.js" th:src="@{/js/drive/directory.js}"></script>

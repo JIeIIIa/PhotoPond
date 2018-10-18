@@ -2,6 +2,8 @@ package ua.kiev.prog.photopond.twitter.Exception;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -56,4 +58,21 @@ public class TwitterControllerAdvice {
 
         return modelAndView;
     }
+
+    @ExceptionHandler(value = {NotFoundTwitterAssociatedAccountException.class})
+    public ResponseEntity<String> notFoundAssociatedAccount() {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                //todo: change returned message
+                .body("Some message");
+    }
+
+    @ExceptionHandler(value = {TweetPublishingException.class})
+    public ResponseEntity<String> tweetPublishingFailure() {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                //todo: change returned message
+                .body("Some message");
+    }
+
 }

@@ -17,5 +17,5 @@ public interface TwitterService {
 
     void disassociateAccount(String login);
 
-    String testPostPicture(String login);
+    TweetDTO publishTweet(String userLogin, TweetDTO tweetDTO);
 }

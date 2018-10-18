@@ -5,6 +5,31 @@ var urlTemplate = {
     }
 };
 
+function splitApiUrl(serviceName) {
+    var apiUrl = document.URL.split('/');
+    if (apiUrl.length > 5) {
+        apiUrl[3] = 'api';
+        apiUrl[5] = serviceName;
+    }
+    return apiUrl;
+}
+
+function apiUrl(serviceName) {
+    var apiUrl = this.splitApiUrl(serviceName).join('/');
+    console.log('apiUrl:   ' + apiUrl);
+
+    return apiUrl;
+}
+
+function shortApiUrl(serviceName) {
+    var shortUrl = this.splitApiUrl(serviceName);
+    shortUrl.length = 6;
+    shortUrl = shortUrl.join('/');
+    console.log('shortUrl:   ' + shortUrl);
+
+    return shortUrl;
+}
+
 function SortOptions(fieldName){
     this.fieldName = fieldName;
     this.ascend = true;

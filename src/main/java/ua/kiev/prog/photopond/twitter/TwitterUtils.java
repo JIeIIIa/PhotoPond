@@ -23,6 +23,12 @@ public class TwitterUtils {
         return new TwitterFactory(configurationBuilder.build()).getInstance();
     }
 
+    static Twitter getTwitterInstance(TwitterUser twitterUser) {
+        AccessToken accessToken = new AccessToken(twitterUser.getToken(), twitterUser.getTokenSecret());
+
+        return getTwitterInstance(accessToken);
+    }
+
     private static ConfigurationBuilder baseConfigurationBuilder() {
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.setApplicationOnlyAuthEnabled(false);

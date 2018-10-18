@@ -16,6 +16,7 @@ import ua.kiev.prog.photopond.user.UserInfoDTO;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static java.util.Objects.isNull;
 import static ua.kiev.prog.photopond.twitter.TwitterRequestMappingConstants.*;
 
 @Controller
@@ -38,7 +39,7 @@ public class TwitterCallbackController {
                                          RedirectAttributes redirectAttributes) {
         LOG.traceEntry("Associate account");
 
-        if (!authentication.isAuthenticated()) {
+        if (isNull(authentication) && !authentication.isAuthenticated()) {
             LOG.error("Unauthorized user request [oauth_token = {}]", oAuthToken);
             redirectAttributes.addFlashAttribute("twitterErrorMessage", "Authorize to associate a twitter account with your profile");
         } else {

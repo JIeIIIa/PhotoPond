@@ -8,18 +8,22 @@ import org.springframework.transaction.annotation.Transactional;
 import twitter4j.*;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import ua.kiev.prog.photopond.Utils.Utils;
+import ua.kiev.prog.photopond.drive.DriveException;
+import ua.kiev.prog.photopond.drive.DriveService;
 import ua.kiev.prog.photopond.facebook.Exception.AssociateFBAccountException;
 import ua.kiev.prog.photopond.facebook.Exception.DisassociateFBAccountException;
-import ua.kiev.prog.photopond.twitter.Exception.AssociateTwitterAccountException;
-import ua.kiev.prog.photopond.twitter.Exception.CustomTwitterException;
-import ua.kiev.prog.photopond.twitter.Exception.TwitterAccountAlreadyAssociateException;
-import ua.kiev.prog.photopond.twitter.Exception.TwitterAuthenticationException;
+import ua.kiev.prog.photopond.twitter.Exception.*;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoDTO;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 import ua.kiev.prog.photopond.user.UserInfoMapper;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+import static ua.kiev.prog.photopond.twitter.TwitterUtils.getTwitterInstance;
 
 @Service
 public class TwitterServiceImpl implements TwitterService {
@@ -30,15 +34,18 @@ public class TwitterServiceImpl implements TwitterService {
 
     private final TwitterRequestTokenStorage requestTokenStorage;
     private final TwitterUserJpaRepository twitterUserJpaRepository;
+    private final DriveService driveService;
 
     @Autowired
     public TwitterServiceImpl(TwitterUserJpaRepository twitterUserJpaRepository,
                               UserInfoJpaRepository userInfoJpaRepository,
-                              TwitterRequestTokenStorage requestTokenStorage) {
+                              TwitterRequestTokenStorage requestTokenStorage,
+                              DriveService driveService) {
         LOG.info("Create instance of {}", TwitterServiceImpl.class);
         this.twitterUserJpaRepository = twitterUserJpaRepository;
         this.userInfoJpaRepository = userInfoJpaRepository;
         this.requestTokenStorage = requestTokenStorage;
+        this.driveService = driveService;
     }
 
     @Override
@@ -70,7 +77,7 @@ public class TwitterServiceImpl implements TwitterService {
     }
 
     private RequestToken generateRequestToken(String callbackUrl) throws TwitterException {
-        Twitter twitter = TwitterUtils.getTwitterInstance();
+        Twitter twitter = getTwitterInstance();
         RequestToken requestToken = twitter.getOAuthRequestToken(callbackUrl);
         requestTokenStorage.add(requestToken);
         return requestToken;
@@ -102,7 +109,7 @@ public class TwitterServiceImpl implements TwitterService {
             RequestToken requestToken = requestTokenStorage
                     .retrieveAndRemoveRequestToken(oauthToken)
                     .orElseThrow(AssociateTwitterAccountException::new);
-            Twitter twitter = TwitterUtils.getTwitterInstance();
+            Twitter twitter = getTwitterInstance();
             AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, oauthVerifier);
 
             User user = twitter.verifyCredentials();
@@ -127,7 +134,7 @@ public class TwitterServiceImpl implements TwitterService {
     @Override
     public UserInfoDTO findUserInfoByRequestToken(String token, String verifier) {
         LOG.trace("Try to find userInfo");
-        Twitter twitter = TwitterUtils.getTwitterInstance();
+        Twitter twitter = getTwitterInstance();
         try {
             RequestToken requestToken = requestTokenStorage
                     .retrieveAndRemoveRequestToken(token)
@@ -175,45 +182,54 @@ public class TwitterServiceImpl implements TwitterService {
 
     @Transactional(readOnly = true)
     @Override
-    public String testPostPicture(String login) {
-        TwitterUser twitterUser = userInfoJpaRepository.findByLogin(login)
+    public TweetDTO publishTweet(String userLogin, TweetDTO tweetDTO) {
+        TwitterUser twitterUser = userInfoJpaRepository.findByLogin(userLogin)
                 .flatMap(twitterUserJpaRepository::findByUserInfo)
-                .orElseThrow(() -> new CustomTwitterException(""));
-
+                //todo: change exception message
+                .orElseThrow(() -> new NotFoundTwitterAssociatedAccountException(""));
+        List<byte[]> images = retrieveImagesData(userLogin, tweetDTO);
         try {
-            Twitter twitter = TwitterUtils.getTwitterInstance(new AccessToken(twitterUser.getToken(), twitterUser.getTokenSecret()));
-            User user = twitter.verifyCredentials();
+            Twitter twitter = getTwitterInstance(twitterUser);
+            long[] ids = prepareImages(twitter, images);
 
-            if (user.getId() != twitterUser.getSocialId()) {
-                //todo: should be another exception
-                throw new CustomTwitterException("");
-            }
-            //todo: change code below
-            long[] ids = new long[2];
-            String statusTxt = "Checkout my new image";
-
-            File photo1 = new File("C:\\Users\\JIeIIIa\\Downloads\\150_150_1_799bad553f97d5744a40.jpg");
-            UploadedMedia media = twitter.uploadMedia(photo1);
-            ids[0] = media.getMediaId();
-
-            File photo2 = new File("C:\\Users\\JIeIIIa\\Downloads\\17982968-Tasteful-Chocolate-Eclair-isolated-on-white-background-Stock-Photo.jpg");
-            UploadedMedia media2 = twitter.uploadMedia(photo2);
-            ids[1] = media2.getMediaId();
-
-            //uploader.upload(photo, status);
-            StatusUpdate update = new StatusUpdate("sharing 2 photos");
+            StatusUpdate update = new StatusUpdate(tweetDTO.getMessage());
             update.setMediaIds(ids);
             Status status = twitter.updateStatus(update);
 
-            System.out.println("Status was updated [" + status.getText() + "]");
-            return "Status was updated [" + status.getText() + "]"
-                    + "<br> <a href=https://twitter.com/" + status.getUser().getScreenName()
-                    + "/status/" + status.getId() + ">link to tweet</a>";
+            String url = "https://twitter.com/" + status.getUser().getScreenName() +
+                    "/status/" + status.getId();
+            tweetDTO.setUrl(url);
+
+            LOG.debug("Tweet was created [userLogin = {}], [url = {}]", userLogin, url);
+            return tweetDTO;
         } catch (TwitterException e) {
-            //todo: should be another exception
-            throw new CustomTwitterException("test posting error");
+            throw new TweetPublishingException(e);
         }
     }
 
+    private List<byte[]> retrieveImagesData(String userLogin, TweetDTO tweetDTO) {
+        try {
+            LOG.traceEntry("Retrieve images for tweet");
+
+            return tweetDTO.getPaths().stream()
+                    .map(p -> Utils.getUriTail(p, userLogin))
+                    .map(p -> driveService.retrievePictureFileData(userLogin, p))
+                    .collect(toList());
+        } catch (DriveException e) {
+            throw new TweetPublishingException(e);
+        }
+    }
+
+    private long[] prepareImages(Twitter twitter, List<byte[]> images) throws TwitterException {
+        long[] ids = new long[images.size()];
+        LOG.trace("Send images to Twitter server");
+        for (int i = 0; i < images.size(); i++) {
+            UploadedMedia media = twitter.uploadMedia("filenameMock", new ByteArrayInputStream(images.get(i)));
+            ids[i] = media.getMediaId();
+        }
+
+        LOG.debug("Images were sent");
+        return ids;
+    }
 
 }
