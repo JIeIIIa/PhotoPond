@@ -46,7 +46,24 @@
       "name": "twitter.consumer.secret",
       "type": "java.lang.String",
       "description": "Twitter consumer secret for application."
+    },
+    {
+      "name": "photopond.directory-generator.enable",
+      "type": "java.lang.Boolean",
+      "description": "Generate directories with random names for all users.",
+      "defaultValue": "false"
+    },
+    {
+      "name": "ephotopond.directory-generator.name.length.min",
+      "type": "java.lang.Integer",
+      "description": "The minimum length of the directory name.",
+      "defaultValue": 3
+    },
+    {
+      "name": "ephotopond.directory-generator.name.length.max",
+      "type": "java.lang.Integer",
+      "description": "The maximum length of the directory name.",
+      "defaultValue": 40
     }
-
   ]
 }
