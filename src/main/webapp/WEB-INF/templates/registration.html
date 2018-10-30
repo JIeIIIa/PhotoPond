@@ -4,7 +4,7 @@
       lang="en">
 
 
-<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{registrationPage.title})">
+<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{pages.registration.title})">
     <title>PhotoPond - registration</title>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
@@ -35,7 +35,7 @@
             <div class="card">
                 <div class="card-header card-info text-center">
                     <h2 class="card-title font-weight-bold"
-                        th:text="#{registrationPage.card.header}">
+                        th:text="#{pages.registration.card.header}">
                         Registration
                     </h2>
                 </div>

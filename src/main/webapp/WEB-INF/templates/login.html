@@ -1,7 +1,7 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{authPages.title})">
+<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{pages.auth.title})">
     <title>PhotoPond - authorization</title>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
@@ -48,7 +48,7 @@
             <div class="card">
                 <div class="card-header card-info text-center">
                     <h2 class="card-title font-weight-bold"
-                        th:text="#{authPages.card.header}">
+                        th:text="#{pages.auth.card.header}">
                         Authorization
                     </h2>
                 </div>
@@ -81,7 +81,7 @@
                     </form>
                     <form class="form">
                         <div class="form-group text-center">
-                            <span th:text="#{authPages.noAccount}">Don’t have an account?</span>
+                            <span th:text="#{pages.auth.noAccount}">Don’t have an account?</span>
                             <a th:href="@{/registration}"
                                th:text="#{btn.registration}">
                                 Sing up
@@ -91,7 +91,7 @@
                             <div class="col-8 offset-2 p-0 border-0">
                                 <a class="btn btn-block btn-social btn-facebook"
                                    th:href="@{${T(ua.kiev.prog.photopond.facebook.FBRequestMappingConstants).AUTHENTICATION_WITH_FACEBOOK_URL}}">
-                                    <i class="fab fa-facebook"></i>Log in with Facebook
+                                    <i class="fab fa-facebook"></i><span th:text="#{pages.auth.facebook.btn}">Log in with Facebook</span>
                                 </a>
                                 <!--/*@thymesVar id="fbAuthError" type="java.lang.String"*/-->
                                 <div class="col-12" th:if="${fbAuthError}">
@@ -103,7 +103,7 @@
                             <div class="form-control col-8 offset-2 p-0 border-0">
                                 <a class="btn btn-block btn-social btn-twitter"
                                    th:href="@{${T(ua.kiev.prog.photopond.twitter.TwitterRequestMappingConstants).AUTHENTICATION_WITH_TWITTER_URL}}">
-                                    <i class="fab fa-twitter"></i> Log in with Twitter
+                                    <i class="fab fa-twitter"></i><span th:text="#{pages.auth.twitter.btn}">Log in with Twitter</span>
                                 </a>
                                 <!--/*@thymesVar id="twitterAuthError" type="java.lang.String"*/-->
                                 <div class="col-12 b-0" th:if="${twitterAuthError}">

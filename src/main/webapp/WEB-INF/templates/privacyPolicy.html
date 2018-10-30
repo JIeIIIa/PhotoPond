@@ -1,7 +1,7 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{authPages.title})">
+<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{pages.privacyPolicy.title})">
     <title>PhotoPond - authorization</title>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="../../css/skins/default-skin.min.css">
 </head>
 <body>
-<object th:include="fragments/header :: header('login')" th:remove="tag"></object>
+<object th:include="fragments/header :: header('privacyPolicy')" th:remove="tag"></object>
 
 <div class="container-fluid">
     <div class="row">

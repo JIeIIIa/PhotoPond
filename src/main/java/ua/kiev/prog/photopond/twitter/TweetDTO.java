@@ -13,12 +13,12 @@ import java.util.List;
 
 public class TweetDTO implements Serializable {
     @NotEmpty(groups = {New.class})
-    @Size(max = 4, groups = {New.class})
+    @Size(max = 4, groups = {New.class}, message = "Size.tweet.images")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<String> paths;
 
     @NotNull(groups = {New.class})
-    @Size(min = 1, max = 240, groups = {New.class})
+    @Size(min = 1, max = 240, groups = {New.class}, message = "Size.tweet.message")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String message;
 

@@ -4,8 +4,8 @@
       lang="en">
 
 
-<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = 'UserFolders')">
-    <title>PhotoPond - authorization</title>
+<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{pages.home.title})">
+    <title>PhotoPond - Own directory</title>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
 
@@ -60,7 +60,8 @@
             <div class="row justify-content-between mb-3">
                 <div class="col-5">
                     <div class="btn-toolbar">
-                        <div class="btn-group" role="group" data-toggle="tooltip" data-placement="bottom" title="Add elements">
+                        <div class="btn-group" role="group" data-toggle="tooltip" data-placement="bottom" title="Add elements"
+                             th:title="#{pages.home.toolbar.add}">
                             <div class="btn-group-sm" role="group">
                                 <button type="button" id="addElementGroupDown" class="btn btn-success dropdown-toggle no-carret"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -69,34 +70,38 @@
 
                                 <div class="dropdown-menu" aria-labelledby="addElementGroupDown">
                                     <div class="dropdown-item" id="openUploadFilesForm" v-on:click="onFileUpload">
-                                        <i class="far fa-image mr-2"></i>Add file
+                                        <i class="far fa-image mr-2"></i><span th:text="#{pages.home.toolbar.add.file}">Add file</span>
                                     </div>
                                     <div class="dropdown-item" id="openAddDirectoryForm" v-on:click="onCreateDirectory">
-                                        <i class="far fa-folder mr-2"></i>Add directory
+                                        <i class="far fa-folder mr-2"></i><span th:text="#{pages.home.toolbar.add.directory}">Add directory</span>
                                     </div>
                                 </div>
                             </div>
                             <transition name="fade">
                                 <div class="btn-group-sm ml-1" v-if="selectedItemCount > 0">
                                     <button type="button" class="btn btn-info"
-                                            data-toggle="tooltip" data-placement="bottom" title="Rename element"
+                                            data-toggle="tooltip" data-placement="bottom"
+                                            title="Rename element" th:title="#{pages.home.toolbar.rename}"
                                             id="openRenameForm" v-on:click="onRename">
                                         <i class="far fa-edit"></i>
                                     </button>
                                     <button type="button" class="btn btn-info"
-                                            data-toggle="tooltip" data-placement="bottom" title="Move elements"
+                                            data-toggle="tooltip" data-placement="bottom"
+                                            title="Move elements" th:title="#{pages.home.toolbar.move}"
                                             id="openMoveForm" v-on:click="onMove">
                                         <i class="far fa-share-square"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger"
-                                            data-toggle="tooltip" data-placement="bottom" title="Delete elements"
+                                            data-toggle="tooltip" data-placement="bottom"
+                                            title="Delete elements" th:title="#{pages.home.toolbar.delete}"
                                             id="deleteBtn" v-on:click="onDelete">
                                         <i class="far fa-trash-alt"></i>
                                     </button>
 
                                     <button type="button" class="btn btn-twitter"
-                                            v-bind:class="{disabled: selectedFileCount > 1}"
-                                            data-toggle="tooltip" data-placement="bottom" title="Share with Twitter"
+                                            v-bind:class="{disabled: selectedFileCount > 7}"
+                                            data-toggle="tooltip" data-placement="bottom"
+                                            title="Share with Twitter" th:title="#{pages.home.toolbar.tweet}"
                                             id="twitterShareBtn" v-on:click="onTweet">
                                         <i class="fab fa-twitter"></i>
                                         <span>Tweet</span>
@@ -110,19 +115,23 @@
                     <div class="btn-group-sm" role="group">
                         <button class="btn btn-outline-secondary border-0 dropdown-toggle"
                                 id="changeElementSize"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                th:text="#{pages.home.toolbar.size}">
                             Size
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="changeElementSize">
-                            <div class="dropdown-item">
+                            <div class="dropdown-item" th:text="#{pages.home.toolbar.size.small}">
                                 Small
                             </div>
-                            <div class="dropdown-item">Large
+                            <div class="dropdown-item" th:text="#{pages.home.toolbar.size.large}">Large
                             </div>
                         </div>
                     </div>
                     <div class="btn-group-sm">
-                        <button class="btn btn-sm btn-outline-secondary border-0">By name</button>
+                        <button class="btn btn-sm btn-outline-secondary border-0"
+                                th:text="#{pages.home.toolbar.sort.byName}">
+                            By name
+                        </button>
                     </div>
                     <div>
                         <i class="fa fa-arrow-up textArrow"></i>
@@ -134,7 +143,7 @@
             <div class="row mb-3" v-if="hasDirectory">
                 <div class="col-12">
                     <div class="row">
-                        <div class="col-12"><h5>Directories:</h5></div>
+                        <div class="col-12"><h5 th:text="#{pages.home.directory.caption}">Directories:</h5></div>
                     </div>
                     <div class="row">
                         <div class="col-3 userElementCard" v-for="item in sortedElements" v-if="isDirectory(item)">
@@ -157,7 +166,7 @@
             <div class="row mb-3" v-if="hasFile">
                 <div class="col-12">
                     <div class="row">
-                        <div class="col-12"><h5>Pictures:</h5></div>
+                        <div class="col-12"><h5 th:text="#{pages.home.picture.caption}">Pictures:</h5></div>
                     </div>
                     <div class="row text-center">
                         <template v-for="item in sortedElements" v-if="isFile(item)">
@@ -180,10 +189,10 @@
 
     <single-input-modal-form inline-template
                              id="createDirectory"
-                             th:attr="custom-header=#{admin.allUsers.deleting.title},
-                                        error-message=#{admin.allUsers.deleting.error},
-                                        success-button-title='Create',
-                                        message='New directory name'"
+                             th:attr="custom-header=#{pages.home.modalForm.createDirectory.title},
+                                        error-message=#{pages.home.modalForm.createDirectory.error},
+                                        success-button-title=#{btn.create},
+                                        message=#{pages.home.modalForm.createDirectory.message}"
                              v-bind:operation-in-progress="dialogOperationInProgress"
                              v-bind:error-code="errorCode"
                              v-model:value="editedValue"
@@ -194,10 +203,10 @@
 
     <single-input-modal-form inline-template
                              id="renameItem"
-                             th:attr="custom-header=#{admin.allUsers.deleting.title},
-                                        error-message=#{admin.allUsers.deleting.error},
-                                        success-button-title='Rename',
-                                        message='New name'"
+                             th:attr="custom-header=#{pages.home.modalForm.rename.title},
+                                        error-message=#{pages.home.modalForm.rename.error},
+                                        success-button-title=#{btn.rename},
+                                        message=#{pages.home.modalForm.rename.message}"
                              v-bind:operation-in-progress="dialogOperationInProgress"
                              v-bind:error-code="errorCode"
                              v-model:value="editedValue"
@@ -208,9 +217,9 @@
 
     <confirm-modal-form inline-template
                         id="deleteItems"
-                        th:attr=" custom-header=#{admin.allUsers.deleting.title},
-                                    error-message=#{admin.allUsers.deleting.error}"
-                        v-bind:message="message"
+                        th:attr=" custom-header=#{pages.home.modalForm.delete.title},
+                                    error-message=#{pages.home.modalForm.delete.error},
+                                    message=#{pages.home.modalForm.delete.message}"
                         v-bind:error-code="errorCode"
                         v-bind:value="editedValue"
                         v-on:clear-error-code="clearErrorCode"
@@ -221,8 +230,8 @@
     <move-modal-form inline-template
                      id="moveItems"
                      ref="moveModalForm"
-                     th:attr=" custom-header=#{admin.allUsers.deleting.title},
-                                error-message=#{admin.allUsers.deleting.title}"
+                     th:attr=" custom-header=#{pages.home.modalForm.move.title},
+                                error-message=#{pages.home.modalForm.move.error}"
                      v-bind:message="message"
                      v-bind:operation-in-progress="dialogOperationInProgress"
                      v-on:move-confirm="onMoveConfirm">
@@ -231,10 +240,10 @@
 
     <single-textarea-modal-form inline-template
                                 id="createTweetMessage"
-                                th:attr="custom-header='Creating new tweet',
-                                        error-message=#{admin.allUsers.deleting.error},
-                                        success-button-title='Tweet',
-                                        message='Add message'"
+                                th:attr="custom-header=#{pages.home.modalForm.tweet.title},
+                                        error-message=#{pages.home.modalForm.tweet.error},
+                                        success-button-title=#{btn.create},
+                                        message=#{pages.home.modalForm.tweet.message}"
                                 v-bind:operation-in-progress="dialogOperationInProgress"
                                 v-bind:error-code="errorCode"
                                 v-model:value="editedValue"

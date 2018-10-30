@@ -28,7 +28,8 @@
                                 th:fragment="changeAvatarCard" th:remove="tag">
                 <div class="card">
                     <div class="card-header card-primary">
-                        <h2 class="card-title font-weight-bold">
+                        <h2 class="card-title font-weight-bold"
+                            th:text="#{pages.settings.changeAvatar.header}">
                             Change avatar
                         </h2>
                     </div>
@@ -38,9 +39,6 @@
                                               v-if="showLoader" key="changeAvatarLoader">
                             </loader-component>
                             <div class="form" v-else key="inputs">
-                                <div style="display: none" id="choosePictureError">
-                                    qwerty
-                                </div>
                                 <alert-item v-cloak inline-template
                                             v-bind:messages="alert.messages"
                                             v-bind:alert-type="alert.type"
@@ -49,9 +47,15 @@
                                 </alert-item>
                                 <div class="form-group">
                                     <div class="row justify-content-between align-items-center pl-3 pr-3 mb-2">
-                                        <label class="form-control-label" v-if="hasOldData">Current avatar</label>
-                                        <label class="form-control-label" v-else>Preview</label>
-                                        <button class="btn btn-outline-info" v-on:click="onChoosePic">Choose pic</button>
+                                        <label class="form-control-label" v-if="hasOldData"
+                                               th:text="#{pages.settings.changeAvatar.title}">Current avatar
+                                        </label>
+                                        <label class="form-control-label" v-else
+                                               th:text="#{pages.settings.changeAvatar.preview}">Preview
+                                        </label>
+                                        <button class="btn btn-outline-info" v-on:click="onChoosePic"
+                                                th:text="#{pages.settings.changeAvatar.choose}">Choose pic
+                                        </button>
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
@@ -75,7 +79,8 @@
                         <div class="row justify-content-between">
                             <div class="col-3">
                                 <button class="btn btn-danger w-100" v-bind:class="{'disabled': showLoader}"
-                                        v-on:click="deleteAvatar">
+                                        v-on:click="deleteAvatar"
+                                        th:text="#{btn.delete}">
                                     Delete
                                 </button>
                             </div>
@@ -83,7 +88,8 @@
                                 <button class="btn btn-success w-100" v-bind:class="{'disabled': hasOldData || showLoader}"
                                         id="changeAvatar"
                                         th:attr="data-change-avatar-url=@{/user/{login}/settings/avatar(login=${#authentication.name})}"
-                                        v-on:click="updateAvatar">
+                                        v-on:click="updateAvatar"
+                                        th:text="#{btn.change}">
                                     Change
                                 </button>
                             </div>

@@ -249,7 +249,7 @@ var app = new Vue({
         },
         onDelete() {
             if (this.selectedItemCount < 1) {
-                console.log('Renaming failure');
+                console.log('No selected elements');
                 return;
             }
 
