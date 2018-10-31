@@ -253,6 +253,7 @@ var app = new Vue({
                 return;
             }
 
+
             console.log("delete:   ");
             console.log(this.selectedItemCount);
             $('#deleteItems #confirmModalForm').modal('show');

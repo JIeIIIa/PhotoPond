@@ -27,12 +27,6 @@
             <change-avatar-card inline-template
                                 th:fragment="changeAvatarCard" th:remove="tag">
                 <div class="card">
-                    <div class="card-header card-primary">
-                        <h2 class="card-title font-weight-bold"
-                            th:text="#{pages.settings.changeAvatar.header}">
-                            Change avatar
-                        </h2>
-                    </div>
                     <div class="card-block">
                         <transition name="fade" mode="out-in">
                             <loader-component inline-template th:insert="~{fragments/loader :: loader}"
@@ -45,24 +39,28 @@
                                             v-on:alert-item-close="closeAlert"
                                             th:insert="~{fragments/alertItem :: alertItem}">
                                 </alert-item>
-                                <div class="form-group">
-                                    <div class="row justify-content-between align-items-center pl-3 pr-3 mb-2">
+                                <div class="form-group mb-0">
+                                    <div class="row justify-content-between align-items-center pl-3 pr-3">
                                         <label class="form-control-label" v-if="hasOldData"
                                                th:text="#{pages.settings.changeAvatar.title}">Current avatar
                                         </label>
                                         <label class="form-control-label" v-else
                                                th:text="#{pages.settings.changeAvatar.preview}">Preview
                                         </label>
-                                        <button class="btn btn-outline-info" v-on:click="onChoosePic"
-                                                th:text="#{pages.settings.changeAvatar.choose}">Choose pic
-                                        </button>
                                     </div>
-                                    <div class="row">
+                                    <div class="row mb-2">
                                         <div class="col-12">
                                             <img class="form-control" v-if="hasOldData"
                                                  th:src="@{/public/user/{login}/avatar(login=${#authentication.name})}">
                                             <img class="form-control" v-else
                                                  v-bind:src="imageData">
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-center align-items-center">
+                                        <div class="col-12 pl-3 pr-3">
+                                            <button class="btn btn-outline-info float-right" v-on:click="onChoosePic"
+                                                    th:text="#{pages.settings.changeAvatar.choose}">Choose pic
+                                            </button>
                                         </div>
                                     </div>
                                     <input type="file"
@@ -77,14 +75,14 @@
                     </div>
                     <div class="card-footer">
                         <div class="row justify-content-between">
-                            <div class="col-3">
+                            <div class="col-4">
                                 <button class="btn btn-danger w-100" v-bind:class="{'disabled': showLoader}"
                                         v-on:click="deleteAvatar"
                                         th:text="#{btn.delete}">
                                     Delete
                                 </button>
                             </div>
-                            <div class="col-6">
+                            <div class="col-8">
                                 <button class="btn btn-success w-100" v-bind:class="{'disabled': hasOldData || showLoader}"
                                         id="changeAvatar"
                                         th:attr="data-change-avatar-url=@{/user/{login}/settings/avatar(login=${#authentication.name})}"

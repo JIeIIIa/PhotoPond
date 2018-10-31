@@ -1,11 +1,11 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml"
       lang="en">
 
 
-<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = 'PhotoPond - settings')">
-    <title>PhotoPond - settings</title>
+<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{pages.settings.title})">
+    <title>PhotoPond - Settings</title>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
 
@@ -21,25 +21,78 @@
 
 <div th:replace="fragments/header :: header('settings')">Static header</div>
 
-<div class="container-fluid" id="settings" v-cloak>
-    <div class="row text-center px-0">
-        <div class="col-md-8 offset-md-2 col-12">
-            <h1 class="font-weight-bold">SETTINGS</h1>
-        </div>
-    </div>
+<!--/*@thymesVar id="startItem" type="java.lang.Integer"*/-->
+<div class="container-fluid" id="settings"
+     th:attrappend="data-start-item=${startItem}"
+     v-cloak>
 
     <div class="row">
-        <div class="col-md-8 col-sm-10 col-12 offset-md-2 offset-sm-1 mb-1">
-            <change-password-card inline-template
-                                  id="changePasswordCard"
-                                  th:insert="~{settings/changePassword :: changePasswordCard}">
-            </change-password-card>
+        <div class="col-2 col-md-3">
+            <div class="card card-outline-primary">
+                <div class="card-header d-inline-block text-center pl-0 pr-0"
+                     data-toggle="tooltip" data-placement="bottom"
+                     title="Settings" th:title="#{pages.settings.menu.header}">
+                    <h3 class="truncate">
+                        <i class="fa fa-cog"></i>
+                        <span class="pl-lg-2 hidden-sm-down"
+                              th:text="#{pages.settings.menu.header}">
+                            Settings
+                        </span>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="#"
+                           data-toggle="tooltip" data-placement="bottom"
+                           title="Change password" th:title="#{pages.settings.menu.password.title}"
+                           class="list-group-item list-group-item-action d-inline-block text-center text-md-left pl-0 pr-0 pl-sm-3 pr-sm-3"
+                           v-bind:class="{'active disabled':isMenuItemSelected(1)}"
+                           v-on:click.prevent.stop="setActiveItem(1)">
+                            <i class="fa fa-key"></i>
+                            <span class="pl-lg-3 hidden-sm-down" th:text="#{pages.settings.menu.password.text}">Password</span>
+                        </a>
+                        <a href="#"
+                           data-toggle="tooltip" data-placement="bottom"
+                           title="Change avatar" th:title="#{pages.settings.menu.avatar.title}"
+                           class="list-group-item list-group-item-action d-inline-block text-center text-md-left pl-0 pr-0 pl-sm-3 pr-sm-3"
+                           v-bind:class="{'active disabled':isMenuItemSelected(2)}"
+                           v-on:click.prevent.stop="setActiveItem(2)">
+                            <i class="fa fa-user-circle"></i>
+                            <span class="pl-lg-3  hidden-sm-down" th:text="#{pages.settings.menu.avatar.text}">Avatar</span>
+                        </a>
+                        <a href="#"
+                           data-toggle="tooltip" data-placement="bottom"
+                           title="Associated social accounts" th:title="#{pages.settings.menu.socials.title}"
+                           class="list-group-item list-group-item-action d-inline-block text-center text-md-left pl-0 pr-0 pl-sm-3 pr-sm-3"
+                           v-bind:class="{'active disabled':isMenuItemSelected(3)}"
+                           v-on:click.prevent.stop="setActiveItem(3)">
+                            <i class="fa fa-link"></i>
+                            <span class="pl-lg-3 hidden-sm-down" th:text="#{pages.settings.menu.socials.text}">Socials</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-8 col-sm-10 col-12 offset-md-2 offset-sm-1">
-            <change-avatar-card inline-template
-                                  id="changeAvatarCard"
-                                  th:insert="~{settings/changeAvatar :: changeAvatarCard}">
-            </change-avatar-card>
+        <div class="col-10 col-md-9">
+            <div class="row">
+                <transition name="fade" duration="300" mode="out-in">
+                    <div class="col-12" v-if="isMenuItemSelected(1)" v-bind:key="1">
+                        <change-password-card inline-template
+                                              id="changePasswordCard"
+                                              th:insert="~{settings/changePassword :: changePasswordCard}">
+                        </change-password-card>
+                    </div>
+                    <div class="col-12" v-else-if="isMenuItemSelected(2)"
+                         v-bind:key="2">
+                        <change-avatar-card inline-template
+                                            id="changeAvatarCard"
+                                            th:insert="~{settings/changeAvatar :: changeAvatarCard}">
+                        </change-avatar-card>
+                    </div>
+
+                </transition>
+
+            </div>
         </div>
     </div>
 </div>
