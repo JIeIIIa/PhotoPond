@@ -12,13 +12,15 @@ var userSettings = new Vue({
         setActiveItem(index){
             this.activeItem = index;
         }
+
     },
     created: function () {
 
-        if ($("#settings").data('start-item')) {
-            this.activeItem = $("#settings").data('start-item');
+        var settings = $("#settings");
+        if (settings.data('start-item')) {
+            this.activeItem = settings.data('start-item');
         } else {
-            this.activeItem = 1;
+            this.activeItem = 3;
         }
 
     }

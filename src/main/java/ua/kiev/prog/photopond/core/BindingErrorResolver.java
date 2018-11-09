@@ -8,6 +8,8 @@ import java.util.Locale;
 public interface BindingErrorResolver {
     String resolveMessage(String key, Object[] arguments, Locale locale);
 
+    String resolveMessage(String key, Locale locale);
+
     String resolveMessage(ObjectError error, Locale locale);
 
     BindingErrorDTO resolve(ObjectError error, Locale locale);

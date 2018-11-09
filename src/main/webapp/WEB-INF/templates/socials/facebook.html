@@ -1,0 +1,104 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head
+        th:replace="~{fragments/profiles/activeProfile :: head (pageTitle = 'Photopond - Facebook data')}"
+>
+    <title>PhotoPond - Facebook data</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <title>PhotoPond - main page</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="../../../css/main.css">
+    <link rel="stylesheet" href="../../../css/skins/default-skin.min.css">
+</head>
+
+<body>
+
+<object th:include="~{fragments/header :: header('facebook')}" th:remove="tag"></object>
+
+<div class="container-fluid">
+    <facebook-accounts inline-template
+                       th:fragment="facebookAccounts" th:remove="tag">
+
+        <div class="row pb-5">
+            <div class="col-12">
+                <h2>
+                    <i class="fab fa-facebook mr-2"></i>Facebook
+                </h2>
+            </div>
+            <div class="col-12 mb-3" style="border-top: red solid 2px">
+                <!--<hr>-->
+            </div>
+            <div class="col-12 mb-1" v-show="isErrorsVisible">
+
+                <!--/*@thymesVar id="fbErrorMessage" type="java.lang.String"*/-->
+                <div th:if="${fbErrorMessage}" th:text="${fbErrorMessage}" id="fbErrorMessage" v-show="false">
+                    Some facebook error
+                </div>
+                <h6>
+                    <alert-item v-cloak inline-template
+                                v-bind:messages="errorMessages"
+                                alert-type="danger"
+                                v-on:alert-item-close="closeAlert"
+                                th:insert="~{fragments/alertItem :: alertItem}">
+                    </alert-item>
+                </h6>
+            </div>
+            <div class="col-12" v-if="isShowInformation">
+                <div class="row">
+                    <template v-for="item in accounts">
+                        <div class="col-9">
+                            <span>{{item.name}}</span> (<span>{{item.email}}</span>)
+                        </div>
+                        <div class="col-3">
+                            <form
+                                    th:action="@{${T(ua.kiev.prog.photopond.facebook.FBRequestMappingConstants).DISASSOCIATE_ACCOUNT_URL}}" method="POST">
+                                <button type="submit" class="btn btn-sm btn-danger float-right"
+                                        th:text="#{btn.remove}">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div class="col-10 offset-1" v-else>
+                <!--<div class="col-8 offset-2">-->
+                <a class="btn btn-block btn-social btn-facebook"
+                   th:href="@{${T(ua.kiev.prog.photopond.facebook.FBRequestMappingConstants).ASSOCIATE_ACCOUNT_URL}}">
+                    <i class="fab fa-facebook"></i>
+                    <span th:text="#{pages.settings.socials.facebook.btn.associate}">Associate Facebook account</span>
+                </a>
+            </div>
+            <br>
+        </div>
+    </facebook-accounts>
+</div>
+
+<div th:replace="~{fragments/profiles/activeProfile :: bottomScripts}" th:remove="tag">
+    <!-- jQuery -->
+    <script src="../../../libs/jquery/jquery-3.2.1.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
+    <script src="../../../libs/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="../../../libs/vuejs/vue-2.5.16.js"></script>
+    <script src="../../../libs/axios/axios.0.18.0.min.js"></script>
+    <script src="../../../libs/lodash/lodash.4.17.10.min.js"></script>
+</div>
+
+<script src="../../../js/main.js" th:src="@{/js/main.js}"></script>
+</body>
+</html>

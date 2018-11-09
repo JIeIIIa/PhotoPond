@@ -1,0 +1,60 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head>
+    <title>PhotoPond - Twitter data</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="../../../css/main.css">
+    <link rel="stylesheet" href="../../../css/skins/default-skin.min.css">
+</head>
+
+<body>
+
+<object th:include="~{fragments/header :: header('twitter')}" th:remove="tag"></object>
+
+<div class="container-fluid">
+    <twitter-accounts inline-template
+                      th:fragment="twitterAccounts" th:remove="tag">
+
+        <div class="row pb-5">
+            <div class="col-12">
+                <h2>
+                    <i class="fab fa-twitter mr-2"></i>Twitter
+                </h2>
+            </div>
+            <div class="col-12 mb-3" style="border-top: red solid 2px">
+            </div>
+            <br>
+        </div>
+    </twitter-accounts>
+</div>
+
+
+<div th:replace="~{fragments/profiles/activeProfile :: bottomScripts}" th:remove="tag">
+    <!-- jQuery -->
+    <script src="../../../libs/jquery/jquery-3.2.1.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
+    <script src="../../../libs/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="../../../libs/vuejs/vue-2.5.16.js"></script>
+    <script src="../../../libs/axios/axios.0.18.0.min.js"></script>
+    <script src="../../../libs/lodash/lodash.4.17.10.min.js"></script>
+</div>
+
+<script src="../../../js/main.js" th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head>
+    <title>PhotoPond - Social accounts</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <title>PhotoPond - main page</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="../../../css/main.css">
+    <link rel="stylesheet" href="../../../css/skins/default-skin.min.css">
+</head>
+
+<body>
+
+<object th:include="~{fragments/header :: header('facebook')}" th:remove="tag"></object>
+
+<div class="container-fluid">
+
+    <social-accounts-card inline-template v-bind:loader="showLoader['facebook']"
+                          th:fragment="socialAccounts" th:remove="tag">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block">
+                        <transition name="fade" mode="out-in">
+                            <loader-component inline-template th:insert="~{fragments/loader :: loader}"
+                                              v-if="isShowLoader" key="socialsLoader">
+                            </loader-component>
+                            <div v-else key="socialsList">
+                                <facebook-accounts inline-template
+                                                   v-bind:accounts="accounts['facebook']"
+                                                   v-bind:error-messages="errorMessageObject['facebook']"
+                                                   v-on:close-alert="closeAlert"
+                                                   v-on:add-error="addError"
+                                                   th:insert="~{socials/facebook :: facebookAccounts}">
+                                </facebook-accounts>
+
+                                <twitter-accounts inline-template
+                                                   th:insert="~{socials/twitter :: twitterAccounts}">
+                                </twitter-accounts>
+
+                            </div>
+                        </transition>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </social-accounts-card>
+
+</div>
+
+<div th:replace="~{fragments/profiles/activeProfile :: bottomScripts}" th:remove="tag">
+    <!-- jQuery -->
+    <script src="../../../libs/jquery/jquery-3.2.1.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
+    <script src="../../../libs/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="../../../libs/vuejs/vue-2.5.16.js"></script>
+    <script src="../../../libs/axios/axios.0.18.0.min.js"></script>
+    <script src="../../../libs/lodash/lodash.4.17.10.min.js"></script>
+</div>
+<script src="../../../js/main.js" th:src="@{/js/main.js}"></script>
+
+<div th:fragment="js" th:remove="tag">
+    <script src="../../../js/socials/facebook.js"
+            th:src="@{/js/socials/facebook.js}"></script>
+    <script src="../../../js/socials/twitter.js"
+            th:src="@{/js/socials/twitter.js}"></script>
+    <script src="../../../js/socials/socialsCard.js"
+            th:src="@{/js/socials/socialsCard.js}"></script>
+</div>
+
+</body>
+</html>

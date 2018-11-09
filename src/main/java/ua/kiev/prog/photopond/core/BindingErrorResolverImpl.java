@@ -34,6 +34,11 @@ public class BindingErrorResolverImpl implements BindingErrorResolver {
     }
 
     @Override
+    public String resolveMessage(String key, Locale locale) {
+        return resolveMessage(key, null, locale);
+    }
+
+    @Override
     public String resolveMessage(ObjectError error, Locale locale) {
         List<String> keys = retrieveKeys(error);
         for (String key : keys) {

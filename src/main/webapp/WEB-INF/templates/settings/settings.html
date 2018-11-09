@@ -89,7 +89,13 @@
                                             th:insert="~{settings/changeAvatar :: changeAvatarCard}">
                         </change-avatar-card>
                     </div>
-
+                    <div class="col-12" v-else-if="isMenuItemSelected(3)"
+                         v-bind:key="3">
+                        <social-accounts-card inline-template
+                                              id="socials"
+                                              th:insert="~{socials/socialsCard :: socialAccounts}">
+                        </social-accounts-card>
+                    </div>
                 </transition>
 
             </div>
@@ -117,6 +123,7 @@
         th:src="@{/js/settings/changeAvatarCard.js}"></script>
 <script src="../../../js/alertItem.js"
         th:src="@{/js/alertItem.js}"></script>
+<div th:replace="~{socials/socialsCard :: js}" th:remove="tag"></div>
 <script src="../../../js/settings/settings.js"
         th:src="@{/js/settings/settings.js}"></script>
 </body>

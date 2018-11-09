@@ -16,7 +16,7 @@ public class FBConstants {
 
     static final Version FB_CLIENT_VERSION = Version.VERSION_3_1;
 
-    static final String FB_REDIRECT_URL = "/public/fb-auth";
+    static final String FB_CALLBACK_URL = "/public/fb-auth";
 
     private static String APPLICATION_ID;
     private static String APPLICATION_SECRET;
@@ -33,7 +33,7 @@ public class FBConstants {
 
     private static int port;
 
-    private static String fullRedirectUrl;
+    private static String fullCallbackUrl;
     private static String associateAccountUrl;
     private static String loginUrl;
 
@@ -59,8 +59,8 @@ public class FBConstants {
     }
 
     @PostConstruct
-    private static void updateFullRedirectUrl() {
-        FBConstants.fullRedirectUrl = String.format("https://%s:%d%s", server, port, FB_REDIRECT_URL);
+    private static void updateFullCallbackUrl() {
+        FBConstants.fullCallbackUrl = String.format("https://%s:%d%s", server, port, FB_CALLBACK_URL);
         FBConstants.associateAccountUrl = getOAuthUrl(FBState.ASSOCIATE);
         FBConstants.loginUrl = getOAuthUrl(FBState.LOGIN);
     }
@@ -73,8 +73,8 @@ public class FBConstants {
         return FBConstants.APPLICATION_SECRET;
     }
 
-    static String getFullRedirectUrl() {
-        return FBConstants.fullRedirectUrl;
+    static String getFullCallbackUrl() {
+        return FBConstants.fullCallbackUrl;
     }
 
     static String associateAccountUrl() {
@@ -86,7 +86,7 @@ public class FBConstants {
     }
 
     private static String getOAuthUrl(FBState state) {
-        return CLIENT.getLoginDialogUrl(getApplicationId(), getFullRedirectUrl(), SCOPE_BUILDER,
+        return CLIENT.getLoginDialogUrl(getApplicationId(), getFullCallbackUrl(), SCOPE_BUILDER,
                 Parameter.with("state", state),
                 Parameter.with("auth_type", "rerequest"));
     }

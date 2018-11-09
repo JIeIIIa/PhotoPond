@@ -3,14 +3,19 @@ package ua.kiev.prog.photopond.facebook;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import static ua.kiev.prog.photopond.facebook.FBRequestMappingConstants.*;
+import static ua.kiev.prog.photopond.user.SettingsPageUtils.socials;
 
 @Controller
 public class FBController {
@@ -21,7 +26,7 @@ public class FBController {
 
     @Autowired
     public FBController(FBService fbService) {
-        LOG.info("Create instance of {}", FBController.class);
+        LOG.info("Create instance of class {}", this.getClass().getName());
         this.fbService = fbService;
     }
 
@@ -36,14 +41,24 @@ public class FBController {
         return modelAndView;
     }
 
+    @RequestMapping(value = ACCOUNTS_LIST_URL)
+    @ResponseBody
+    public ResponseEntity<FBUserDTO> associatedList(Authentication authentication) {
+        LOG.trace("Request to {}", ACCOUNTS_LIST_URL);
+        FBUserDTO fbUserDTO = fbService.findAccountByLogin(authentication.getName());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(fbUserDTO);
+    }
+
     @RequestMapping(value = DISASSOCIATE_ACCOUNT_URL, method = RequestMethod.POST)
-    public ModelAndView disassociateAccount(ModelAndView modelAndView,
-                                            Authentication authentication) {
+    public ModelAndView disassociateAccount(Authentication authentication,
+                                            RedirectAttributes redirectAttributes) {
         LOG.traceEntry("Request to {}", DISASSOCIATE_ACCOUNT_URL);
         fbService.disassociateAccount(authentication.getName());
-        modelAndView.setView(new RedirectView(ACCOUNT_VIEW_URL));
 
-        return modelAndView;
+        return socials(authentication, redirectAttributes);
     }
 
     @RequestMapping(value = ASSOCIATE_ACCOUNT_URL, method = RequestMethod.GET)

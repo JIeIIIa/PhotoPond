@@ -136,7 +136,7 @@ public class FBServiceImpl implements FBService {
     private FacebookClient.AccessToken changeCodeToExtendedAccessToken(String code) {
         FacebookClient facebookClient = new DefaultFacebookClient(FB_CLIENT_VERSION);
         FacebookClient.AccessToken userAccessToken = facebookClient
-                .obtainUserAccessToken(getApplicationId(), getApplicationSecret(), FBConstants.getFullRedirectUrl(), code);
+                .obtainUserAccessToken(getApplicationId(), getApplicationSecret(), FBConstants.getFullCallbackUrl(), code);
 
         FacebookClient.AccessToken extendedAccessToken = facebookClient.obtainExtendedAccessToken(getApplicationId(), getApplicationSecret(),
                 userAccessToken.getAccessToken());
