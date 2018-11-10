@@ -47,7 +47,7 @@ public class FBCallbackController {
                                          Authentication authentication,
                                          Locale locale,
                                          RedirectAttributes redirectAttributes) {
-        LOG.traceEntry("State = {}", state);
+        LOG.traceEntry("Associate Facebook account [code = {}], [state = {}]", code, state);
 
         if (!authentication.isAuthenticated()) {
             LOG.error("Unauthorized user request [code = {}]", code);

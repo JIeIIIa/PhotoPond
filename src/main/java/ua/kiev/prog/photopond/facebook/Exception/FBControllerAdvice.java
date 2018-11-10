@@ -59,7 +59,7 @@ public class FBControllerAdvice {
                                        RedirectAttributes redirectAttributes) {
         ModelAndView modelAndView = SettingsPageUtils.socials(authentication, redirectAttributes);
         LOG.trace("redirect to {}", modelAndView.getView());
-        String message = bindingErrorResolver.resolveMessage(messageKey, null, locale);
+        String message = bindingErrorResolver.resolveMessage(messageKey, locale);
         redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE_NAME, message);
 
         return modelAndView;
@@ -72,7 +72,7 @@ public class FBControllerAdvice {
         LOG.trace("redirect to '/login' page");
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setView(new RedirectView("/login", true, true, false));
-        String message = bindingErrorResolver.resolveMessage("facebook.error.authorization", null, locale);
+        String message = bindingErrorResolver.resolveMessage("facebook.error.authorization", locale);
         redirectAttributes.addFlashAttribute(ERROR_AUTH_ATTRIBUTE_NAME, message);
 
         return modelAndView;
