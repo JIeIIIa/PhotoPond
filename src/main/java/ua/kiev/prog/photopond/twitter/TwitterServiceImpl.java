@@ -185,8 +185,7 @@ public class TwitterServiceImpl implements TwitterService {
     public TweetDTO publishTweet(String userLogin, TweetDTO tweetDTO) {
         TwitterUser twitterUser = userInfoJpaRepository.findByLogin(userLogin)
                 .flatMap(twitterUserJpaRepository::findByUserInfo)
-                //todo: change exception message
-                .orElseThrow(() -> new NotFoundTwitterAssociatedAccountException(""));
+                .orElseThrow(() -> new NotFoundTwitterAssociatedAccountException("Not found Twitter associated account: userLogin = " + userLogin));
         List<byte[]> images = retrieveImagesData(userLogin, tweetDTO);
         try {
             Twitter twitter = getTwitterInstance(twitterUser);

@@ -35,6 +35,47 @@
             </div>
             <div class="col-12 mb-3" style="border-top: red solid 2px">
             </div>
+            <div class="col-12 mb-1" v-show="isErrorsVisible">
+
+                <!--/*@thymesVar id="twitterErrorMessage" type="java.lang.String"*/-->
+                <div th:if="${twitterErrorMessage}" th:text="${twitterErrorMessage}" id="twitterErrorMessage" v-show="false">
+                    Some facebook error
+                </div>
+                <h6>
+                    <alert-item v-cloak inline-template
+                                v-bind:messages="errorMessages"
+                                alert-type="danger"
+                                v-on:alert-item-close="closeAlert"
+                                th:insert="~{fragments/alertItem :: alertItem}">
+                    </alert-item>
+                </h6>
+            </div>
+            <div class="col-12" v-if="isShowInformation">
+                <div class="row">
+                    <template v-for="item in accounts">
+                        <div class="col-9">
+                            <span>{{item.name}}</span> (id:<span>{{item.socialId}}</span>)
+                        </div>
+                        <div class="col-3">
+                            <form
+                                    th:action="@{${T(ua.kiev.prog.photopond.twitter.TwitterRequestMappingConstants).DISASSOCIATE_ACCOUNT_URL}}" method="POST">
+                                <button type="submit" class="btn btn-sm btn-danger float-right"
+                                        th:text="#{btn.remove}">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div class="col-10 offset-1" v-else>
+                <!--<div class="col-8 offset-2">-->
+                <a class="btn btn-block btn-social btn-twitter"
+                   th:href="@{${T(ua.kiev.prog.photopond.twitter.TwitterRequestMappingConstants).ASSOCIATE_ACCOUNT_URL}}">
+                    <i class="fab fa-twitter"></i>
+                    <span th:text="#{pages.settings.socials.twitter.btn.associate}">Associate Twitter account</span>
+                </a>
+            </div>
             <br>
         </div>
     </twitter-accounts>

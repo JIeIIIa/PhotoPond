@@ -240,10 +240,10 @@
 
     <single-textarea-modal-form inline-template
                                 id="createTweetMessage"
-                                th:attr="custom-header=#{pages.home.modalForm.tweet.title},
-                                        error-message=#{pages.home.modalForm.tweet.error},
+                                th:attr="custom-header=#{pages.home.modalForm.tweet.create.title},
+                                        error-message=#{pages.home.modalForm.tweet.create.error},
                                         success-button-title=#{btn.create},
-                                        message=#{pages.home.modalForm.tweet.message}"
+                                        message=#{pages.home.modalForm.tweet.create.message}"
                                 v-bind:operation-in-progress="dialogOperationInProgress"
                                 v-bind:error-code="errorCode"
                                 v-model:value="editedValue"
@@ -251,6 +251,18 @@
                                 v-on:success="onTweetSuccess">
         <div th:insert="~{fragments/singleTextareaModalForm :: singleTextareaModalForm}"></div>
     </single-textarea-modal-form>
+
+    <single-input-modal-form inline-template
+                             id="tweetPublished"
+                             th:attr="custom-header=#{pages.home.modalForm.tweet.published.title},
+                                        error-message='',
+                                        success-button-title=#{btn.ok},
+                                        message=#{pages.home.modalForm.tweet.published.message}"
+                             v-model:value="editedValue"
+                             v-on:success="hideTweetPublishedForm">
+        <div th:insert="~{fragments/singleInputModalForm :: singleInputModalForm}"></div>
+    </single-input-modal-form>
+
 </div>
 
 <div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">

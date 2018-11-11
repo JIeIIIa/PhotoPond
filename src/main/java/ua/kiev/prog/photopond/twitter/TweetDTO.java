@@ -25,6 +25,9 @@ public class TweetDTO implements Serializable {
     @JsonView(value = {Exist.class})
     private String url;
 
+    @JsonView(value = {Exist.class})
+    private String responseMessage;
+
     public List<String> getPaths() {
         return paths;
     }
@@ -47,5 +50,13 @@ public class TweetDTO implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public void setResponseMessage(String responseMessage) {
+        this.responseMessage = responseMessage;
     }
 }

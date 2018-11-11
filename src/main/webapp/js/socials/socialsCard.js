@@ -64,5 +64,6 @@ var socialAccounts = Vue.component('social-accounts-card', {
     },
     created: function () {
         this.loadAccounts('facebook');
+        this.loadAccounts('twitter');
     }
 });

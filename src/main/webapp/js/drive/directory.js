@@ -378,19 +378,37 @@ var app = new Vue({
                 .then(function (response) {
                     if (response.status === 200) {
                         $('#createTweetMessage .singleTextareaModalForm').modal('hide');
+                        ref.showTweetPublishedForm(response.data)
                     } else {
-                        alert('Error');
+                        ref.errorCode = response.status;
+                        ref.error = response.data;
                     }
                     ref.dialogOperationInProgress = false;
                 })
                 .catch(function (reason) {
-                    alert('Caught Error!');
+                    ref.errorCode = reason.response.status;
+                    ref.error = reason.response.data;
                     ref.dialogOperationInProgress = false;
                 });
+        },
+        deselect() {
+            this.elements.forEach(function (item) {
+                item.selected = false;
+            });
+        },
+        showTweetPublishedForm(tweetDTO) {
+            this.errorCode = "";
+            this.editedValue = tweetDTO['url'];
+            this.deselect();
+            $('#tweetPublished .singleInputModalForm').modal('show');
+        },
+        hideTweetPublishedForm(){
+            $('#tweetPublished .singleInputModalForm').modal('hide');
         }
     },
     created: function () {
         this.url = document.URL;
         this.loadDirectoryData();
+        $('#tweetPublished .singleInputModalForm .btn-secondary').hide();
     }
 });

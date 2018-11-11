@@ -67,17 +67,21 @@
                                 </div>
                             </div>
                             <div class="modal-footer justify-content-between">
-                                <button class="col-3 btn btn-secondary"
-                                        v-on:click="cancel"
-                                        v-bind:readonly="operationInProgress"
-                                        th:text="#{btn.cancel}">
-                                    Cancel
-                                </button>
-                                <button class="col-7 btn btn-success"
-                                        v-on:click="success"
-                                        v-bind:disabled="isInputDisabled">
-                                    {{ successButtonTitle }}
-                                </button>
+                                <div class="col-4">
+                                    <button class="btn btn-secondary btn-block"
+                                            v-on:click="cancel"
+                                            v-bind:readonly="operationInProgress"
+                                            th:text="#{btn.cancel}">
+                                        Cancel
+                                    </button>
+                                </div>
+                                <div class="col-7">
+                                    <button class="btn btn-success btn-block"
+                                            v-on:click="success"
+                                            v-bind:disabled="isInputDisabled">
+                                        {{ successButtonTitle }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </transition>

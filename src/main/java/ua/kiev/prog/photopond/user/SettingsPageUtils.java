@@ -24,7 +24,7 @@ public class SettingsPageUtils {
         }
 
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setView(new RedirectView(url(authentication), true, true, true));
+        modelAndView.setView(new RedirectView(url(authentication), true, true, false));
         redirectAttributes.addFlashAttribute("startItem", SETTINGS_SOCIALS_ITEM_INDEX);
 
         return modelAndView;

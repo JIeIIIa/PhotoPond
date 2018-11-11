@@ -11,13 +11,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+import ua.kiev.prog.photopond.core.BindingErrorResolver;
 import ua.kiev.prog.photopond.security.AuthenticationUtils;
 import ua.kiev.prog.photopond.user.UserInfoDTO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 
-import static java.util.Objects.isNull;
 import static ua.kiev.prog.photopond.twitter.TwitterRequestMappingConstants.*;
+import static ua.kiev.prog.photopond.user.SettingsPageUtils.socials;
 
 @Controller
 public class TwitterCallbackController {
@@ -25,10 +27,13 @@ public class TwitterCallbackController {
 
     private final TwitterService twitterService;
 
+    private final BindingErrorResolver bindingErrorResolver;
+
     @Autowired
-    public TwitterCallbackController(TwitterService twitterService) {
-        LOG.info("Create instance of {}", TwitterCallbackController.class);
+    public TwitterCallbackController(TwitterService twitterService, BindingErrorResolver bindingErrorResolver) {
+        LOG.info("Create instance of class {}", this.getClass().getName());
         this.twitterService = twitterService;
+        this.bindingErrorResolver = bindingErrorResolver;
     }
 
     @RequestMapping(value = ASSOCIATE_CALLBACK_SHORT_URL, params = {"oauth_token", "oauth_verifier"},
@@ -36,33 +41,36 @@ public class TwitterCallbackController {
     public ModelAndView associateAccount(@RequestParam("oauth_token") String oAuthToken,
                                          @RequestParam("oauth_verifier") String oAuthVerifier,
                                          Authentication authentication,
+                                         Locale locale,
                                          RedirectAttributes redirectAttributes) {
-        LOG.traceEntry("Associate account");
+        LOG.traceEntry("Associate twitter account [oauth_token = {}]", oAuthToken);
 
-        if (isNull(authentication) && !authentication.isAuthenticated()) {
+        if (!authentication.isAuthenticated()) {
             LOG.error("Unauthorized user request [oauth_token = {}]", oAuthToken);
-            redirectAttributes.addFlashAttribute("twitterErrorMessage", "Authorize to associate a twitter account with your profile");
+            redirectAttributes.addFlashAttribute(
+                    ERROR_ATTRIBUTE_NAME,
+                    bindingErrorResolver.resolveMessage("twitter.error.unauthorizedAssociation", locale)
+            );
+            LOG.error("Unauthorized Twitter account association");
         } else {
             TwitterUserDTO twitterUserDTO = twitterService.associateAccount(authentication.getName(), oAuthToken, oAuthVerifier);
             LOG.trace(twitterUserDTO);
         }
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setView(new RedirectView(ACCOUNT_VIEW_URL, true, true, false));
-
-        return modelAndView;
+        return socials(authentication, redirectAttributes);
     }
 
     @RequestMapping(value = ASSOCIATE_CALLBACK_SHORT_URL, params = {"denied"}, method = RequestMethod.GET)
     public ModelAndView associateAccount(@RequestParam("denied") String oAuthToken,
+                                         Authentication authentication,
+                                         Locale locale,
                                          RedirectAttributes redirectAttributes) {
         LOG.traceEntry("Account associate failure [oauth_token = {}]", oAuthToken);
 
         twitterService.removeRequestToken(oAuthToken);
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setView(new RedirectView(ACCOUNT_VIEW_URL, true, true, false));
-        redirectAttributes.addFlashAttribute("twitterErrorMessage", "Twitter account association error");
+        ModelAndView modelAndView = socials(authentication, redirectAttributes);
+        redirectAttributes.addFlashAttribute(ERROR_ATTRIBUTE_NAME, bindingErrorResolver.resolveMessage("twitter.error.associate", locale));
 
         return modelAndView;
 
@@ -88,6 +96,7 @@ public class TwitterCallbackController {
 
     @RequestMapping(value = LOGIN_CALLBACK_SHORT_URL, params = {"denied"}, method = RequestMethod.GET)
     public ModelAndView authorizationError(@RequestParam("denied") String oAuthToken,
+                                           Locale locale,
                                            RedirectAttributes redirectAttributes) {
         LOG.traceEntry("Authorization failure [oauth_token = {}]", oAuthToken);
 
@@ -95,7 +104,10 @@ public class TwitterCallbackController {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setView(new RedirectView("/login", true, true, false));
-        redirectAttributes.addFlashAttribute("twitterAuthError", "Twitter authorization error");
+        redirectAttributes.addFlashAttribute(
+                ERROR_AUTH_ATTRIBUTE_NAME,
+                bindingErrorResolver.resolveMessage("twitter.error.authorization", locale)
+        );
 
         return modelAndView;
     }

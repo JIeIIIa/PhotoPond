@@ -46,6 +46,10 @@
                                 </facebook-accounts>
 
                                 <twitter-accounts inline-template
+                                                  v-bind:accounts="accounts['twitter']"
+                                                  v-bind:error-messages="errorMessageObject['twitter']"
+                                                  v-on:close-alert="closeAlert"
+                                                  v-on:add-error="addError"
                                                    th:insert="~{socials/twitter :: twitterAccounts}">
                                 </twitter-accounts>
 
