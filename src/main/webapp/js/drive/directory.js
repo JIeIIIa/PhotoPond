@@ -11,7 +11,8 @@ var app = new Vue({
             editedValue: '',
             editedItem: '',
             selectedMode: false,
-            dialogOperationInProgress: false
+            dialogOperationInProgress: false,
+            showLoader: false
         }
     },
     computed: {
@@ -21,8 +22,11 @@ var app = new Vue({
                 return item;
             })
         },
-        sortedElements() {
-            return this.elementsWithUri;
+        sortedDirectories() {
+            return this.filter('DIR');
+        },
+        sortedFiles() {
+            return this.filter('FILE');
         },
         parentDirectories() {
             var splitUrl = this.url.split('/');
@@ -89,6 +93,17 @@ var app = new Vue({
         }
     },
     methods: {
+        filter(type) {
+            var ref = this;
+            var res = [];
+            this.elements.forEach(function (item) {
+                if ((type === 'DIR' && ref.isDirectory(item)) ||
+                    (type === 'FILE' && ref.isFile(item))) {
+                    res.push(item);
+                }
+            });
+            return res;
+        },
         pageNotFound() {
             var redirectedUrl = '/page-not-found';
             var form = $('<form action="' + redirectedUrl + '" method="post" hidden="hidden">' +
@@ -99,7 +114,7 @@ var app = new Vue({
         },
         loadDirectoryData() {
             var ref = this;
-            // ref.showLoader = true;
+            ref.showLoader = true;
             axios.get(apiUrl('directory'))
                 .then(function (response) {
                     if (response.status === 200) {
@@ -110,10 +125,10 @@ var app = new Vue({
                     } else {
                         ref.pageNotFound();
                     }
-                    // ref.showLoader = false;
+                    ref.showLoader = false;
                 })
                 .catch(function (error) {
-                    // ref.showLoader = false;
+                    ref.showLoader = false;
                     ref.pageNotFound();
                 })
         },
@@ -402,7 +417,7 @@ var app = new Vue({
             this.deselect();
             $('#tweetPublished .singleInputModalForm').modal('show');
         },
-        hideTweetPublishedForm(){
+        hideTweetPublishedForm() {
             $('#tweetPublished .singleInputModalForm').modal('hide');
         }
     },

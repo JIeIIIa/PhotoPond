@@ -1,0 +1,94 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+      lang="en">
+
+
+<head>
+    <title>PhotoPond - Own directory (elements)</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <title>PhotoPond - directories</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css">
+
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="../../../libs/font-awesome-free-5.1.1-web/css/all.css">
+
+    <link rel="stylesheet" href="../../../css/main.css">
+    <link rel="stylesheet" href="../../../css/skins/default-skin.min.css">
+
+</head>
+
+<body>
+<div class="container-fluid" id="directoryApp" v-cloak>
+    <!--Print subdirectories-->
+    <template th:fragment="subdirectories" th:remove="tag">
+        <div class="row mb-3" v-if="hasDirectory">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12"><h5 th:text="#{pages.home.directory.caption}">Directories:</h5></div>
+                </div>
+                <div class="row" name="table-row" is="transition-group">
+                    <div class="col-3 userElementCard mb-2" v-for="item in sortedDirectories"
+                         :key="'dir_' + item.data.name">
+                        <div class="card userElement btn btn-block"
+                             v-bind:class="{selected: item.selected}">
+                            <a v-bind:href="item.data.uri"
+                               class="contentSrc truncate"
+                               data-toggle="tooltip" data-placement="bottom" v-bind:title="item.data.name">
+                                <i class="fa fa-folder" style="color: #f0cb58"></i>
+                                {{ item.data.name }}
+                            </a>
+                            <input type="checkbox" title="" v-model="item.selected" style="position:absolute; top: 0; left: 0;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!--Print Pictures-->
+    <template th:fragment="pictures" th:remove="tag">
+        <div class="row mb-3" v-if="hasFile">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12"><h5 th:text="#{pages.home.picture.caption}">Pictures:</h5></div>
+                </div>
+                <div class="row text-center" name="table-row" is="transition-group">
+                    <div class="col-12 col-sm-6 col-md-3 userElementCard"
+                         v-for="item in sortedFiles" :key="'pic_' + item.data.name">
+                        <div class="card userElement h-100" v-bind:class="{selected: item.selected}">
+                            <img src="#" v-bind:src="item.data.uri"
+                                 class="contentSrc"/>
+                            <input title="" type="checkbox" v-model="item.selected" style="position: absolute">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+
+<div>
+    <!-- jQuery -->
+    <script src="../../../libs/jquery/jquery-3.2.1.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
+    <script src="../../../libs/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="../../../libs/vuejs/vue-2.5.16.js"></script>
+</div>
+<script src="../../../js/main.js" th:src="@{/js/main.js}"></script>
+<script src="../../../js/userDirectory.js" th:src="@{/js/userDirectory.js}"></script>
+<script src="../../../js/drive/directory.js" th:src="@{/js/drive/directory.js}"></script>
+
+
+</body>
+</html>
