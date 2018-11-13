@@ -64,3 +64,9 @@ function appendToUrl(url, part) {
         return url + '/' + part;
     }
 }
+
+Vue.directive("tooltip",{
+    bind: function(el){
+        $(el).tooltip({ trigger: "hover", 'delay': { show: 1000, hide: 100 } })
+    }
+});

@@ -13,8 +13,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Bootstrap CSS with custom styles -->
-    <link rel="stylesheet" href="../../../css/skins/skin.css">
+    <link rel="stylesheet" href="../../../css/photopond.css">
 </head>
 
 <body>
@@ -27,7 +26,7 @@
             <change-avatar-card inline-template
                                 th:fragment="changeAvatarCard" th:remove="tag">
                 <div class="card">
-                    <div class="card-block">
+                    <div class="card-body">
                         <transition name="fade" mode="out-in">
                             <loader-component inline-template th:insert="~{fragments/loader :: loader}"
                                               v-if="showLoader" key="changeAvatarLoader">
@@ -41,10 +40,10 @@
                                 </alert-item>
                                 <div class="form-group mb-0">
                                     <div class="row justify-content-between align-items-center pl-3 pr-3">
-                                        <label class="form-control-label" v-if="hasOldData"
+                                        <label v-if="hasOldData"
                                                th:text="#{pages.settings.changeAvatar.title}">Current avatar
                                         </label>
-                                        <label class="form-control-label" v-else
+                                        <label v-else
                                                th:text="#{pages.settings.changeAvatar.preview}">Preview
                                         </label>
                                     </div>
@@ -101,11 +100,11 @@
 
 <div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">
     <!-- jQuery -->
-    <script src="../../../libs/jquery/jquery-3.2.1.min.js"></script>
+    <script src="../../../libs/jquery/jquery-3.3.1.slim.min.js"></script>
 
     <!-- Bootstrap JS -->
-    <script src="../../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
-    <script src="../../../libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../../libs/popper/popper.1.14.3.min.js"></script>
+    <script src="../../../libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
     <!-- Vue.js -->
     <script src="../../../libs/vuejs/vue-2.5.16.js"></script>

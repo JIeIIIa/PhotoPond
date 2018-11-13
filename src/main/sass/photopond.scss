@@ -1,0 +1,20 @@
+@import "custom";
+@import "bootstrap/4.1.3/bootstrap";
+
+
+// Components Vue.js
+@import "vuejs";
+
+// Custom elements
+@import "element/logo";
+@import "element/navbar-header";
+@import "element/loader";
+@import "element/left-bottom-button";
+@import "element/breadcrumbs";
+@import "element/scrolls";
+@import "element/alerts";
+
+// Detailing pages elements
+@import "element/pages";
+@import "element/pages/social/social";
+

@@ -13,18 +13,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- jQuery -->
-    <script src="../../libs/jquery/jquery-3.2.1.min.js"></script>
-
-    <!-- Bootstrap CSS -->
-    <script src="../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
-    <link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap.min.css">
-    <script src="../../libs/bootstrap/js/bootstrap.min.js"></script>
-
-    <link rel="stylesheet" href="../../css/main.css">
-    <link rel="stylesheet" href="../../css/skins/default-skin.min.css">
-</head>
-
+    <link rel="stylesheet" href="../../css/photopond.css"></head>
 <body>
 
 <object th:include="fragments/header :: header('registration')" th:remove="tag"></object>
@@ -33,14 +22,14 @@
     <div class="row">
         <div class="col-10 offset-1 col-md-8 offset-md-2">
             <div class="card">
-                <div class="card-header card-info text-center">
+                <div class="card-header bg-primary text-center">
                     <h2 class="card-title font-weight-bold"
                         th:text="#{pages.registration.card.header}">
                         Registration
                     </h2>
                 </div>
-                <div class="card-block">
-                    <form class="form" action="#" th:action="@{/registration}" th:object="${userDTO}" method="POST">
+                <div class="card-body">
+                    <form action="#" th:action="@{/registration}" th:object="${userDTO}" method="POST">
                         <div class="form-group">
                             <label th:for="*{login}" class="control-label" th:text="#{user.login}">
                                 Login
@@ -85,11 +74,11 @@
 
 <div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">
     <!-- jQuery -->
-    <script src="../../libs/jquery/jquery-3.2.1.min.js"></script>
+    <script src="../../libs/jquery/jquery-3.3.1.slim.min.js"></script>
 
     <!-- Bootstrap JS -->
-    <script src="../../libs/bootstrap/tether-1.3.3/js/tether.min.js"></script>
-    <script src="../../libs/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../../libs/popper/popper.1.14.3.min.js"></script>
+    <script src="../../libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
     <!-- Vue.js -->
     <script src="../../libs/vuejs/vue-2.5.16.js"></script>

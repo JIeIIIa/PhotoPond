@@ -15,6 +15,16 @@ var app = new Vue({
             showLoader: false
         }
     },
+    watch: {
+        showLoader(newVal, oldVal) {
+            if (!newVal) {
+                // alert('!');
+                this.$nextTick(function () {
+                    // enableTooltips();
+                })
+            }
+        }
+    },
     computed: {
         elementsWithUri() {
             return this.elements.map(function (item) {

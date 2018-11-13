@@ -1,0 +1,14 @@
+.textArrow {
+  float: left;
+  color: #6CC5EC;
+}
+
+.cursor {
+  &-pointer {
+    cursor: pointer;
+  }
+
+  &-not-allowed {
+    cursor: not-allowed;
+  }
+}

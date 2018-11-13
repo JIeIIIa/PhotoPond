@@ -8885,61 +8885,57 @@ body {
 }
 
 .navbar-brand:focus .logo-background, .navbar-brand:hover .logo-background {
-  transform: scale(1, 0.6);
+  transform: scale(1, 0.65);
   transition-duration: 300ms;
 }
 .navbar-brand:focus .logo, .navbar-brand:hover .logo {
   color: white;
+}
+.navbar-brand:focus a, .navbar-brand:hover a {
+  text-decoration: none;
 }
 
 .logo {
   color: #ddecf7;
   font-family: "Roboto Slab";
   font-weight: 900;
-  font-size: 1.5rem;
+  font-size: 4.2rem;
   overflow: hidden;
-  position: absolute;
-  display: inline-block;
+  position: relative;
+  height: 4rem;
+  width: 5.3rem;
   top: 0;
-  width: 6rem;
-  height: 4.775rem;
   z-index: 30;
 }
 .logo .capitalLetter {
-  position: absolute;
-  font-size: 2.5em;
-  top: 0.2rem;
-  left: 0.7rem;
-  margin-top: -0.2em;
+  position: relative;
+  top: -1.2rem;
+  left: -6.4rem;
   z-index: 40;
 }
 .logo .pond {
-  position: absolute;
-  font-size: 1.5em;
-  top: 0.2rem;
-  left: 0.7rem;
-  margin-top: 0.4em;
-  margin-left: 0.5em;
-  letter-spacing: -0.1em;
+  position: relative;
+  font-size: 0.6em;
+  top: -1.2rem;
+  left: -8.75rem;
+  letter-spacing: -0.05em;
   z-index: 40;
 }
 .logo .photo {
-  position: absolute;
-  top: 0.2rem;
-  left: 0.7rem;
-  font-size: 0.55em;
-  margin-left: 2.8em;
-  margin-top: 1.55em;
+  position: relative;
+  top: -2.5rem;
+  left: -12.05rem;
+  font-size: 0.25em;
   z-index: 40;
 }
 
 .logo-background {
-  position: relative;
   display: inline-block;
+  position: relative;
   border-radius: 50%;
-  height: 5.7rem;
-  width: 5.7rem;
-  top: -0.5rem;
+  height: 125%;
+  width: 100%;
+  top: -12.5%;
   background-color: #1b5460;
   z-index: 30;
 }
@@ -8966,9 +8962,6 @@ body {
 #header .navbar .nav-item .nav-link.active {
   color: #DDECF7;
   border-bottom: 5px solid #798230;
-}
-#header .navbar .nav-item .btn, #header .navbar .nav-item .nav-link {
-  font-weight: 900;
 }
 #header .navbar .nav-item .btn.btn-primary {
   color: #4c8b17;
@@ -9187,6 +9180,18 @@ body {
   right: 0;
 }
 
+.textArrow {
+  float: left;
+  color: #6CC5EC;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
 #errorPage {
   position: absolute;
   top: 0;
@@ -9240,6 +9245,15 @@ body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #FFFFFF;
+}
+
+.userElement {
+  border: 4px solid transparent;
+}
+.userElement > img {
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
 }
 
 .btn-facebook {
