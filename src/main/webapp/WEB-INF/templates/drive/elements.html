@@ -26,21 +26,31 @@
         <div class="row mb-3" v-if="hasDirectory">
             <div class="col-12">
                 <div class="row">
-                    <div class="col-12"><h5 th:text="#{pages.home.directory.caption}">Directories:</h5></div>
+                    <div class="col-12">
+                        <h3 class="font-weight-bold" th:text="#{pages.home.directory.caption}">Directories:</h3>
+                    </div>
                 </div>
-                <div class="row" name="table-row" is="transition-group">
-                    <div class="col-3 userElementCard mb-2" v-for="item in sortedDirectories"
+                <div class="row ml-0 mr-0 pb-2" name="table-row" is="transition-group">
+                    <div class="col-3 p-1" v-for="item in sortedDirectories"
                          :key="'dir_' + item.data.name">
-                        <div class="card userElement btn btn-block"
+                        <div class="card drive-item"
                              v-bind:class="{selected: item.selected}">
-                            <a v-bind:href="item.data.uri"
-                               class="contentSrc text-truncate text-left"
-                               v-tooltip
-                               data-toggle="tooltip" data-placement="bottom" v-bind:title="item.data.name">
-                                <i class="fa fa-folder" style="color: #f0cb58"></i>
-                                {{ item.data.name }}
-                            </a>
-                            <input type="checkbox" title="" v-model="item.selected" style="position:absolute; top: 0; left: 0;">
+                            <i class="fa fa-folder drive-item-icon dir-item-icon p-1"></i>
+                            <div class="card-body drive-item-body h-100 w-100 text-left text-truncate">
+                                <a v-bind:href="item.data.uri"
+                                   class="ml-4"
+                                   v-tooltip data-toggle="tooltip" data-placement="bottom" v-bind:title="item.data.name">
+
+                                    {{ item.data.name }}
+
+                                </a>
+                                <!--<input type="checkbox" title="" v-model="item.selected" style="position:absolute; top: 0; left: 0;">-->
+                                <div class="rounded-checkbox m-1">
+                                    <input title="" type="checkbox" v-model="item.selected" class="position-absolute" style="top:0; left: 0"
+                                           :id="'input' + item.data.name">
+                                    <label :for="'input' + item.data.name"></label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -53,15 +63,35 @@
         <div class="row mb-3" v-if="hasFile">
             <div class="col-12">
                 <div class="row">
-                    <div class="col-12"><h5 th:text="#{pages.home.picture.caption}">Pictures:</h5></div>
+                    <div class="col-12">
+                        <h3 class="font-weight-bold" th:text="#{pages.home.picture.caption}">Pictures:</h3>
+                    </div>
                 </div>
-                <div class="row text-center" name="table-row" is="transition-group">
-                    <div class="col-12 col-sm-6 col-md-3 userElementCard"
+                <div class="row ml-0 mr-0 pb-2 text-center" name="table-row" is="transition-group">
+                    <div class="col-12 col-sm-6 col-md-3 p-1"
                          v-for="item in sortedFiles" :key="'pic_' + item.data.name">
-                        <div class="card userElement h-100" v-bind:class="{selected: item.selected}">
-                            <img src="#" v-bind:src="item.data.uri"
-                                 class="contentSrc"/>
-                            <input title="" type="checkbox" v-model="item.selected" style="position: absolute">
+                        <div class="card drive-item" v-bind:class="{selected: item.selected}">
+                            <div class="card-body height-vw-12 height-vw-sm-6 height-vw-md-3 p-0 position-relative">
+                                <div class="w-100 h-100">
+                                    <img src="#" v-bind:src="item.data.uri" style="object-fit: cover" class="w-100 h-100 drive-item-img-body"/>
+
+                                </div>
+                                <div class="zoom-in d-flex" style="">
+                                    <!--<div class="background"></div>-->
+                                    <i class="fas fa-search-plus m-1 " style="text-shadow: -1px 0 white, 2px 2px white"></i>
+                                </div>
+                                <div class="rounded-checkbox m-1">
+                                    <input title="" type="checkbox" v-model="item.selected" class="position-absolute" style="top:0; left: 0"
+                                           :id="'input' + item.data.name">
+                                    <label :for="'input' + item.data.name"></label>
+                                </div>
+
+                            </div>
+                            <div class="card-footer drive-item-img-footer text-truncate"
+                                 v-tooltip data-toggle="tooltip" data-placement="bottom"
+                                 title="Picture name" :title="item.data.name">
+                                {{ item.data.name }}
+                            </div>
                         </div>
                     </div>
                 </div>

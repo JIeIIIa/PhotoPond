@@ -11,4 +11,20 @@
   &-not-allowed {
     cursor: not-allowed;
   }
+
+  &-zoom-in {
+    cursor: zoom-in;
+  }
+
+  &-zoom-out {
+    cursor: zoom-out;
+  }
+}
+
+.no-carret::after {
+  display: none;
+}
+
+.break-word-wrap {
+  word-wrap: break-word;
 }

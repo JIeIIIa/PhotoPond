@@ -3,43 +3,25 @@
         Later all styles must be moved to a scss-file.
 */
 
-.break-word-wrap {
-    word-wrap: break-word;
-}
-
-.btn:focus, .btn:active {
-    outline: none;
-    box-shadow: none;
-}
-
-.textArrow {
+.img-shadow {
+    position: relative;
+    max-width: 100%;
     float: left;
-    margin-top: 0.2rem;
-    margin-left: 0.1rem;
-    color: #6CC5EC;
+    display: inline-block;
 }
 
-.userElement {
-    border: 4px solid transparent;
+.img-shadow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    -webkit-box-shadow: inset 0px 0px 100px 0px rgba(27,85,96,1);
+    -moz-box-shadow: inset 0px 0px 100px 0px rgba(27,85,96,1);
+    box-shadow: inset 0px 0px 100px 0px rgba(27,85,96,1);
 }
 
-.selected {
-    border: 4px solid #00ff00;
-}
-
-.userElement > img {
-    object-fit: contain;
-    height: 100%;
-    width: 100%;
-}
-
-.no-carret::after {
-    display: none;
-}
-
-.truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;     /** IE6+, Firefox 7+, Opera 11+, Chrome, Safari **/
-    -o-text-overflow: ellipsis;  /** Opera 9 & 10 **/
+.img-shadow img {
+    float: left;
 }
