@@ -30,7 +30,7 @@ function shortApiUrl(serviceName) {
     return shortUrl;
 }
 
-function SortOptions(fieldName){
+function SortOptions(fieldName) {
     this.fieldName = fieldName;
     this.ascend = true;
 
@@ -43,7 +43,7 @@ function SortOptions(fieldName){
         }
     };
 
-    this.isAscend = function() {
+    this.isAscend = function () {
         return this.ascend;
     }
 }
@@ -51,9 +51,20 @@ function SortOptions(fieldName){
 function dynamicSort(property, direction) {
     var sortOrder = direction ? 1 : -1;
 
-    return function (a,b) {
-        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
-        return result * sortOrder;
+    return function (a, b) {
+        if (_.has(a, property) && _.has(b, property)) {
+            var first = _.get(a, property);
+            var second = _.get(b, property);
+            var result;
+            if ((typeof first === "string") && (typeof second === "string")) {
+                result = first.toLowerCase().localeCompare(second.toLowerCase());
+            } else {
+                result = (first < second) ? -1 : (first > second) ? 1 : 0;
+            }
+            return result * sortOrder;
+        } else {
+            return 0;
+        }
     }
 }
 
@@ -65,8 +76,8 @@ function appendToUrl(url, part) {
     }
 }
 
-Vue.directive("tooltip",{
-    bind: function(el){
-        $(el).tooltip({ trigger: "hover", 'delay': { show: 1000, hide: 100 } })
+Vue.directive("tooltip", {
+    bind: function (el) {
+        $(el).tooltip({trigger: "hover", 'delay': {show: 1000, hide: 100}})
     }
 });

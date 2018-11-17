@@ -16,7 +16,8 @@ var app = new Vue({
                 countPerRow: 2,
                 suffix: [12, 6, 4, 3, 2, 1]
             },
-            imageIndex: -1
+            imageIndex: -1,
+            sortOptions: new SortOptions("data.name")
         }
     },
     computed: {
@@ -27,10 +28,14 @@ var app = new Vue({
             })
         },
         sortedDirectories() {
-            return this.filter('DIR');
+            return this
+                .filter('DIR')
+                .sort(dynamicSort(this.sortOptions.fieldName, this.sortOptions.isAscend()));
         },
         sortedFiles() {
-            return this.filter('FILE');
+            return this
+                .filter('FILE')
+                .sort(dynamicSort(this.sortOptions.fieldName, this.sortOptions.isAscend()));
         },
         parentDirectories() {
             var splitUrl = this.url.split('/');
@@ -114,6 +119,16 @@ var app = new Vue({
                 res.push(item.data);
             });
 
+            return res;
+        },
+        faArrowSortIcon: function () {
+            var res = [];
+            res.push("fa");
+            if (this.sortOptions.isAscend()) {
+                res.push("fa-arrow-up");
+            } else {
+                res.push("fa-arrow-down");
+            }
             return res;
         }
     },
@@ -451,6 +466,9 @@ var app = new Vue({
             } else {
                 return '';
             }
+        },
+        sortingDirection() {
+            this.sortOptions.changeOrder(this.sortOptions.fieldName);
         }
     },
     created: function () {

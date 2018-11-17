@@ -66,7 +66,7 @@
                                 </button>
 
                                 <button type="button" class="btn btn-twitter"
-                                        v-bind:class="{disabled: selectedFileCount > 7}"
+                                        v-bind:class="{disabled: selectedFileCount > 4}"
                                         v-tooltip data-toggle="tooltip" data-placement="bottom"
                                         title="Share with Twitter" th:title="#{pages.home.toolbar.tweet}"
                                         id="twitterShareBtn" v-on:click="onTweet">
@@ -82,6 +82,8 @@
                 <div class="btn-group-sm" role="group">
                     <button class="btn btn-outline-secondary border-0 dropdown-toggle"
                             id="changeElementSize"
+                            v-tooltip data-placement="bottom"
+                            title="Change size of elements" th:title="#{pages.home.toolbar.size.tooltip}"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                             th:text="#{pages.home.toolbar.size}">
                         Size
@@ -106,12 +108,17 @@
                 </div>
                 <div class="btn-group-sm">
                     <button class="btn btn-sm btn-outline-secondary border-0"
+                            v-tooltip data-placement="bottom" data-toggle="tooltip"
+                            title="Sort by" th:title="#{pages.home.toolbar.sort}"
                             th:text="#{pages.home.toolbar.sort.byName}">
                         By name
                     </button>
                 </div>
                 <div>
-                    <i class="fa fa-arrow-up textArrow"></i>
+                    <i class="textArrow cursor-pointer" v-bind:class="faArrowSortIcon"
+                       v-tooltip data-placement="bottom" data-toggle="tooltip"
+                       title="Change sorting direction" th:title="#{pages.home.toolbar.sort.changeDirection}"
+                       v-on:click="sortingDirection"></i>
                 </div>
             </div>
         </div>
