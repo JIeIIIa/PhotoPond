@@ -1,0 +1,14 @@
+@mixin make-height-vw($columns: $grid-columns, $breakpoints: $grid-breakpoints) {
+  @each $breakpoint in map-keys($breakpoints) {
+    $infix: breakpoint-infix($breakpoint, $breakpoints);
+    @for $i from 1 through $columns {
+      @include media-breakpoint-up($breakpoint, $breakpoints) {
+        .height-vw#{$infix}-#{$i} {
+          height: round(95vw * $i / $columns)
+        }
+      }
+    }
+  }
+}
+
+@include make-height-vw();

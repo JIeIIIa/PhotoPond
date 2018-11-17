@@ -72,11 +72,11 @@
         </div>
     </div>
 
-<!--
-    <div class="position-fixed p-0 m-0" style="opacity: 0.5; background-color: black; width: 100vw; height: 100vh; top: 0; left: 0">
-        <img src="../../../pic/no_avatar.jpg" th:src="@{/public/user/{login}/avatar(login=${#authentication.name})}"
-             style="width: 100%; height: 100%; object-fit: cover; opacity: 1;">
-    </div>-->
+    <!--
+        <div class="position-fixed p-0 m-0" style="opacity: 0.5; background-color: black; width: 100vw; height: 100vh; top: 0; left: 0">
+            <img src="../../../pic/no_avatar.jpg" th:src="@{/public/user/{login}/avatar(login=${#authentication.name})}"
+                 style="width: 100%; height: 100%; object-fit: cover; opacity: 1;">
+        </div>-->
 
     <single-input-modal-form inline-template
                              id="createDirectory"
@@ -154,6 +154,18 @@
         <div th:insert="~{fragments/singleInputModalForm :: singleInputModalForm}"></div>
     </single-input-modal-form>
 
+
+    <slider inline-template
+            id="slider"
+            th:include="drive/slider :: slider"
+            v-bind:images="images"
+            v-bind:index="imageIndex"
+            v-on:index-increment="imageIndex++"
+            v-on:index-decrement="imageIndex--"
+            v-on:close="imageIndex = -1">
+    </slider>
+
+
 </div>
 
 <div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">
@@ -174,6 +186,7 @@
 <script src="../../../js/singleTextareaModalForm.js" th:src="@{/js/singleTextareaModalForm.js}"></script>
 <script src="../../../js/confirmModalForm.js" th:src="@{/js/confirmModalForm.js}"></script>
 <script src="../../../js/drive/moveModalForm.js" th:src="@{/js/drive/moveModalForm.js}"></script>
+<script src="../../../js/drive/slider.js" th:src="@{/js/drive/slider.js}"></script>
 <script src="../../../js/drive/directory.js" th:src="@{/js/drive/directory.js}"></script>
 
 

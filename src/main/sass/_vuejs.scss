@@ -1,7 +1,14 @@
 @import "vuejs/general";
 
+// Animation settings
+$slider-move-transitionX:             150%;
+$slider-move-animation-duration:      0.5s;
+
+
 // Animation classes
 @import "vuejs/animations/fade";
 @import "vuejs/animations/slide-left";
 @import "vuejs/animations/slide-right";
 @import "vuejs/animations/table-row";
+@import "vuejs/animations/slider-move-left";
+@import "vuejs/animations/slider-move-right";

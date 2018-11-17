@@ -28,3 +28,15 @@
 .break-word-wrap {
   word-wrap: break-word;
 }
+
+.hidden {
+  visibility: hidden;
+}
+
+.full-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}

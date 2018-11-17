@@ -31,7 +31,8 @@
                     </div>
                 </div>
                 <div class="row ml-0 mr-0 pb-2" name="table-row" is="transition-group">
-                    <div class="col-3 p-1" v-for="item in sortedDirectories"
+                    <div class="p-1" v-bind:class="colSizeClasses"
+                         v-for="item in sortedDirectories"
                          :key="'dir_' + item.data.name">
                         <div class="card drive-item"
                              v-bind:class="{selected: item.selected}">
@@ -68,17 +69,18 @@
                     </div>
                 </div>
                 <div class="row ml-0 mr-0 pb-2 text-center" name="table-row" is="transition-group">
-                    <div class="col-12 col-sm-6 col-md-3 p-1"
-                         v-for="item in sortedFiles" :key="'pic_' + item.data.name">
+                    <div class="p-1" v-bind:class="colSizeClasses"
+                         v-for="(item, index) in sortedFiles" :key="'pic_' + item.data.name">
                         <div class="card drive-item" v-bind:class="{selected: item.selected}">
-                            <div class="card-body height-vw-12 height-vw-sm-6 height-vw-md-3 p-0 position-relative">
+                            <div class="card-body p-0 position-relative"
+                                 v-bind:class="heightSizeClasses">
                                 <div class="w-100 h-100">
                                     <img src="#" v-bind:src="item.data.uri" style="object-fit: cover" class="w-100 h-100 drive-item-img-body"/>
 
                                 </div>
-                                <div class="zoom-in d-flex" style="">
-                                    <!--<div class="background"></div>-->
-                                    <i class="fas fa-search-plus m-1 " style="text-shadow: -1px 0 white, 2px 2px white"></i>
+                                <div class="zoom-in d-flex" style="" v-on:click="imageIndex = index">
+                                    <!--<i class="fas fa-search-plus m-1 " style="text-shadow: -1px 0 white, 2px 2px white"></i>-->
+                                    <i class="fas fa-search-plus m-1"></i>
                                 </div>
                                 <div class="rounded-checkbox m-1">
                                     <input title="" type="checkbox" v-model="item.selected" class="position-absolute" style="top:0; left: 0"

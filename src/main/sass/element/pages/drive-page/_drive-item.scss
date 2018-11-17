@@ -1,0 +1,82 @@
+$drive-item-transform-perspective:   400px;
+$drive-item-transform-duration:      500ms;
+
+$drive-item-border-color: #20400c;
+$drive-item-bg-color: #488a1c;
+$drive-item-footer-bg-color: #76d126;
+
+$drive-item-color: $link-blue;
+
+.drive-item {
+  color: $drive-item-color;
+  box-shadow: 7px 7px 15px 0 rgba(0,0,0,0.8);
+  border: $card-border-width solid $drive-item-border-color;
+  @include border-radius($card-border-radius);
+  overflow: hidden;
+
+  background: $drive-item-border-color;
+  background: -moz-radial-gradient(center, ellipse cover, $drive-item-bg-color 0%, $drive-item-border-color 100%);
+  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, $drive-item-bg-color), color-stop(100%, $drive-item-border-color));
+  background: -webkit-radial-gradient(center, ellipse cover, $drive-item-bg-color 0%, $drive-item-border-color 100%);
+  background: -o-radial-gradient(center, ellipse cover, $drive-item-bg-color 0%, $drive-item-border-color 100%);
+  background: -ms-radial-gradient(center, ellipse cover, $drive-item-bg-color 0%, $drive-item-border-color 100%);
+  background: radial-gradient(ellipse at center, $drive-item-bg-color 0%, $drive-item-border-color 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=$drive-item-bg-color, endColorstr=$drive-item-border-color, GradientType=1 );
+
+  transform: perspective($drive-item-transform-perspective) rotateY(0deg);
+  transition-duration: $drive-item-transform-duration;
+
+  & a {
+    color: $drive-item-color;
+
+    &:hover, &:focus {
+      color: darken($drive-item-color, 20%);
+    }
+  }
+
+  &.selected {
+    transform: perspective($drive-item-transform-perspective) rotateY(20deg);
+    transition-duration: $drive-item-transform-duration;
+  }
+
+  & &-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  & .dir-item-icon {
+    color: #f0cb58;
+  }
+
+  & &-img-body {
+    @include border-radius($card-inner-border-radius $card-inner-border-radius 0 0);
+  }
+
+  &-img-footer {
+    color: $drive-item-color;
+    background: $drive-item-footer-bg-color;
+    background: -moz-linear-gradient(top, $drive-item-footer-bg-color 0%, $drive-item-border-color 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $drive-item-footer-bg-color), color-stop(100%, $drive-item-border-color));
+    background: -webkit-linear-gradient(top, $drive-item-footer-bg-color 0%, $drive-item-border-color 100%);
+    background: -o-linear-gradient(top, $drive-item-footer-bg-color 0%, $drive-item-border-color 100%);
+    background: -ms-linear-gradient(top, $drive-item-footer-bg-color 0%, $drive-item-border-color 100%);
+    background: linear-gradient(to bottom,e $drive-item-footer-bg-color 0%, $drive-item-border-color 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=$drive-item-footer-bg-color, endColorstr=$drive-item-border-color, GradientType=0 );
+  }
+
+  & .zoom-in {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 2.5em;
+    color: black;
+    text-shadow: -0.025em 0 white, 0.06em 0.06em white;
+    cursor: zoom-in;
+
+    &:hover {
+      transform: scale(1.05);
+      transition-duration: 100ms;
+    }
+  }
+}

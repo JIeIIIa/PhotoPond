@@ -8674,6 +8674,44 @@ body {
   transition: all 0.5s;
 }
 
+.slider-move-left-enter, .slider-move-left-leave-to {
+  opacity: 0;
+  transform: translateX(-150%);
+  display: inline-flex;
+}
+.slider-move-left-enter-active {
+  transition: all 0.5s;
+  display: inline-flex;
+}
+.slider-move-left-leave-active {
+  transition: all 0.5s;
+  display: inline-flex;
+  position: absolute;
+}
+.slider-move-left-move {
+  display: inline-flex;
+  transition: all 0.5s;
+}
+
+.slider-move-right-enter, .slider-move-right-leave-to {
+  opacity: 0;
+  transform: translateX(150%);
+  display: inline-flex;
+}
+.slider-move-right-enter-active {
+  transition: all 0.5s;
+  display: inline-flex;
+}
+.slider-move-right-leave-active {
+  transition: all 0.5s;
+  display: inline-flex;
+  position: absolute;
+}
+.slider-move-right-move {
+  display: inline-flex;
+  transition: all 0.5s;
+}
+
 .navbar-brand:focus .logo-background, .navbar-brand:hover .logo-background {
   transform: scale(1, 0.65);
   transition-duration: 300ms;
@@ -8994,6 +9032,18 @@ body {
 
 .break-word-wrap {
   word-wrap: break-word;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.full-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
 }
 
 #errorPage {
@@ -9394,6 +9444,7 @@ body {
   right: 0;
   font-size: 2.5em;
   color: black;
+  text-shadow: -0.025em 0 white, 0.06em 0.06em white;
   cursor: zoom-in;
 }
 .drive-item .zoom-in:hover {
@@ -9445,6 +9496,64 @@ body {
 }
 .rounded-checkbox input[type="checkbox"]:checked + label:after {
   opacity: 1;
+}
+
+.slider {
+  width: 100%;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  color: black;
+  z-index: 2000;
+}
+.slider .slider-background {
+  background: black;
+  opacity: 0.85;
+}
+.slider .slider-header {
+  color: white;
+  text-shadow: 0 0 1em black, 0 0 2em black, 0 0 0.1em black;
+  z-index: 2200;
+}
+.slider .slider-img {
+  object-fit: contain;
+  z-index: 2010;
+}
+.slider .slider-icon {
+  font-size: 6em;
+  transform: translateY(-50%);
+  opacity: 0.15;
+  text-shadow: -0.025em 0 white, 0.06em 0.06em white, 0 0 0.75em white;
+}
+.slider .slider-icon.enabled:hover {
+  transform: scale(1.07) translateY(-50%);
+  text-shadow: -0.025em 0 white, 0.06em 0.06em white, 0 0 1em white;
+  opacity: 0.7;
+}
+.slider .slider-icon.icon-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 3em;
+  transform: translateY(0);
+  opacity: 0.5;
+  z-index: 2210;
+}
+.slider .slider-icon.icon-close:hover {
+  transform: scale(1.07);
+  opacity: 0.85;
+}
+.slider .slider-icon.icon-prev {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  z-index: 2100;
+}
+.slider .slider-icon.icon-next {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  z-index: 2100;
 }
 
 .btn-facebook {

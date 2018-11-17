@@ -1,0 +1,23 @@
+.slider-move-right {
+  &-enter, &-leave-to {
+    opacity: 0;
+    transform: translateX($slider-move-transitionX);
+    display: inline-flex;
+  }
+
+  &-enter-active {
+    transition: all $slider-move-animation-duration;
+    display: inline-flex;
+  }
+
+  &-leave-active {
+    transition: all $slider-move-animation-duration;
+    display: inline-flex;
+    position: absolute;
+  }
+
+  &-move {
+    display: inline-flex;
+    transition: all $slider-move-animation-duration;
+  }
+}

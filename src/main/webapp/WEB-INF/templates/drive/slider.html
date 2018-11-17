@@ -1,0 +1,79 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+      lang="en">
+
+
+<head th:replace="fragments/profiles/activeProfile :: head (pageTitle = #{pages.home.title})">
+    <title>PhotoPond - Slider (Vue.js component)</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="../../../libs/font-awesome-free-5.1.1-web/css/all.css">
+
+    <link rel="stylesheet" href="../../../css/photopond.css">
+    <link rel="stylesheet" href="../../../css/temporary.css">
+</head>
+
+<div class="container-fluid">
+
+    <slider inline-template id="slider"
+            th:fragment="slider" th:remove="tag">
+        <transition name="fade">
+            <div v-if="visible">
+                <div class="fixed-top slider" style="">
+                    <div class="full-fill slider-background">
+                    </div>
+                    <div class="full-fill">
+                        <div v-for="(img, i) in images" is="transition-group" :name="transitionGroup">
+                            <div class="full-fill" v-show="i == index" key="'view_img_' + i">
+                                <div class="col-12 text-center slider-header">
+                                    <div class="ml-5 mr-5 p-3 text-truncate" style="font-size: 1.5em">
+                                        {{ img.name }}
+                                    </div>
+                                </div>
+                                <img v-bind:src="img.uri" class="full-fill slider-img">
+                            </div>
+                        </div>
+
+                        <div class="m-3 slider-icon icon-close" v-on:click="close">
+                            <i class="far fa-times-circle"></i>
+                        </div>
+                        <div class="p-3 slider-icon icon-prev" v-bind:class="{'enabled': prevEnable}"
+                             v-on:click="indexDecrement">
+                            <i class="fas fa-chevron-circle-left"></i>
+                        </div>
+                        <div class="p-3 slider-icon icon-next" v-bind:class="{'enabled': nextEnable}" v-on:click="indexIncrement">
+                            <i class="fas fa-chevron-circle-right"></i>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </transition>
+    </slider>
+
+</div>
+
+<div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">
+    <!-- jQuery -->
+    <script src="../../../libs/jquery/jquery-3.3.1.slim.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../../../libs/popper/popper.1.14.3.min.js"></script>
+    <script src="../../../libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="../../../libs/vuejs/vue-2.5.16.js"></script>
+</div>
+<script src="../../../js/main.js" th:src="@{/js/main.js}"></script>
+
+<script src="../../../js/drive/slider.js" th:src="@{/js/drive/slider.js}"></script>
+
+</body>
+</html>

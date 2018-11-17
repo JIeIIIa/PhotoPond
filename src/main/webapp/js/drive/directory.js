@@ -10,19 +10,13 @@ var app = new Vue({
             errorCode: '',
             editedValue: '',
             editedItem: '',
-            selectedMode: false,
             dialogOperationInProgress: false,
-            showLoader: false
-        }
-    },
-    watch: {
-        showLoader(newVal, oldVal) {
-            if (!newVal) {
-                // alert('!');
-                this.$nextTick(function () {
-                    // enableTooltips();
-                })
-            }
+            showLoader: false,
+            size: {
+                countPerRow: 2,
+                suffix: [12, 6, 4, 3, 2, 1]
+            },
+            imageIndex: -1
         }
     },
     computed: {
@@ -100,6 +94,27 @@ var app = new Vue({
                 }
             }
             return false;
+        },
+        colSizeClasses() {
+            return ['col-' + this.size.suffix[this.size.countPerRow - 1],
+                'col-sm-' + this.size.suffix[this.size.countPerRow],
+                'col-md-' + this.size.suffix[this.size.countPerRow + 1],
+                'col-xl-' + this.size.suffix[this.size.countPerRow + 2]];
+        },
+        heightSizeClasses() {
+            return ['height-vw-' + this.size.suffix[this.size.countPerRow - 1],
+                'height-vw-sm-' + this.size.suffix[this.size.countPerRow],
+                'height-vw-md-' + this.size.suffix[this.size.countPerRow + 1],
+                'height-vw-xl-' + this.size.suffix[this.size.countPerRow + 2]];
+        },
+        images() {
+
+            var res = [];
+            this.sortedFiles.forEach(function (item) {
+                res.push(item.data);
+            });
+
+            return res;
         }
     },
     methods: {
@@ -416,7 +431,7 @@ var app = new Vue({
                     ref.dialogOperationInProgress = false;
                 });
         },
-        deselect() {
+        deselectAll() {
             this.elements.forEach(function (item) {
                 item.selected = false;
             });
@@ -424,11 +439,18 @@ var app = new Vue({
         showTweetPublishedForm(tweetDTO) {
             this.errorCode = "";
             this.editedValue = tweetDTO['url'];
-            this.deselect();
+            this.deselectAll();
             $('#tweetPublished .singleInputModalForm').modal('show');
         },
         hideTweetPublishedForm() {
             $('#tweetPublished .singleInputModalForm').modal('hide');
+        },
+        sizeMenuItemClass(countPerRow) {
+            if (countPerRow !== this.size.countPerRow) {
+                return 'hidden';
+            } else {
+                return '';
+            }
         }
     },
     created: function () {

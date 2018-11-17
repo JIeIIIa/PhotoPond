@@ -87,10 +87,20 @@
                         Size
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="changeElementSize">
-                        <div class="dropdown-item cursor-pointer" th:text="#{pages.home.toolbar.size.small}">
-                            Small
+                        <div class="dropdown-item cursor-pointer"
+                             v-on:click="size.countPerRow = 3">
+                            <i class="fa fa-check" v-bind:class="sizeMenuItemClass(3)"></i>
+                            <span th:text="#{pages.home.toolbar.size.small}">Small</span>
                         </div>
-                        <div class="dropdown-item cursor-pointer" th:text="#{pages.home.toolbar.size.large}">Large
+                        <div class="dropdown-item cursor-pointer"
+                             v-on:click="size.countPerRow = 2">
+                            <i class="fa fa-check" v-bind:class="sizeMenuItemClass(2)"></i>
+                            <span th:text="#{pages.home.toolbar.size.medium}">Medium</span>
+                        </div>
+                        <div class="dropdown-item cursor-pointer"
+                             v-on:click="size.countPerRow = 1">
+                            <i class="fa fa-check" v-bind:class="sizeMenuItemClass(1)"></i>
+                            <span th:text="#{pages.home.toolbar.size.large}">Large</span>
                         </div>
                     </div>
                 </div>

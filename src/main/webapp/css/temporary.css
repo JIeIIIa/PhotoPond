@@ -17,9 +17,9 @@
     bottom: 0;
     left: 0;
     right: 0;
-    -webkit-box-shadow: inset 0px 0px 100px 0px rgba(27,85,96,1);
-    -moz-box-shadow: inset 0px 0px 100px 0px rgba(27,85,96,1);
-    box-shadow: inset 0px 0px 100px 0px rgba(27,85,96,1);
+    -webkit-box-shadow: inset 0px 0px 100px 0px rgba(27, 85, 96, 1);
+    -moz-box-shadow: inset 0px 0px 100px 0px rgba(27, 85, 96, 1);
+    box-shadow: inset 0px 0px 100px 0px rgba(27, 85, 96, 1);
 }
 
 .img-shadow img {
