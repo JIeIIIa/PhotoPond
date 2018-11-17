@@ -130,6 +130,16 @@ var app = new Vue({
                 res.push("fa-arrow-down");
             }
             return res;
+        },
+        isSelectAll() {
+            return this.selectedItemCount === this.elements.length;
+        },
+        faSelectedIcon: function () {
+            if (this.isSelectAll) {
+                return ['far', 'fa-check-circle'];
+            } else {
+                return ['far', 'fa-circle'];
+            }
         }
     },
     methods: {
@@ -446,15 +456,30 @@ var app = new Vue({
                     ref.dialogOperationInProgress = false;
                 });
         },
-        deselectAll() {
+        selectAll(state) {
             this.elements.forEach(function (item) {
-                item.selected = false;
+                item.selected = state;
             });
+        },
+        changeAllSelection() {
+            this.selectAll(!this.isSelectAll);
+        },
+        selectDirectories() {
+            this.filter('DIR')
+                .forEach(function (item) {
+                    item.selected = true;
+                });
+        },
+        selectFiles() {
+            this.filter('FILE')
+                .forEach(function (item) {
+                    item.selected = true;
+                });
         },
         showTweetPublishedForm(tweetDTO) {
             this.errorCode = "";
             this.editedValue = tweetDTO['url'];
-            this.deselectAll();
+            this.selectAll(false);
             $('#tweetPublished .singleInputModalForm').modal('show');
         },
         hideTweetPublishedForm() {

@@ -44,9 +44,39 @@
                                 </div>
                             </div>
                         </div>
+                        <div>
+                            <div class="btn-group ml-1">
+                                <button type="button" class="btn btn-info btn-sm"
+                                        v-tooltip data-placement="bottom" title="Select elements"
+                                        th:title="#{pages.home.toolbar.selection}"
+                                        v-on:click="changeAllSelection">
+                                    <i v-bind:class="faSelectedIcon"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-split"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="sr-only">Toggle Selection Dropdown</span>
+                                </button>
+
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item cursor-pointer" v-on:click="selectAll(true)">
+                                        <span th:text="#{pages.home.toolbar.selection.all}">All</span>
+                                    </div>
+                                    <div class="dropdown-item cursor-pointer" v-on:click="selectAll(false)">
+                                        <span th:text="#{pages.home.toolbar.selection.none}">None</span>
+                                    </div>
+                                    <div class="dropdown-item cursor-pointer" v-on:click="selectDirectories">
+                                        <span th:text="#{pages.home.toolbar.selection.directories}">Directories</span>
+                                    </div>
+                                    <div class="dropdown-item cursor-pointer" v-on:click="selectFiles">
+                                        <span th:text="#{pages.home.toolbar.selection.pictures}">Pictures</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <transition name="fade">
                             <div class="btn-group-sm ml-1" v-if="selectedItemCount > 0">
-                                <button type="button" class="btn btn-info"
+
+                                <button type="button" class="btn btn-info" v-bind:class="{'disabled' : selectedItemCount !== 1}"
                                         v-tooltip data-toggle="tooltip" data-placement="bottom"
                                         title="Rename element" th:title="#{pages.home.toolbar.rename}"
                                         id="openRenameForm" v-on:click="onRename">
