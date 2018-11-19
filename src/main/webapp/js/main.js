@@ -81,3 +81,17 @@ Vue.directive("tooltip", {
         $(el).tooltip({trigger: "hover", 'delay': {show: 1000, hide: 100}})
     }
 });
+
+/**
+ * Add slide animation to Bootstrap dropdown elements
+ */
+$('document').ready(function () {
+    var dropdown = '.dropdown';
+    $(dropdown).on('show.bs.dropdown', function (e) {
+        $(this).find('.dropdown-menu').first().stop(true, true).slideDown(300);
+    });
+
+    $(dropdown).on('hide.bs.dropdown', function (e) {
+        $(this).find('.dropdown-menu').first().stop(true, true).slideUp(200);
+    });
+});

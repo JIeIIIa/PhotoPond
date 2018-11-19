@@ -24,18 +24,15 @@
 </div>
 
 <div th:fragment="headerWithCustomUrl(activeItem, url)" th:remove="tag">
-    <div class="container-fluid" id="header">
-        <!--<div class="">-->
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top pt-0 pb-0">
+    <div class="container-fluid fixed-top px-0" id="header">
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark pt-0 pb-0">
             <div class="navbar-brand d-inline-flex align-items-center p-0">
                 <a class="nav-item logo" href="#" th:href="@{/}">
-                    <!--<div class="">-->
                     <span class="logo-background">&nbsp;</span>
                     <span class="capitalLetter transform"><i>P</i></span>
                     <span class="pond transform"><i>ond</i></span>
                     <span class="photo transform"><i>hoto</i></span>
                 </a>
-                <!--<div>&nbsp;</div>-->
             </div>
 
             <button class="navbar-toggler navbar-toggler-right shadow-none h-75" type="button" data-toggle="collapse"
@@ -153,14 +150,8 @@
                     </li>
                 </ul>
             </div>
-
-
-            <!--</div>-->
         </nav>
-        <!--</div>-->
     </div>
-
-
 </div>
 
 <div>

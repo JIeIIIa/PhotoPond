@@ -132,7 +132,7 @@ var app = new Vue({
             return res;
         },
         isSelectAll() {
-            return this.selectedItemCount === this.elements.length;
+            return this.elements.length > 0 && this.selectedItemCount === this.elements.length;
         },
         faSelectedIcon: function () {
             if (this.isSelectAll) {
