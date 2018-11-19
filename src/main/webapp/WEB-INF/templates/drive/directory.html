@@ -168,6 +168,8 @@
 
 </div>
 
+<div th:replace="fragments/footer :: footer" th:remove="tag"></div>
+
 <div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">
     <!-- jQuery -->
     <script src="../../../libs/jquery/jquery-3.3.1.slim.min.js"></script>

@@ -16,7 +16,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../../css/photopond.css"></head>
+    <link rel="stylesheet" href="../../../css/photopond.css">
 </head>
 
 <body>
@@ -45,12 +45,14 @@
                                      v-on:edit-user="editUser">
                             <div th:insert="~{users/tableAllUsers :: tableAllUsers}"></div>
                         </users-table>
+
                         <text-filter v-cloak inline-template
                                      v-model="filterTemplate">
-                            <div th:insert="~{fragments/filter :: textFilter}">
+                            <div th:insert="~{fragments/filter :: textFilter}" th:remove="tag">
 
                             </div>
                         </text-filter>
+                        <div class="filler"></div>
                     </div>
                 </transition>
                 <user-modal-form inline-template
@@ -73,6 +75,8 @@
         </div>
     </div>
 </div>
+
+<div th:replace="fragments/footer :: footer" th:remove="tag"></div>
 
 <div th:replace="~{fragments/profiles/activeProfile :: bottomScripts}" th:remove="tag">
     <!-- jQuery -->

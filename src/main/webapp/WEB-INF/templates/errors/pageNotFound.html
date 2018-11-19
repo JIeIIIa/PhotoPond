@@ -39,15 +39,14 @@
         <div class="col-12 mt-2" th:if="${url}">
             <div class="row">
                 <div class="col-1"><h5>URL:</h5></div>
-                <div class="offset-1 col-10"><h5 class="break-word-wrap" th:text="${url}">http://someUrl</h5></div>
+                <div class="offset-1 col-10 height-vw-2"><h5 class="break-word-wrap" th:text="${url}">http://someUrl</h5></div>
             </div>
         </div>
     </div>
 </div>
 
-<div>
+<div th:replace="fragments/footer :: footer" th:remove="tag"></div>
 
-</div>
 <div th:replace="fragments/profiles/activeProfile :: bottomScripts" th:remove="tag">
     <!-- jQuery -->
     <script src="../../../libs/jquery/jquery-3.3.1.slim.min.js"></script>

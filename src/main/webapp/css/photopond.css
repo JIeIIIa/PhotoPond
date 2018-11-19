@@ -8889,9 +8889,8 @@ body {
 }
 
 .left-corner-container {
-  position: fixed;
+  position: absolute;
   left: 1em;
-  bottom: 1em;
   width: calc(100% - 2em);
   padding: 0;
 }
@@ -9008,6 +9007,33 @@ body {
   right: 0;
 }
 
+.footer {
+  box-shadow: 0px 0px 3.5em 0.3em #081219, inset 0px 0px 6em 0.1em #081219;
+}
+.footer .footer-social {
+  transform: scale(1);
+  transition-duration: 700ms;
+}
+.footer .footer-social:hover, .footer .footer-social:focus {
+  color: white;
+  transform: scale(1.5);
+  transition-duration: 300ms;
+  text-shadow: 0.2em 0.2em 0.3em #081219;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.filler {
+  flex: 1 0 auto;
+}
+
 .textArrow {
   float: left;
   color: #6CC5EC;
@@ -9044,6 +9070,24 @@ body {
   top: 0;
   height: 100%;
   width: 100%;
+}
+
+.link-unstyled, .link-unstyled:visited, .link-unstyled:hover, .link-unstyled:active, .link-unstyled:focus, .link-unstyled:active:hover {
+  font-style: inherit;
+  color: inherit;
+  background-color: transparent;
+  font-size: inherit;
+  text-decoration: none;
+  font-variant: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  font-family: inherit;
+  border-radius: inherit;
+  border: inherit;
+  outline: inherit;
+  box-shadow: inherit;
+  padding: inherit;
+  vertical-align: inherit;
 }
 
 #errorPage {

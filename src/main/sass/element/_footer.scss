@@ -1,0 +1,19 @@
+$footer-shadow-color: #081219 !default;
+
+.footer {
+  box-shadow: 0px 0px 3.5em 0.3em #081219, inset 0px 0px 6em 0.1em $footer-shadow-color;
+
+  & &-social {
+    transform: scale(1);
+    transition-duration: 700ms;
+
+    &:hover, &:focus {
+      color: white;
+      transform: scale(1.5);
+      transition-duration: 300ms;
+      text-shadow: 0.2em 0.2em 0.3em $footer-shadow-color;
+    }
+  }
+}
+
+
