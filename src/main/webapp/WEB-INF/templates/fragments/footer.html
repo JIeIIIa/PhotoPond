@@ -34,7 +34,7 @@
                         <div class="col-12 col-xl-8 offset-xl-2  text-truncate">
                             <div class="ml-sm-3 ml-md-0">
                                 <div class="col-12">
-                                    <h4 class="font-weight-bold" >CONTACTS</h4>
+                                    <h4 class="font-weight-bold text-uppercase" th:text="#{footer.contacts}">CONTACTS</h4>
                                 </div>
                                 <div class="col-12">
                                     <i class="fas fa-phone"></i>
@@ -56,42 +56,53 @@
                 <div class="col-12 order-0 col-sm-12 col-md-4 order-md-1 text-center pb-2">
                     <div class="row h-100 align-items-center">
                         <div class="col-2 col-md-4 col-lg-2">
-                            <h2 class="footer-social">
+                            <h2 class="footer-social"
+                                v-tooltip data-placement="top"
+                                title="LinkedIn profile" th:title="#{footer.tooltip.linkedIn}">
                                 <a href="javascript:void(0)" class="link-unstyled">
                                     <i class="fab fa-linkedin"></i>
                                 </a>
                             </h2>
                         </div>
                         <div class="col-2 col-md-4 col-lg-2">
-                            <h2 class="footer-social">
+                            <h2 class="footer-social"
+                                v-tooltip data-placement="top"
+                                title="Project Github repository" th:title="#{footer.tooltip.github}">
                                 <a href="javascript:void(0)" class="link-unstyled">
                                     <i class="fab fa-github-square"></i>
                                 </a>
                             </h2>
                         </div>
                         <div class="col-2 col-md-4 col-lg-2">
-                            <h2 class="footer-social">
+                            <h2 class="footer-social"
+                                v-tooltip data-placement="top"
+                                title="Send email" th:title="#{footer.tooltip.email}">
                                 <a href="javascript:void(0)" class="link-unstyled">
                                     <i class="fas fa-envelope"></i>
                                 </a>
                             </h2>
                         </div>
                         <div class="col-2 col-md-4 col-lg-2">
-                            <h2 class="footer-social">
+                            <h2 class="footer-social"
+                                v-tooltip data-placement="top"
+                                title="Send message in Skype" th:title="#{footer.tooltip.skype}">
                                 <a href="skype:nikname?chat" class="link-unstyled">
                                     <i class="fab fa-skype"></i>
                                 </a>
                             </h2>
                         </div>
                         <div class="col-2 col-md-4 col-lg-2">
-                            <h2 class="footer-social">
+                            <h2 class="footer-social" v-tooltip data-placement="top"
+                                title="Send message in Viber" th:title="#{footer.tooltip.viber}">
                                 <a href="viber://add?number=380637923713" class="link-unstyled">
                                     <i class="fab fa-viber"></i>
                                 </a>
                             </h2>
                         </div>
                         <div class="col-2 col-md-4 col-lg-2">
-                            <h2 class="footer-social">
+                            <h2 class="footer-social"
+                                v-tooltip data-placement="top"
+                                title="Send message in Telegram" th:title="#{footer.tooltip.telegram}">
                                 <a href="tg://resolve?domain=JIeIIIa" class="link-unstyled">
                                     <i class="fab fa-telegram-plane"></i>
                                 </a>
@@ -104,16 +115,18 @@
                         <div class="col-12 col-xl-10 d-inline-flex justify-content-end">
                             <div class="mr-sm-3 mr-md-0">
                                 <div class="col-12">
-                                    <h4 class="font-weight-bold">LINKS</h4>
+                                    <h4 class="font-weight-bold text-uppercase" th:text="#{footer.links}">LINKS</h4>
                                 </div>
                                 <div class="col-12">
-                                    <a href="../privacyPolicy.html" th:href="@{/public/privacyPolicy.html}">Privacy policy</a>
+                                    <a href="../privacyPolicy.html" th:href="@{/public/privacyPolicy.html}"
+                                       th:text="#{footer.privacyPolicy}">Privacy policy</a>
                                 </div>
                                 <div class="col-12">
-                                    <a href="../terms.html" th:href="@{/public/terms.html}">Terms of Service</a>
+                                    <a href="../terms.html" th:href="@{/public/terms.html}"
+                                       th:text="#{footer.terms}">Terms of Service</a>
                                 </div>
                                 <div class="col-12">
-                                    <a href="../about.html" th:href="@{/about}">About</a>
+                                    <a href="../about.html" th:href="@{/about}" th:text="#{footer.about}">About</a>
                                 </div>
                             </div>
                         </div>
@@ -122,12 +135,18 @@
             </div>
 
             <div class="row mt-2">
-                <div class="col-12 text-center">
-                    <span>Copyright &copy;2018</span>
-                    <span class="d-none d-sm-inline"> | Designed by <i class="font-weight-bold">Oleksii Onishchenko</i></span>
+                <div class="col-12 text-center ">
+                    <span>Copyright &copy;2018 </span>
+                    <span class="d-none d-sm-inline">
+                    <span> | </span>
+                    <span th:text="#{footer.designed}">Designed by</span>
+                    <span> </span>
+                    <i class="font-weight-bold" th:text="#{footer.developer}">Oleksii Onishchenko</i>
+                        </span>
                 </div>
-                <div class="col-12 text-center d-block d-sm-none">
-                    Designed by <i class="font-weight-bold">Oleksii Onishchenko</i>
+                <div class="col-12 text-center d-block d-none d-sm-none">
+                    <span th:text="#{footer.designed}">Designed by</span>
+                    <i class="font-weight-bold" th:text="#{footer.developer}">Oleksii Onishchenko</i>
                 </div>
             </div>
 

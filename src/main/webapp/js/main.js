@@ -76,16 +76,26 @@ function appendToUrl(url, part) {
     }
 }
 
+/**
+ * Enable Vuejs managing for Bootstrap tooltips for elements that have 'v-tooltip' attribute
+ */
 Vue.directive("tooltip", {
     bind: function (el) {
-        $(el).tooltip({trigger: "hover", 'delay': {show: 1000, hide: 100}})
+        $(el).tooltip({trigger: "hover", 'delay': {show: 1000, hide: 100}});
     }
 });
 
 /**
+ * Enable Bootstrap tooltips for elements that have 'v-tooltip' attribute
+ */
+function enableTooltip() {
+    $('[v-tooltip]').tooltip({trigger: "hover", 'delay': {show: 1000, hide: 100}});
+}
+
+/**
  * Add slide animation to Bootstrap dropdown elements
  */
-$('document').ready(function () {
+function dropdownMenuSlideAnimation() {
     var dropdown = '.dropdown';
     $(dropdown).on('show.bs.dropdown', function (e) {
         $(this).find('.dropdown-menu').first().stop(true, true).slideDown(300);
@@ -94,4 +104,13 @@ $('document').ready(function () {
     $(dropdown).on('hide.bs.dropdown', function (e) {
         $(this).find('.dropdown-menu').first().stop(true, true).slideUp(200);
     });
+}
+
+/**
+ * The ready() method specifies what happens when a ready event occurs.
+ * The ready event occurs when the DOM (document object model) has been loaded.
+ */
+$(document).ready(function () {
+    dropdownMenuSlideAnimation();
+    enableTooltip();
 });
