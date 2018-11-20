@@ -39,49 +39,55 @@
                                             th:insert="~{fragments/alertItem :: alertItem}">
                                 </alert-item>
                                 <div class="form-group mb-0">
-                                    <div class="row justify-content-between align-items-center pl-3 pr-3">
-                                        <label v-if="hasOldData"
-                                               th:text="#{pages.settings.changeAvatar.title}">Current avatar
-                                        </label>
-                                        <label v-else
-                                               th:text="#{pages.settings.changeAvatar.preview}">Preview
-                                        </label>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-12">
-                                            <img class="form-control" v-if="hasOldData"
-                                                 th:src="@{/public/user/{login}/avatar(login=${#authentication.name})}">
-                                            <img class="form-control" v-else
-                                                 v-bind:src="imageData">
-                                        </div>
-                                    </div>
-                                    <div class="row justify-content-center align-items-center">
-                                        <div class="col-12 pl-3 pr-3">
-                                            <button class="btn btn-outline-info float-right" v-on:click="onChoosePic"
-                                                    th:text="#{pages.settings.changeAvatar.choose}">Choose pic
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <input type="file"
-                                           placeholder="choose avatar picture" id="avatarImg" name="avatarImg" ref="avatarImg"
-                                           v-on:change="previewImage"
-                                           style="display: none">
+                                    <div class="row d-flex justify-content-center align-items-center">
+                                        <div class="col-10 col-md-8 col-xl-7">
+                                            <div class="row d-flex justify-content-center align-items-center">
+                                                <div class="col-12 text-center">
+                                                    <h2>
+                                                        <label v-if="hasOldData"
+                                                               th:text="#{pages.settings.changeAvatar.title}">Current avatar
+                                                        </label>
+                                                        <label v-else
+                                                               th:text="#{pages.settings.changeAvatar.preview}">Preview
+                                                        </label>
+                                                    </h2>
+                                                </div>
+
+                                                <div class="col-12 height-vw-8 height-vw-md-6 height-vw-xl-5">
+                                                    <img class="form-control img-contain" v-if="hasOldData"
+                                                         th:src="@{/public/user/{login}/avatar(login=${#authentication.name})}" src="#">
+                                                    <img class="form-control img-contain" v-else
+                                                         v-bind:src="imageData" src="#">
+                                                </div>
+
+                                                <div class="col-12 mt-1">
+                                                    <button class="btn btn-block btn-outline-info" v-on:click="onChoosePic"
+                                                            th:text="#{pages.settings.changeAvatar.choose}">Choose pic
+                                                    </button>
+                                                </div>
+
+                                                <input type="file" class="d-none"
+                                                       placeholder="choose avatar picture" id="avatarImg" name="avatarImg" ref="avatarImg"
+                                                       v-on:change="previewImage">
 
 
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </transition>
                     </div>
                     <div class="card-footer">
                         <div class="row justify-content-between">
-                            <div class="col-4">
+                            <div class="col-12 col-sm-5 col-md-4 mb-1 mb-sm-0">
                                 <button class="btn btn-danger w-100" v-bind:class="{'disabled': showLoader}"
                                         v-on:click="deleteAvatar"
                                         th:text="#{btn.delete}">
                                     Delete
                                 </button>
                             </div>
-                            <div class="col-8">
+                            <div class="col-12 col-sm-7 col-md-8">
                                 <button class="btn btn-success w-100" v-bind:class="{'disabled': hasOldData || showLoader}"
                                         id="changeAvatar"
                                         th:attr="data-change-avatar-url=@{/user/{login}/settings/avatar(login=${#authentication.name})}"
