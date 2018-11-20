@@ -5,12 +5,17 @@
 <head th:fragment="head (pageTitle)" th:replace="${@environment.acceptsProfiles('prod')}?
         ~{fragments/profiles/production :: head (pageTitle=${pageTitle})} :
         ~{fragments/profiles/development :: head (pageTitle=${pageTitle})}"
-        >
+>
 </head>
 <body>
-<div th:fragment="bottomScripts" th:replace="${@environment.acceptsProfiles('prod')}?
+<div th:fragment="bottomScripts" th:remove="tag">
+    <div th:include="${@environment.acceptsProfiles('prod')}?
         ~{fragments/profiles/production :: bottomScripts} :
         ~{fragments/profiles/development :: bottomScripts}" th:remove="tag">
+    </div>
+
+    <!-- Common js elements -->
+    <script th:src="@{/js/main.js}"></script>
 </div>
 </body>
 </html>
