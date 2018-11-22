@@ -21,16 +21,79 @@
 <div th:replace="fragments/header :: header('about')">Static header</div>
 
 <div class="container-fluid">
-    <div class="row text-center px-0">
-        <div>
-            <div class="col-md-8 offset-md-2 col-12">
-
-                <h1 class="font-weight-bold">ABOUT<br> mock page</h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus, adipisci aliquam cupiditate distinctio dolorem doloremque illo,
-                    inventore labore magnam minima molestiae, officia perspiciatis quam quod reiciendis reprehenderit repudiandae veniam vitae.</p>
-
+    <div class="row text-center px-0 justify-content-center">
+        <div class="col-11 col-md-8 text-justify">
+            <div class="row text-center mb-3 pb-2 border-bottom ">
+                <div class="col-12">
+                    <h1 class="font-weight-bold text-uppercase" th:text="#{pages.about.caption}">About</h1>
+                </div>
+                <div class="col-12" th:if="false">
+                    <ul class="nav nav-pills col-12">
+                        <li class="nav-item col-6 pl-0 pr-1">
+                            <a class="nav-link active" href="javascript:void(0)">Project</a>
+                        </li>
+                        <li class="nav-item col-6 px-0">
+                            <a class="nav-link" href="javascript:void(0)">Developer</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <p th:text="#{pages.about.project.introduction}">
+                        PhotoPond is a java study project.
+                    </p>
+                    <p th:text="#{pages.about.project.objective}">
+                        The objective of the PhotoPond project was to develop a user-friendly web-application to store images.
+                        After sign up, user can create directories and upload files. Each directory and file can be moving, renaming or deleting.
+                        A user can associate a social (Facebook or Twitter) account to his PhotoPond-profile. If the social account is associated,
+                        user can authorize with it. If the Twitter account is associated, user can share stored in application images on Twitter.
+                        Administrator can view basic information about all users, change user's login or role, delete users.
+                    </p>
+                    <p th:text="#{pages.about.project.storageGuidelines}">
+                        Information about users, directories and files are stored in database.
+                        In the case of files and directories, metadata are saved to database and other information are saved to disk.
+                        For example, after creating a folder, information about it is added to the database and a folder with the same name is created on
+                        the disk.
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h3 class="font-weight-bold" th:text="#{pages.about.technology.caption}">Used technology</h3>
+                </div>
+                <div class="col-12">
+                    <div class="row mb-2">
+                        <div class="col-3 col-sm-2 pr-0 d-flex align-items-center font-italic font-weight-bold text-left"
+                             th:text="#{pages.about.technology.backend}">
+                            Back-end
+                        </div>
+                        <div class="col-9 col-sm-10">
+                            Spring Boot, Spring MVC, Spring Security, Spring Data JPA, RestFb, Twitter4j, Log4j2, Tomcat, MySQL;
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-3 col-sm-2 pr-0 d-flex align-items-center font-italic font-weight-bold text-left"
+                             th:text="#{pages.about.technology.frontend}">
+                            Front-end
+                        </div>
+                        <div class="col-9 col-sm-10">
+                            Thymeleaf, Vue.js, jQuery, Bootstrap, CSS/SCSS;
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-3 col-sm-2 pr-0 d-flex align-items-center font-italic font-weight-bold text-left"
+                             th:text="#{pages.about.technology.tests}">
+                            Tests
+                        </div>
+                        <div class="col-9 col-sm-10">
+                            JUnit, Mockito, DBUnit, AssertJ.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
     </div>
 </div>
 
