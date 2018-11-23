@@ -5,6 +5,14 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
+  padding-top: $body-padding-top;
+
+  -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Roboto Slab", serif;
 }
 
 .filler {

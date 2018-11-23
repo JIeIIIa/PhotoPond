@@ -1,6 +1,8 @@
 #headerwrap {
   min-height: 40rem;
   width: 100%;
+  margin-top: -3rem;
+  background: url('/pic/bg_in_the_mountains.jpg') no-repeat center center;
 
   /* чтоб изображение нормально выглядело на всех разрешениях */
   -webkit-background-size: cover;
@@ -11,7 +13,6 @@
   h1 {
     font-size: 3.5em;
     margin-top: 17rem;
-    font-weight: 600;
     letter-spacing: 0.15em;
     color: #DDECF7;
   }
@@ -25,4 +26,6 @@
 
 }
 
-
+.annotation {
+  background: rgb(125, 193, 230);;
+}

@@ -1,4 +1,8 @@
 @charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Roboto&subset=cyrillic");
+@import url("https://fonts.googleapis.com/css?family=Roboto+Slab:400,700&subset=cyrillic");
+@import url("https://fonts.googleapis.com/css?family=EB+Garamond");
+@import url("https://fonts.googleapis.com/css?family=Merriweather:900i");
 /*
 $primary-color: #62b5f4;
 $success-color: #2ef145;
@@ -8618,12 +8622,6 @@ a.text-dark:hover, a.text-dark:focus {
     border-color: #dee2e6;
   }
 }
-body {
-  padding-top: 5.2rem;
-  -webkit-font-smoothing: antialiased;
-  -webkit-overflow-scrolling: touch;
-}
-
 [v-cloak] {
   display: none;
 }
@@ -8725,7 +8723,7 @@ body {
 
 .logo {
   color: #ddecf7;
-  font-family: "Roboto Slab";
+  font-family: "Noto Color Emoji";
   font-weight: 900;
   font-size: 4.2rem;
   overflow: hidden;
@@ -9028,6 +9026,13 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
+  padding-top: 5.2rem;
+  -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Roboto Slab", serif;
 }
 
 .filler {
@@ -9131,7 +9136,9 @@ body {
 #headerwrap {
   min-height: 40rem;
   width: 100%;
-  /* ╤З╤В╨╛╨▒ ╨╕╨╖╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╨╡ ╨╜╨╛╤А╨╝╨░╨╗╤М╨╜╨╛ ╨▓╤Л╨│╨╗╤П╨┤╨╡╨╗╨╛ ╨╜╨░ ╨▓╤Б╨╡╤Е ╤А╨░╨╖╤А╨╡╤И╨╡╨╜╨╕╤П╤Е */
+  margin-top: -3rem;
+  background: url("/pic/bg_in_the_mountains.jpg") no-repeat center center;
+  /* чтоб изображение нормально выглядело на всех разрешениях */
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -9140,7 +9147,6 @@ body {
 #headerwrap h1 {
   font-size: 3.5em;
   margin-top: 17rem;
-  font-weight: 600;
   letter-spacing: 0.15em;
   color: #DDECF7;
 }
@@ -9149,6 +9155,10 @@ body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #FFFFFF;
+}
+
+.annotation {
+  background: #7dc1e6;
 }
 
 .height-vw-1 {
