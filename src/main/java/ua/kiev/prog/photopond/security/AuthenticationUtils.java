@@ -29,12 +29,12 @@ public class AuthenticationUtils {
     }
 
     public static View userHomeRedirectView(String login) {
-        LOG.debug("Redirect to user home page.");
         UriComponents uriComponents = UriComponentsBuilder.newInstance()
                 .path("/user/{login}/drive")
                 .build()
                 .expand(login)
                 .encode();
+        LOG.debug("Was built RedirectView to user home page: {}", uriComponents.getPath());
 
         return new RedirectView(uriComponents.toUriString(), true, true, false);
     }

@@ -45,6 +45,11 @@
                 </div>
                 <div class="card-body">
                     <form th:action="@{/j_spring_security_check}" method="POST">
+                        <!--/*@thymesVar id="securityLastExceptionMessage" type="java.lang.String"*/-->
+                        <div class="form-group mb-0" th:if="${securityLastExceptionMessage}">
+                            <div th:replace="fragments/alertItem :: smallAlert(${securityLastExceptionMessage})" th:remove="tag"></div>
+                        </div>
+
                         <div class="form-group">
                             <label for="j_login" class="control-label"
                                    th:text="#{user.login}">
@@ -85,20 +90,20 @@
                                     <i class="fab fa-facebook"></i><span th:text="#{pages.auth.facebook.btn}">Log in with Facebook</span>
                                 </a>
                                 <!--/*@thymesVar id="fbAuthError" type="java.lang.String"*/-->
-                                <div class="col-12" th:if="${fbAuthError}">
-                                    <div th:text="${fbAuthError}">Facebook authorization error!</div>
+                                <div class="col-12 px-0 mt-2" th:if="${fbAuthError}">
+                                    <div th:replace="fragments/alertItem :: smallAlert(${fbAuthError})" th:remove="tag"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="form-control col-8 offset-2 p-0 border-0">
+                            <div class="col-8 offset-2 p-0 border-0">
                                 <a class="btn btn-block btn-social btn-twitter"
                                    th:href="@{${T(ua.kiev.prog.photopond.twitter.TwitterRequestMappingConstants).AUTHENTICATION_WITH_TWITTER_URL}}">
                                     <i class="fab fa-twitter"></i><span th:text="#{pages.auth.twitter.btn}">Log in with Twitter</span>
                                 </a>
                                 <!--/*@thymesVar id="twitterAuthError" type="java.lang.String"*/-->
-                                <div class="col-12 b-0" th:if="${twitterAuthError}">
-                                    <div th:text="${twitterAuthError}">Twitter authorization error!</div>
+                                <div class="col-12 px-0 mt-2" th:if="${twitterAuthError}">
+                                    <div th:replace="fragments/alertItem :: smallAlert(${twitterAuthError})" th:remove="tag"></div>
                                 </div>
                             </div>
                         </div>

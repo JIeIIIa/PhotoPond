@@ -35,6 +35,14 @@
     </alert-item>
 </div>
 
+<template th:fragment="smallAlert(message)" th:remove="tag">
+    <div class="alert alert-danger alert-dismissible fade show text-sm-left py-1 mb-2" role="alert">
+        <small th:text="${message}">Alert message!</small>
+        <button type="button" class="close px-2 py-1" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</template>
 <!-- jQuery -->
 <script src="../../../libs/jquery/jquery-3.3.1.slim.min.js"></script>
 

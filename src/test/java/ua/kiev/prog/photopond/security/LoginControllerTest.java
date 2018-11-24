@@ -61,22 +61,13 @@ public class LoginControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "someUser")
-    public void accessDeny() throws Exception {
-        mockMvc
-                .perform(get(SERVER_ADDRESS + "/user/user"))
-                .andExpect(status().isUnauthorized())
-                .andDo(print());
-    }
-
-    @Test
     public void authenticationFailed() throws Exception {
         mockMvc
                 .perform(formLogin(LOGIN_PROCESSING_URL)
                         .user("j_login", "userTest")
                         .password("j_password", "invalid"))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/login?error=true"))
+                .andExpect(redirectedUrl("/login"))
                 .andExpect(unauthenticated())
                 .andDo(print());
     }
@@ -110,7 +101,7 @@ public class LoginControllerTest {
                         .user("j_login", "deactivatedUser")
                         .password("j_password", "qwerty123!"))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/login?error=true"))
+                .andExpect(redirectedUrl("/login"))
                 .andExpect(unauthenticated())
                 .andDo(print());
     }
