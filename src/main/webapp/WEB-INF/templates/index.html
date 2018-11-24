@@ -68,42 +68,8 @@
 
 <div class="container-fluid predefined-accounts pt-5 pb-3">
     <div class="row text-center justify-content-center align-items-center">
-        <div class="col-12">
-            <h3 th:text="#{pages.index.accounts.title}">Predefined accounts</h3>
-        </div>
-        <div class="col-10 col-md-9 col-lg-6">
-            <p th:text="#{pages.index.accounts.body}">
-                If you do not want to create an account, you can use one of the predefined accounts to test PhotoPond.
-                For these accounts is not allowed to change the password or role.
-            </p>
-        </div>
-        <div class="col-10 col-md-9 col-lg-3 pt-2 pt-lg-0">
-            <table class="table table-sm table-striped table-dark text-light">
-                <thead>
-                <tr>
-                    <th scope="col" class="align-middle" th:text="#{user.login}">Login</th>
-                    <th scope="col" class="align-middle" th:text="#{user.password}">Password</th>
-                    <th scope="col" class="align-middle" th:text="#{user.role}">Role</th>
-                </tr>
-                </thead>
-                <tbody class="font-italic">
-                <tr>
-                    <td>Admin</td>
-                    <td>password</td>
-                    <td>ADMIN</td>
-                </tr>
-                <tr>
-                    <td>User</td>
-                    <td>useruser</td>
-                    <td>USER</td>
-                </tr>
-                <tr>
-                    <td>nonActiveUser</td>
-                    <td>password</td>
-                    <td>DEACTIVATED</td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="col-10 col-md-9" th:include="fragments/predefinedUsers :: predefinedUserRow('')">
+           PREDEFINED ACCOUNTS
         </div>
     </div>
 </div>

@@ -22,7 +22,7 @@
 
 <div class="container-fluid">
     <div class="row text-center px-0 justify-content-center">
-        <div class="col-11 col-md-8 text-justify">
+        <div class="col-11 col-md-10 col-lg-9 col-xl-8 text-justify">
             <div class="row text-center mb-3 pb-2 border-bottom ">
                 <div class="col-12">
                     <h1 class="font-weight-bold text-uppercase" th:text="#{pages.about.caption}">About</h1>
@@ -58,6 +58,12 @@
                     </p>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-12" th:include="fragments/predefinedUsers :: predefinedUserRow('font-weight-bold')">
+                    PREDEFINED ACCOUNTS
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-12 text-center">
                     <h3 class="font-weight-bold" th:text="#{pages.about.technology.caption}">Used technology</h3>
