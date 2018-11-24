@@ -23,41 +23,27 @@ public class DeveloperUsersFillerStartupRunner extends AbstractUsersFillerStartu
         LOG.info("Dev database init");
     }
 
-    protected void createUsers() {
-        UserInfoDTO adminDTO = UserInfoDTOBuilder.getInstance()
-                .login("admin")
+    protected void createModifiableUsers() {
+        UserInfoDTO moderDTO = UserInfoDTOBuilder.getInstance()
+                .login("Moder")
                 .password("password")
                 .role(UserRole.ADMIN)
                 .build();
-        createUserOrResetPassword(getUserInfoService(), adminDTO);
+        createUserOrResetPassword(getUserInfoService(), moderDTO);
 
-        UserInfoDTO userDTO = UserInfoDTOBuilder.getInstance()
-                .login("user")
-                .password("useruser")
+        UserInfoDTO uzerDTO = UserInfoDTOBuilder.getInstance()
+                .login("Uzzzer")
+                .password("password")
                 .build();
-        createUserOrResetPassword(getUserInfoService(), userDTO);
+        createUserOrResetPassword(getUserInfoService(), uzerDTO);
 
-        UserInfoDTO deactivatedUserDTO = UserInfoDTOBuilder.getInstance()
-                .login("nonActiveUser")
-                .password("useruser")
+        UserInfoDTO nonActiveDTO = UserInfoDTOBuilder.getInstance()
+                .login("nonActive")
+                .password("password")
                 .role(UserRole.DEACTIVATED)
                 .build();
-        createUserOrResetPassword(getUserInfoService(), deactivatedUserDTO);
+        createUserOrResetPassword(getUserInfoService(), nonActiveDTO);
 
-        LOG.info("    =======================================");
-        LOG.info("                Available users ");
-        LOG.info("    =======================================");
-        userInfoToLog(adminDTO);
-        LOG.info("    ---------------------------------------");
-        userInfoToLog(userDTO);
-        LOG.info("    ---------------------------------------");
-        userInfoToLog(deactivatedUserDTO);
-        LOG.info("    =======================================");
-    }
-
-    void userInfoToLog(UserInfoDTO userInfoDTO) {
-        LOG.info("         login   : " + userInfoDTO.getLogin());
-        LOG.info("         password: " + userInfoDTO.getPassword());
-        LOG.info("         role    : " + userInfoDTO.getRole().name());
+        printTable("Modifiable users", moderDTO, uzerDTO, nonActiveDTO);
     }
 }

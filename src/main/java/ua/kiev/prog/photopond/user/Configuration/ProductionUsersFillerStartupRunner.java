@@ -1,5 +1,7 @@
 package ua.kiev.prog.photopond.user.Configuration;
 
+import org.apache.commons.text.CharacterPredicates;
+import org.apache.commons.text.RandomStringGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ public class ProductionUsersFillerStartupRunner extends AbstractUsersFillerStart
         LOG.info("Prod database init");
     }
 
-    protected void createUsers() {
+    protected void createModifiableUsers() {
         String password = generatePassword();
         String adminLogin = "PhotoPondSuperAdmin";
         UserInfoDTO adminDTO  = UserInfoDTOBuilder.getInstance()
@@ -43,6 +45,9 @@ public class ProductionUsersFillerStartupRunner extends AbstractUsersFillerStart
     }
 
     private String generatePassword() {
-        return "password";
+        RandomStringGenerator randomStringGenerator = new RandomStringGenerator.Builder()
+                .filteredBy(CharacterPredicates.LETTERS)
+                .build();
+        return randomStringGenerator.generate(10, 20);
     }
 }

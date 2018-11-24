@@ -153,6 +153,7 @@ public class UserInfoServiceJpaImpl implements UserInfoService {
     }
 
     @Override
+    @Transactional
     public boolean resetPassword(String login, String password) {
         LOG.traceEntry("Reset the password for '{}'", login);
         return userInfoRepository.findByLogin(login)
