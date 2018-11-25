@@ -27,6 +27,7 @@ public class DriveItemDTOMapper {
         dto.setName(directory.getName());
         dto.setParentUri(appendToPath(baseUrl, directory.parentPath()));
         dto.setType(DriveItemType.DIR);
+        dto.setCreationDate(directory.getCreationDate());
 
         return dto;
     }
@@ -43,6 +44,7 @@ public class DriveItemDTOMapper {
                 "files",
                 file.parentPath()));
         dto.setType(DriveItemType.FILE);
+        dto.setCreationDate(file.getCreationDate());
 
         return dto;
     }

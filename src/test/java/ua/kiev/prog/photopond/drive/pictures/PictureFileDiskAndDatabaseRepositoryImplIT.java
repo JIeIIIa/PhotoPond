@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @ActiveProfiles("dev")
 @DataJpaTest
+@EnableJpaAuditing
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class,
         TransactionalTestExecutionListener.class,
@@ -105,6 +108,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
     @Test
     public void saveWhenPictureFileNotExists() throws IOException {
         //Given
+        Date start = new Date();
         String filename = "anotherFile.jpg";
         PictureFile file = PictureFileBuilder.getInstance()
                 .filename(filename)
@@ -118,7 +122,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
 
         //Then
         assertThatFileContainsData(expected, filename.getBytes());
-        assertThat(result).isEqualToIgnoringGivenFields(expected, "id");
+        assertThat(result).isEqualToIgnoringGivenFields(expected, "id", "creationDate");
+        assertThat(result.getCreationDate()).isBetween(start, new Date());
+
     }
 
     @Test(expected = PictureFileException.class)
@@ -146,6 +152,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
     @Test
     public void saveWhenPictureFileExistsOnDisk() throws IOException {
         //Given
+        Date start = new Date();
         pictureFileJpaRepository.delete(pictureFile);
         PictureFile expected = PictureFileBuilder.getInstance().from(pictureFile).build();
 
@@ -154,7 +161,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
 
         //Then
         assertThatFileContainsData(result, expected.getData());
-        assertThat(result).isEqualToIgnoringGivenFields(expected, "id");
+        assertThat(result).isEqualToIgnoringGivenFields(expected, "id", "creationDate");
+        assertThat(result.getCreationDate()).isBetween(start, new Date());
+
     }
 
     @Test(expected = PictureFileException.class)
@@ -166,6 +175,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
     @Test
     public void saveSuccess() throws IOException {
         //Given
+        Date start = new Date();
         String filename = "anotherFile.jpg";
         PictureFile file = PictureFileBuilder.getInstance()
                 .filename(filename)
@@ -180,7 +190,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
 
         //Then
         assertThatFileContainsData(result, filename.getBytes());
-        assertThat(result).isEqualToIgnoringGivenFields(expected, "id");
+        assertThat(result).isEqualToIgnoringGivenFields(expected, "id", "creationDate");
+        assertThat(result.getCreationDate()).isBetween(start, new Date());
+
         assertThat(pictureFileJpaRepository.findFirstByDirectoryAndFilename(directory, filename))
                 .isPresent();
     }

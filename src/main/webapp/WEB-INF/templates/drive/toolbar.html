@@ -23,13 +23,13 @@
 <div class="container-fluid" id="directoryApp" v-cloak>
     <!-- Toolbar-->
     <template th:fragment="toolbar" th:remove="tag">
-        <div class="row justify-content-between mb-3">
+        <div class="row justify-content-between my-3">
             <div class="col">
                 <div class="btn-toolbar">
                     <div class="btn-group" role="group">
                         <div class="btn-group-sm dropdown" role="group">
                             <button type="button" id="addElementGroupDown" class="btn btn-success dropdown-toggle no-carret"
-                                    v-tooltip data-placement="bottom" title="Add elements"
+                                    v-tooltip data-placement="top" title="Add elements"
                                     th:title="#{pages.home.toolbar.add}"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-plus"></i>
@@ -47,12 +47,14 @@
                         <div>
                             <div class="btn-group dropdown ml-1">
                                 <button type="button" class="btn btn-info btn-sm"
-                                        v-tooltip data-placement="bottom" title="Select elements"
+                                        v-tooltip data-placement="top" title="Select elements"
                                         th:title="#{pages.home.toolbar.selection}"
                                         v-on:click="changeAllSelection">
                                     <i v-bind:class="faSelectedIcon"></i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-split"
+                                        v-tooltip data-placement="top" title="Select elements"
+                                        th:title="#{pages.home.toolbar.selection}"
                                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="sr-only">Toggle Selection Dropdown</span>
                                 </button>
@@ -77,19 +79,19 @@
                             <div class="btn-group-sm ml-1" v-if="selectedItemCount > 0">
 
                                 <button type="button" class="btn btn-info" v-bind:class="{'disabled' : selectedItemCount !== 1}"
-                                        v-tooltip data-toggle="tooltip" data-placement="bottom"
+                                        v-tooltip data-toggle="tooltip" data-placement="top"
                                         title="Rename element" th:title="#{pages.home.toolbar.rename}"
                                         id="openRenameForm" v-on:click="onRename">
                                     <i class="far fa-edit"></i>
                                 </button>
                                 <button type="button" class="btn btn-info"
-                                        v-tooltip data-toggle="tooltip" data-placement="bottom"
+                                        v-tooltip data-toggle="tooltip" data-placement="top"
                                         title="Move elements" th:title="#{pages.home.toolbar.move}"
                                         id="openMoveForm" v-on:click="onMove">
                                     <i class="far fa-share-square"></i>
                                 </button>
                                 <button type="button" class="btn btn-danger"
-                                        v-tooltip data-toggle="tooltip" data-placement="bottom"
+                                        v-tooltip data-toggle="tooltip" data-placement="top"
                                         title="Delete elements" th:title="#{pages.home.toolbar.delete}"
                                         id="deleteBtn" v-on:click="onDelete">
                                     <i class="far fa-trash-alt"></i>
@@ -97,7 +99,7 @@
 
                                 <button type="button" class="btn btn-twitter"
                                         v-bind:class="{disabled: selectedFileCount > 4}"
-                                        v-tooltip data-toggle="tooltip" data-placement="bottom"
+                                        v-tooltip data-toggle="tooltip" data-placement="top"
                                         title="Share with Twitter" th:title="#{pages.home.toolbar.tweet}"
                                         id="twitterShareBtn" v-on:click="onTweet">
                                     <i class="fab fa-twitter"></i>
@@ -108,11 +110,11 @@
                     </div>
                 </div>
             </div>
-            <div class="col-4 d-inline-flex justify-content-end align-items-center">
+            <div class="col-12 col-sm-4 order-first order-sm-last d-inline-flex justify-content-start justify-content-sm-end align-items-center">
                 <div class="btn-group-sm dropdown" role="group">
                     <button class="btn btn-outline-secondary border-0 dropdown-toggle"
                             id="changeElementSize"
-                            v-tooltip data-placement="bottom"
+                            v-tooltip data-placement="top"
                             title="Change size of elements" th:title="#{pages.home.toolbar.size.tooltip}"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                             th:text="#{pages.home.toolbar.size}">
@@ -137,16 +139,30 @@
                     </div>
                 </div>
                 <div class="btn-group-sm dropdown">
-                    <button class="btn btn-sm btn-outline-secondary border-0"
-                            v-tooltip data-placement="bottom" data-toggle="tooltip"
-                            title="Sort by" th:title="#{pages.home.toolbar.sort}"
-                            th:text="#{pages.home.toolbar.sort.byName}">
-                        By name
+                    <button class="btn btn-outline-secondary border-0 dropdown-toggle"
+                            id="sortOption"
+                            v-tooltip data-placement="top"
+                            title="Change size of elements" th:title="#{pages.home.toolbar.sort.tooltip}"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            th:text="#{pages.home.toolbar.sort}">
+                        Sort
                     </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortOption">
+                        <button class="dropdown-item cursor-pointer"
+                                v-on:click="sortBy('data.name')">
+                            <i class="fa fa-check" v-bind:class="sortOption('data.name')"></i>
+                            <span th:text="#{pages.home.toolbar.sort.byName}">By name</span>
+                        </button>
+                        <button class="dropdown-item cursor-pointer"
+                                v-on:click="sortBy('data.creationDate')">
+                            <i class="fa fa-check" v-bind:class="sortOption('data.creationDate')"></i>
+                            <span th:text="#{pages.home.toolbar.sort.byCreationDate}">By date</span>
+                        </button>
+                    </div>
                 </div>
                 <div>
                     <i class="textArrow cursor-pointer" v-bind:class="faArrowSortIcon"
-                       v-tooltip data-placement="bottom" data-toggle="tooltip"
+                       v-tooltip data-placement="top" data-toggle="tooltip"
                        title="Change sorting direction" th:title="#{pages.home.toolbar.sort.changeDirection}"
                        v-on:click="sortingDirection"></i>
                 </div>

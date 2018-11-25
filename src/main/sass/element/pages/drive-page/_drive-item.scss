@@ -7,6 +7,11 @@ $drive-item-footer-bg-color: #76d126;
 
 $drive-item-color: $link-blue;
 
+@mixin date-styles(){
+  font-size: 60%;
+  white-space: pre-line;
+}
+
 .drive-item {
   color: $drive-item-color;
   box-shadow: 7px 7px 15px 0 rgba(0,0,0,0.8);
@@ -49,6 +54,10 @@ $drive-item-color: $link-blue;
     color: #f0cb58;
   }
 
+  &-body .item-date {
+    @include date-styles;
+  }
+
   & &-img-body {
     @include border-radius($card-inner-border-radius $card-inner-border-radius 0 0);
   }
@@ -63,6 +72,10 @@ $drive-item-color: $link-blue;
     background: -ms-linear-gradient(top, $drive-item-footer-bg-color 0%, $drive-item-border-color 100%);
     background: linear-gradient(to bottom,e $drive-item-footer-bg-color 0%, $drive-item-border-color 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=$drive-item-footer-bg-color, endColorstr=$drive-item-border-color, GradientType=0 );
+
+    e& .item-date {
+      @include date-styles;
+    }
   }
 
   & .zoom-in {

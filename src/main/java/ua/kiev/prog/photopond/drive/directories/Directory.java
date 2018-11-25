@@ -2,6 +2,7 @@ package ua.kiev.prog.photopond.drive.directories;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import ua.kiev.prog.photopond.core.Audit;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "directories")
-public class Directory implements Serializable {
+public class Directory extends Audit implements Serializable {
 
     private static final long serialVersionUID = 5004333612018429325L;
 

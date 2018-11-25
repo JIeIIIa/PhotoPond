@@ -45,7 +45,11 @@
                                     {{ item.data.name }}
 
                                 </a>
-                                <!--<input type="checkbox" title="" v-model="item.selected" style="position:absolute; top: 0; left: 0;">-->
+
+                                <div class="item-date"><span th:text="#{audit.created}">Created</span>:
+                                    <p class="mb-0">{{ item.data.creationDateString }}</p>
+                                </div>
+
                                 <div class="rounded-checkbox m-1">
                                     <input title="" type="checkbox" v-model="item.selected" class="position-absolute" style="top:0; left: 0"
                                            :id="'input' + item.data.name">
@@ -76,12 +80,11 @@
                                  v-bind:class="heightSizeClasses">
                                 <div class="w-100 h-100">
                                     <img src="#" v-bind:src="item.data.uri" style="object-fit: cover" class="w-100 h-100 drive-item-img-body"/>
-
                                 </div>
                                 <div class="zoom-in d-flex" style="" v-on:click="imageIndex = index">
-                                    <!--<i class="fas fa-search-plus m-1 " style="text-shadow: -1px 0 white, 2px 2px white"></i>-->
                                     <i class="fas fa-search-plus m-1"></i>
                                 </div>
+
                                 <div class="rounded-checkbox m-1">
                                     <input title="" type="checkbox" v-model="item.selected" class="position-absolute" style="top:0; left: 0"
                                            :id="'input' + item.data.name">
@@ -89,10 +92,16 @@
                                 </div>
 
                             </div>
-                            <div class="card-footer drive-item-img-footer text-truncate"
-                                 v-tooltip data-toggle="tooltip" data-placement="bottom"
-                                 title="Picture name" :title="item.data.name">
-                                {{ item.data.name }}
+                            <div class="card-footer drive-item-img-footer">
+                                <div class="text-truncate"
+                                     v-tooltip data-toggle="tooltip" data-placement="bottom"
+                                     title="Picture name" :title="item.data.name">
+                                    {{ item.data.name }}
+                                </div>
+
+                                <div class="item-date text-left"><span th:text="#{audit.created}">Created</span>:
+                                    <p class="mb-0">{{ item.data.creationDateString }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>

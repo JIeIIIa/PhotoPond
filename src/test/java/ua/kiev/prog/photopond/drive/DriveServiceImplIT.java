@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -38,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +53,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 @RunWith(SpringRunner.class)
 @ActiveProfiles({"dev", "unitTest", "testMySQLDB"})
 @DataJpaTest
+@EnableJpaAuditing
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class,
         TransactionalTestExecutionListener.class,
@@ -208,6 +211,7 @@ public class DriveServiceImplIT {
     @Test
     public void addDirectorySuccess() {
         //Given
+        Date start = new Date();
         DriveItemDTO expected = toDTO(new DirectoryBuilder()
                 .path(buildPath(ROOT_PATH, "newDirectory"))
                 .owner(user)
@@ -218,7 +222,10 @@ public class DriveServiceImplIT {
         DriveItemDTO result = instance.addDirectory(user.getLogin(), ROOT_PATH, expected.getName());
 
         //Then
-        assertThat(result).isEqualToComparingFieldByField(expected);
+        assertThat(result)
+                      .isEqualToIgnoringGivenFields(expected, "creationDate", "creationDateString");
+        assertThat(result.getCreationDate()).isBetween(start, new Date());
+        assertThat(result.getCreationDateString()).isNotNull();
     }
 
     @Test(expected = DriveException.class)
@@ -366,6 +373,7 @@ public class DriveServiceImplIT {
     @Test
     public void addPictureFileSuccess() {
         //Given
+        Date start = new Date();
         String originalFilename = "awesomeFile.jpg";
         MultipartFile file = new MockMultipartFile("filename", originalFilename, "image/jpeg", originalFilename.getBytes());
 
@@ -383,7 +391,9 @@ public class DriveServiceImplIT {
         //Then
         assertThat(result)
                 .isNotNull()
-                .isEqualToComparingFieldByField(expected);
+                .isEqualToIgnoringGivenFields(expected, "creationDate", "creationDateString");
+        assertThat(result.getCreationDate()).isBetween(start, new Date());
+        assertThat(result.getCreationDateString()).isNotNull();
     }
 
     @Test

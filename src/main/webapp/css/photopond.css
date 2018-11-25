@@ -9484,6 +9484,10 @@ h1, h2, h3, h4, h5, h6 {
 .drive-item .dir-item-icon {
   color: #f0cb58;
 }
+.drive-item-body .item-date {
+  font-size: 60%;
+  white-space: pre-line;
+}
 .drive-item .drive-item-img-body {
   border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
 }
@@ -9497,6 +9501,10 @@ h1, h2, h3, h4, h5, h6 {
   background: -ms-linear-gradient(top, #76d126 0%, #20400c 100%);
   background: linear-gradient(to bottom, e #76d126 0%, #20400c 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=$drive-item-footer-bg-color, endColorstr=$drive-item-border-color, GradientType=0 );
+}
+.drive-item-img-footer .item-date {
+  font-size: 60%;
+  white-space: pre-line;
 }
 .drive-item .zoom-in {
   position: absolute;

@@ -2,6 +2,7 @@ package ua.kiev.prog.photopond.drive.pictures;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import ua.kiev.prog.photopond.core.Audit;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @Entity
 @Table(name = "pictureFiles")
-public class PictureFile implements Serializable {
+public class PictureFile extends Audit implements Serializable {
 
     private static final long serialVersionUID = -6304466568923584573L;
 

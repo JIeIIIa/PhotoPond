@@ -143,6 +143,17 @@ var app = new Vue({
         }
     },
     methods: {
+        dateConvert(unixTimeStamp) {
+            var dt = eval(unixTimeStamp);
+            var myDate = new Date(dt);
+            return (myDate.toLocaleString());
+        },
+        sortBy: function (col) {
+            this.sortOptions.changeOrder(col);
+        },
+        isSortedByField: function (fieldName) {
+            return this.sortOptions.fieldName === fieldName;
+        },
         filter(type) {
             var ref = this;
             var res = [];
@@ -490,6 +501,13 @@ var app = new Vue({
                 return 'hidden';
             } else {
                 return '';
+            }
+        },
+        sortOption(fieldName) {
+            if (this.isSortedByField(fieldName)) {
+                return '';
+            } else {
+                return 'hidden';
             }
         },
         sortingDirection() {
