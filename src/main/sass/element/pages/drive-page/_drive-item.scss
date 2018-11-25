@@ -73,7 +73,7 @@ $drive-item-color: $link-blue;
     background: linear-gradient(to bottom,e $drive-item-footer-bg-color 0%, $drive-item-border-color 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=$drive-item-footer-bg-color, endColorstr=$drive-item-border-color, GradientType=0 );
 
-    e& .item-date {
+    & .item-date {
       @include date-styles;
     }
   }

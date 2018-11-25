@@ -1,8 +1,7 @@
 @charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Crimson+Text:700i|PT+Serif:700i");
 @import url("https://fonts.googleapis.com/css?family=Roboto&subset=cyrillic");
 @import url("https://fonts.googleapis.com/css?family=Roboto+Slab:400,700&subset=cyrillic");
-@import url("https://fonts.googleapis.com/css?family=EB+Garamond");
-@import url("https://fonts.googleapis.com/css?family=Merriweather:900i");
 /*
 $primary-color: #62b5f4;
 $success-color: #2ef145;
@@ -8723,35 +8722,35 @@ a.text-dark:hover, a.text-dark:focus {
 
 .logo {
   color: #ddecf7;
-  font-family: "Noto Color Emoji";
+  font-family: 'PT Serif', 'Crimson Text', serif;
   font-weight: 900;
   font-size: 4.2rem;
   overflow: hidden;
   position: relative;
   height: 4rem;
-  width: 5.3rem;
+  width: 5.7rem;
   top: 0;
   z-index: 30;
 }
 .logo .capitalLetter {
   position: relative;
-  top: -1.2rem;
-  left: -6.4rem;
+  top: -1.25rem;
+  left: -6.75rem;
   z-index: 40;
 }
 .logo .pond {
   position: relative;
   font-size: 0.6em;
-  top: -1.2rem;
-  left: -8.75rem;
-  letter-spacing: -0.05em;
+  top: -1.28rem;
+  left: -9.2rem;
+  letter-spacing: -0.06em;
   z-index: 40;
 }
 .logo .photo {
   position: relative;
-  top: -2.5rem;
-  left: -12.05rem;
-  font-size: 0.25em;
+  top: -2.7rem;
+  left: -12.7rem;
+  font-size: 0.23em;
   z-index: 40;
 }
 
@@ -8759,9 +8758,9 @@ a.text-dark:hover, a.text-dark:focus {
   display: inline-block;
   position: relative;
   border-radius: 50%;
-  height: 125%;
+  height: 150%;
   width: 100%;
-  top: -12.5%;
+  top: -25%;
   background-color: #1b5460;
   z-index: 30;
 }
@@ -8778,6 +8777,12 @@ a.text-dark:hover, a.text-dark:focus {
   max-width: 100%;
   height: 100%;
   object-fit: contain;
+}
+#header .navbar {
+  box-shadow: 0px 0px 3.5em 0.3em #081219, inset 0px 0px 2.5em 0.1em #081219;
+}
+#header .dropdown-menu {
+  box-shadow: 0px 0px 2em 0.3em #081219, inset 0px 0px 2.5em 0.1em #081219;
 }
 #header .navbar .nav-item .nav-link {
   padding-bottom: 0;
@@ -9145,14 +9150,14 @@ h1, h2, h3, h4, h5, h6 {
   background-size: cover;
 }
 #headerwrap h1 {
-  font-size: 3.5em;
+  font-size: 3.2em;
   margin-top: 17rem;
   letter-spacing: 0.15em;
   color: #DDECF7;
 }
 #headerwrap h2 {
-  font-size: 1.5em;
-  letter-spacing: 0.1em;
+  font-size: 1.2em;
+  letter-spacing: 0.75em;
   text-transform: uppercase;
   color: #FFFFFF;
 }

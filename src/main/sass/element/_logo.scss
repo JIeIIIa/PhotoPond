@@ -18,39 +18,39 @@
 
 .logo {
   color: $light-blue;
-  font-family: "Noto Color Emoji";
+  font-family:  'PT Serif', 'Crimson Text', serif;
   font-weight: 900;
   font-size: 4.2rem;
   overflow: hidden;
   position: relative;
 
   height: 4rem;
-  width: 5.3rem;
+  width: 5.7rem;
 
   top: 0;
   z-index: 30;
 
   .capitalLetter {
     position: relative;
-    top: -1.2rem;
-    left: -6.4rem;
+    top: -1.25rem;
+    left: -6.75rem;
     z-index: 40;
   }
 
   .pond {
     position: relative;
     font-size: 0.6em;
-    top: -1.2rem;
-    left: -8.75rem;
-    letter-spacing: -0.05em;
+    top: -1.28rem;
+    left: -9.2rem;
+    letter-spacing: -0.06em;
     z-index: 40;
   }
 
   .photo {
     position: relative;
-    top: -2.5rem;
-    left: -12.05rem;
-    font-size: 0.25em;
+    top: -2.7rem;
+    left: -12.7rem;
+    font-size: 0.23em;
     z-index: 40;
   }
 }
@@ -59,9 +59,10 @@
   display: inline-block;
   position: relative;
   border-radius: 50%;
-  height: 125%;
+  height: 150%;
   width: 100%;
-  top: -12.5%;
+  //left: 5%;
+  top: -25%;
 
   background-color: $main-background;
   z-index: 30;
