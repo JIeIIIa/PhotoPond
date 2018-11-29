@@ -1,12 +1,12 @@
 var userSettings = new Vue({
     el: "#settings",
-    data() {
+    data: function() {
         return {
             activeItem: 2
         }
     },
     methods: {
-        isMenuItemSelected(index){
+        isMenuItemSelected: function(index){
             return this.activeItem === index;
         },
         menuItemClass: function(index) {
@@ -16,20 +16,17 @@ var userSettings = new Vue({
                 return ['bg-dark'];
             }
         },
-        setActiveItem(index){
+        setActiveItem: function(index){
             this.activeItem = index;
         }
 
     },
     created: function () {
-
         var settings = $("#settings");
         if (settings.data('start-item')) {
             this.activeItem = settings.data('start-item');
         } else {
             this.activeItem = 3;
         }
-
     }
-
 });

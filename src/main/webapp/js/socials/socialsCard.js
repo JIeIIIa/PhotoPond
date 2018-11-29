@@ -1,5 +1,5 @@
 var socialAccounts = Vue.component('social-accounts-card', {
-    data() {
+    data: function() {
         return {
             showLoader: {
                 facebook: false,
@@ -26,7 +26,7 @@ var socialAccounts = Vue.component('social-accounts-card', {
         }
     },
     methods: {
-        loadAccounts(type) {
+        loadAccounts: function(type) {
             console.log("Start loading facebook accounts");
             var ref = this;
             ref.showLoader[type] = true;
@@ -50,12 +50,12 @@ var socialAccounts = Vue.component('social-accounts-card', {
                     ref.showLoader[type] = false;
                 });
         },
-        closeAlert(type) {
+        closeAlert: function(type) {
             if (type in this.errorMessageObject) {
                 this.errorMessageObject[type] = [];
             }
         },
-        addError(type, error) {
+        addError: function(type, error) {
             if (type in this.errorMessageObject) {
                 this.errorMessageObject[type] = [];
                 this.errorMessageObject[type].push(error);

@@ -1,6 +1,6 @@
 var moveModalForm = Vue.component('move-modal-form', {
     props: ['errorMessage', 'customHeader', 'message', 'operationInProgress'],
-    data() {
+    data: function() {
         return {
             currentUrl: '',
             content: {},
@@ -23,7 +23,7 @@ var moveModalForm = Vue.component('move-modal-form', {
         }
     },
     computed: {
-        errorMessageObject() {
+        errorMessageObject: function() {
             var res = [];
             if (this.errorCode !== "") {
                 res.push({
@@ -34,7 +34,7 @@ var moveModalForm = Vue.component('move-modal-form', {
 
             return res;
         },
-        subDirectoriesWithUri() {
+        subDirectoriesWithUri: function() {
             var list = [];
             if (!jQuery.isEmptyObject(this.content.parent)) {
                 var item = this.content.parent;
@@ -53,12 +53,12 @@ var moveModalForm = Vue.component('move-modal-form', {
 
             return list;
         },
-        isLoaderVisible() {
+        isLoaderVisible: function() {
             return this.operationInProgress || this.loaderVisible;
         }
     },
     methods: {
-        makePath(item, useHtml) {
+        makePath: function(item, useHtml) {
             if (jQuery.isEmptyObject(item)) {
                 return '';
             }
@@ -78,7 +78,7 @@ var moveModalForm = Vue.component('move-modal-form', {
         closeAlert: function () {
             this.errorCode = '';
         },
-        loadSubDirectories(url) {
+        loadSubDirectories: function(url) {
             var ref = this;
             ref.loaderVisible = true;
             this.errorCode = '';

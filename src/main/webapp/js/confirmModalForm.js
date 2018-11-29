@@ -1,6 +1,6 @@
 var confirmModalForm = Vue.component('confirm-modal-form', {
     props: ['customHeader', 'errorMessage', 'errorCode', 'message', 'value'],
-    data() {
+    data: function() {
         return {
             operationInProgress: false,
             errorVisible: false
@@ -23,7 +23,7 @@ var confirmModalForm = Vue.component('confirm-modal-form', {
         }
     },
     computed: {
-        errorMessageObject() {
+        errorMessageObject: function() {
             var res = [];
             if(this.errorCode !== "") {
                 res.push({
@@ -31,7 +31,6 @@ var confirmModalForm = Vue.component('confirm-modal-form', {
                     code: this.errorCode
                 });
             }
-
             return res;
         }
     }

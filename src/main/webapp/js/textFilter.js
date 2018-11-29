@@ -2,20 +2,20 @@ var textFilter = Vue.component('text-filter', {
     props: {
         value: ""
     },
-    data() {
+    data: function() {
         return {
             inputVal: this.value,
             inputVisible: false
         }
     },
     methods: {
-        init() {
+        init: function() {
             this.inputVisible = !this.inputVisible;
             this.inputVal = '';
         }
     },
     watch: {
-        inputVal(val) {
+        inputVal: function(val) {
             this.$emit('input', val);
         }
     }

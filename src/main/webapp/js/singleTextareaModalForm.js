@@ -2,7 +2,7 @@ var singleTextareaModalForm = Vue.component('single-textarea-modal-form', {
     props: ['operationInProgress',
         'errorMessage', 'errorCode',
         'customHeader', 'message', 'value', 'successButtonTitle'],
-    data() {
+    data: function() {
         return {
             errorVisible: false,
             maxLength: 240
@@ -20,7 +20,7 @@ var singleTextareaModalForm = Vue.component('single-textarea-modal-form', {
         }
     },
     computed: {
-        errorMessageObject() {
+        errorMessageObject: function() {
             var res = [];
             if (this.errorCode !== "") {
                 res.push({
@@ -31,12 +31,11 @@ var singleTextareaModalForm = Vue.component('single-textarea-modal-form', {
 
             return res;
         },
-        isInputDisabled() {
+        isInputDisabled: function() {
             return this.value === "";
         },
-        charsRemaining(){
+        charsRemaining: function(){
             return this.maxLength - this.value.length;
         }
     }
-
 });

@@ -2,7 +2,7 @@ var loader = Vue.component('loader-component', {});
 
 var changePassword = Vue.component('change-password-card', {
     props: [],
-    data() {
+    data: function() {
         return {
             inputs: {
                 oldPassword: {
@@ -44,7 +44,7 @@ var changePassword = Vue.component('change-password-card', {
                 this.clearItem(this.inputs[key]);
             }
         },
-        resolveError(item) {
+        resolveError: function(item) {
             if ('userInfoDTO.oldPassword' === item['objectName']) {
                 this.inputs.oldPassword.errorMsg = item['message'];
             }

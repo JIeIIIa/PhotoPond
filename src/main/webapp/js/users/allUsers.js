@@ -2,7 +2,7 @@ var loader = Vue.component('loader-component', {});
 
 var vm = new Vue({
     el: '#usersApp',
-    data() {
+    data: function() {
         return {
             allUsers: [],
             editedUser: {},
@@ -13,7 +13,7 @@ var vm = new Vue({
         }
     },
     computed: {
-        filteredData() {
+        filteredData: function() {
             if ("" === this.filterTemplate) {
                 return this.allUsers;
             }
@@ -25,7 +25,7 @@ var vm = new Vue({
     },
 
     methods: {
-        loadAllUsers() {
+        loadAllUsers: function() {
             var ref = this;
             ref.showLoader = true;
             axios.get(urlTemplate.admin.allUsers)
@@ -37,12 +37,12 @@ var vm = new Vue({
                     ref.showLoader = false;
                 })
         },
-        userByIndex(user) {
+        userByIndex: function(user) {
             return this.allUsers.findIndex(function (u) {
                 return u.id === user.id;
             });
         },
-        onDelete(key) {
+        onDelete: function(key) {
             this.editedUser = this.allUsers[key];
             this.errorCode = "";
             this.message = "<div class='row'>" +
@@ -51,7 +51,7 @@ var vm = new Vue({
                 "</div>";
             $("#confirmModalForm").modal('show');
         },
-        onDeleteConfirm(user) {
+        onDeleteConfirm: function(user) {
             this.errorCode = "-1";
             console.log(user);
             var index = this.userByIndex(user);
@@ -70,12 +70,12 @@ var vm = new Vue({
                     }
                 });
         },
-        editUser(user) {
+        editUser: function(user) {
             this.editedUser = _.cloneDeep(user);
             this.showModal = true;
             $("#modalUserInfoForm").modal('show');
         },
-        doneEdit(user) {
+        doneEdit: function(user) {
             $("#modalUserInfoForm").modal('hide');
             var index = this.userByIndex(user);
             this.allUsers.splice(index, 1, user);

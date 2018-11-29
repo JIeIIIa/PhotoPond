@@ -1,13 +1,13 @@
 var modalForm = Vue.component('user-modal-form', {
     props: ['user', 'errorMessage'],
-    data() {
+    data: function() {
         return {
             savingInProgress: false,
             errorCode: ""
         }
     },
     methods: {
-        saveData() {
+        saveData: function() {
             var ref = this;
             ref.savingInProgress = true;
             axios.post(urlTemplate.admin.userById + this.user.id, this.user)
@@ -21,17 +21,17 @@ var modalForm = Vue.component('user-modal-form', {
                     ref.savingInProgress = false;
                 });
         },
-        cancel() {
+        cancel: function() {
             $('#modalUserInfoForm').modal('hide');
         }
     },
     watch: {
-        user(value) {
+        user: function(value) {
             this.errorCode = "";
         }
     },
     computed: {
-        errorMessages() {
+        errorMessages: function() {
             var res = [];
             if (this.errorCode !== "") {
                 res.push({

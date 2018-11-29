@@ -9,11 +9,11 @@ var twitter = Vue.component('twitter-accounts', {
         }
     },
     methods: {
-        closeAlert() {
+        closeAlert: function() {
             this.$emit('close-alert', 'twitter');
         }
     },
-    mounted() {
+    mounted: function() {
         var twitterErrorMessage = $("#twitterErrorMessage");
         if (twitterErrorMessage.length !== 0) {
             this.$emit('add-error', 'twitter', {'text': twitterErrorMessage.text()});

@@ -1,10 +1,5 @@
 var fb = Vue.component('facebook-accounts', {
     props: ["accounts", "errorMessages"],
-    data() {
-        return {
-            // accounts: []
-        }
-    },
     computed: {
         isShowInformation: function () {
             return this.accounts.length > 0;
@@ -14,11 +9,11 @@ var fb = Vue.component('facebook-accounts', {
         }
     },
     methods: {
-        closeAlert() {
+        closeAlert: function() {
             this.$emit('close-alert', 'facebook');
         }
     },
-    mounted() {
+    mounted: function() {
         var fbErrorMessage = $("#fbErrorMessage");
         if (fbErrorMessage.length !== 0) {
             this.$emit('add-error', 'facebook', {'text': fbErrorMessage.text()});

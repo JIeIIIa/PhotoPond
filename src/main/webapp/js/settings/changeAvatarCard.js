@@ -1,6 +1,6 @@
 var changeAvatar = Vue.component('change-avatar-card', {
     props: [],
-    data() {
+    data: function() {
         return {
             showLoader: false,
             alert: {
@@ -21,8 +21,8 @@ var changeAvatar = Vue.component('change-avatar-card', {
             item.value = '';
             item.errorMsg = '';
         },
-        resolveError(item) {
-
+        resolveError: function(item) {
+            //todo: add implementation
         },
 
         resolveResponseErrors: function (errors) {
@@ -187,5 +187,4 @@ var changeAvatar = Vue.component('change-avatar-card', {
             })
         }
     }
-
 });

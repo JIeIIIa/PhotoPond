@@ -2,7 +2,7 @@ var singleInputModalForm = Vue.component('single-input-modal-form', {
     props: ['operationInProgress',
         'errorMessage', 'errorCode',
         'customHeader', 'message', 'value', 'successButtonTitle'],
-    data() {
+    data: function() {
         return {
             errorVisible: false
         }
@@ -19,7 +19,7 @@ var singleInputModalForm = Vue.component('single-input-modal-form', {
         }
     },
     computed: {
-        errorMessageObject() {
+        errorMessageObject: function() {
             var res = [];
             if(this.errorCode !== "") {
                 res.push({
@@ -30,9 +30,8 @@ var singleInputModalForm = Vue.component('single-input-modal-form', {
 
             return res;
         },
-        isInputDisabled() {
+        isInputDisabled: function() {
             return this.value === "";
         }
     }
-
 });
