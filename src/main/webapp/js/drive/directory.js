@@ -515,7 +515,7 @@ var app = new Vue({
         }
     },
     created: function () {
-        this.url = document.URL;
+        this.url = decodeURI(document.URL);
         this.loadDirectoryData();
         $('#tweetPublished .singleInputModalForm .btn-secondary').hide();
     }
