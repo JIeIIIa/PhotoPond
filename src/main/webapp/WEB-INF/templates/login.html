@@ -36,14 +36,14 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-10 offset-1 col-md-8 offset-md-2">
-            <div class="card">
+            <div class="card border-primary">
                 <div class="card-header bg-primary text-center">
                     <h2 class="card-title font-weight-bold"
                         th:text="#{pages.auth.card.header}">
                         Authorization
                     </h2>
                 </div>
-                <div class="card-body">
+                <div class="card-body bg-dark">
                     <form th:action="@{/j_spring_security_check}" method="POST">
                         <!--/*@thymesVar id="securityLastExceptionMessage" type="java.lang.String"*/-->
                         <div class="form-group mb-0" th:if="${securityLastExceptionMessage}">
@@ -55,7 +55,7 @@
                                    th:text="#{user.login}">
                                 Login
                             </label>
-                            <input class="form-control" type="text"
+                            <input class="form-control bg-light" type="text"
                                    placeholder="Login" th:placeholder="#{user.login}"
                                    id="j_login" name="j_login">
                         </div>
@@ -64,7 +64,7 @@
                                    th:text="#{user.password}">
                                 Password
                             </label>
-                            <input class="form-control" type="Password"
+                            <input class="form-control bg-light" type="Password"
                                    placeholder="Password" th:placeholder="#{user.password}"
                                    id="j_password" name="j_password">
                         </div>

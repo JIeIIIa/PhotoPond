@@ -25,7 +25,7 @@
 
 <div th:fragment="headerWithCustomUrl(activeItem, url)" th:remove="tag">
     <div class="container-fluid fixed-top px-0" id="header">
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark pt-0 pb-0">
+        <nav class="navbar navbar-expand-sm navbar-dark pt-0 pb-0">
             <div class="navbar-brand d-inline-flex align-items-center p-0">
                 <a class="nav-item logo" href="#" th:href="@{/}">
                     <span class="logo-background">&nbsp;</span>
@@ -85,19 +85,19 @@
                                 <img src="../../../pic/no_avatar.jpg" th:src="@{/public/user/{login}/avatar(login=${#authentication.name})}">
                             </div>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-right bg-dark"
+                        <ul class="dropdown-menu dropdown-menu-right bg-dark border-primary"
                             aria-labelledby="userNavbarDropdownMenuLink">
                             <li>
                                 <div class="dropdown-header">
                                     <h4>
-                                        <span th:text="#{header.signedInAs}">Signed in as</span>
-                                        <i class="login" sec:authentication="name" id="login">
+                                        <span class="text-info" th:text="#{header.signedInAs}">Signed in as</span>
+                                        <span class="login text-light" sec:authentication="name" id="login">
                                             SomeLogin
-                                        </i>
+                                        </span>
                                     </h4>
                                 </div>
                             </li>
-                            <li class="dropdown-divider"></li>
+                            <li class="dropdown-divider border-primary"></li>
                             <li>
                                 <a class="dropdown-item" href="#"
                                    th:href="@{/user/{login}/settings(login=${#authentication.name})}"
@@ -111,7 +111,7 @@
                                     Administration
                                 </a>
                             </li>
-                            <li class="dropdown-divider"></li>
+                            <li class="dropdown-divider border-primary"></li>
                             <li>
                                 <a class="dropdown-item" href="#" th:href="@{/logout}"
                                    th:text="#{header.logOut}">
@@ -128,7 +128,7 @@
                                  class="flag"
                                  th:alt="#{header.lang.__${currentLang}__}">
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-right bg-dark pull-left align-items-center text-left scroll-after-sm"
+                        <ul class="dropdown-menu dropdown-menu-right bg-dark border-primary pull-left align-items-center text-left scroll-after-sm"
                             aria-labelledby="navbarDropdownMenuLink">
                             <li th:each="lang : ${new String[]{'uk', 'ru', 'en'}}">
                                 <!--/*@thymesVar id="lang" type="java.lang.String"*/-->

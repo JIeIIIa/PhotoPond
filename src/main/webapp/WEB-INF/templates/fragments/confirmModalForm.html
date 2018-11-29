@@ -23,8 +23,8 @@
     <confirm-modal-form inline-template th:fragment="confirmModalForm" th:remove="tag">
         <div class="modal fade" id="confirmModalForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header bg-warning text-center">
+                <div class="modal-content border-warning bg-dark">
+                    <div class="modal-header bg-warning border-warning text-center">
                         <div class="modal-title w-100 font-weight-bold">
                             <h4>
                                 <span>{{ customHeader }}</span>
@@ -62,7 +62,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer justify-content-between">
+                            <div class="modal-footer border-warning justify-content-between">
                                 <button class="col-3 btn btn-secondary"
                                         v-on:click="cancel"
                                         v-bind:readonly="operationInProgress"

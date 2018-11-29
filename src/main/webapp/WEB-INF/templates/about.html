@@ -25,7 +25,10 @@
         <div class="col-11 col-md-10 col-lg-9 col-xl-8 text-justify">
             <div class="row text-center mb-3 pb-2 border-bottom ">
                 <div class="col-12">
-                    <h1 class="font-weight-bold text-uppercase" th:text="#{pages.about.caption}">About</h1>
+                    <h1 class="font-weight-bold text-primary text-uppercase"
+                        th:text="#{pages.about.caption}">
+                        About
+                    </h1>
                 </div>
                 <div class="col-12" th:if="false">
                     <ul class="nav nav-pills col-12">
@@ -59,14 +62,17 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12" th:include="fragments/predefinedUsers :: predefinedUserRow('font-weight-bold')">
+                <div class="col-12" th:include="fragments/predefinedUsers :: predefinedUserRow('font-weight-bold text-primary')">
                     PREDEFINED ACCOUNTS
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-12 text-center">
-                    <h3 class="font-weight-bold" th:text="#{pages.about.technology.caption}">Used technology</h3>
+                    <h3 class="font-weight-bold text-primary"
+                        th:text="#{pages.about.technology.caption}">
+                        Used technology
+                    </h3>
                 </div>
                 <div class="col-12">
                     <div class="row mb-2">

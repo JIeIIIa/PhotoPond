@@ -23,8 +23,8 @@
     <user-modal-form inline-template th:fragment="modalForm" th:remove="tag">
         <div class="modal fade" id="modalUserInfoForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header bg-info text-center">
+                <div class="modal-content border-info bg-dark">
+                    <div class="modal-header bg-info border-info text-center">
                         <div class="modal-title w-100 font-weight-bold">
                             <h4>
                                 <span th:text="#{admin.allUsers.editing.title}">Change data</span>
@@ -56,11 +56,11 @@
                                 <div class="md-form mb-3">
                                     <i class="fa fa-user prefix grey-text"></i>
                                     <label for="user-login" th:text="#{user.login}">Login</label>
-                                    <input type="text" id="user-login" class="form-control" v-model="user.login">
+                                    <input type="text" id="user-login" class="form-control bg-light" v-model="user.login">
                                 </div>
                                 <div class="md-form mb-5">
                                     <label for="user-role" th:text="#{user.role}">Role</label>
-                                    <select id="user-role" class="form-control" v-model="user.role">
+                                    <select id="user-role" class="form-control bg-light" v-model="user.role">
                                         <option>ADMIN</option>
                                         <option>USER</option>
                                         <option>DEACTIVATED</option>
@@ -69,7 +69,7 @@
                             </div>
                         </transition>
                     </div>
-                    <div class="modal-footer justify-content-between">
+                    <div class="modal-footer border-info justify-content-between">
                         <button class="col-3 btn btn-secondary"
                                 v-on:click="cancel"
                                 v-bind:readonly="savingInProgress"

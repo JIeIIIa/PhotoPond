@@ -1,7 +1,6 @@
 .left-corner {
   &-container {
-    position: absolute;
-    left: 1em;
+    position: relative;
     width: calc(100% - 2em);
     padding: 0;
 
@@ -50,13 +49,14 @@
 
     &-background {
       z-index: 10;
-      background-color: $main-background;
+      background-color: transparent;
     }
   }
 
   &-input {
     position: relative;
-    width: 80%;
+    width: calc(100% - 2.5em);
+    height: 1.95em;
     z-index: 1;
     left: 2.5em;
   }

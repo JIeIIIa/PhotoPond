@@ -4,7 +4,7 @@
 // without modifying source files.
 
 $white:    #fff;
-$gray-100: #f8f9fa;
+$gray-100: #f8f9fa; //#D2ECF1
 $gray-200: #e9ecef;
 $gray-300: #dee2e6;
 $gray-400: #ced4da;
@@ -15,6 +15,18 @@ $gray-800: #343a40;
 $gray-900: #212529;
 $black:    #000;
 
+
+$white:    #fff;
+$gray-100: #D2ECF1; //
+$gray-200: #c0e1e7;
+$gray-300: #b2e3e9;
+$gray-400: #a2c3c9;
+$gray-500: #6b959c;
+$gray-600: #33747a;
+$gray-700: #14576d;
+$gray-800: #022329; //
+$gray-900: #011319; //
+$black:    #000;
 $grays: ();
 // stylelint-disable-next-line scss/dollar-variable-default
 $grays: map-merge(
@@ -57,19 +69,33 @@ $dark:          $gray-800;
 $main-background: #1b5460;
 $main-color: #0f100b;
 
-/*
+
 $primary-color: #62b5f4;
 $success-color: #2ef145;
 $info-color: #329ef1;
 $warning-color: #f39f2e;
 $danger-color: #f3372e;
-*/
+
 
 $dark-brown: #0f100b;
 $light-blue: #ddecf7;
 $link-blue: #b1d6ed;
 $lime-dark: #4c8b17;
 
+$main-color: $light-blue;
+$dark: #213539;//$dark-brown;
+$body-bg-color: #1b5460;
+//$another: #022329;
+
+$primary:       $gray-900;//#022329;
+$secondary:     $gray-500;// !default;
+$success:       #378323;
+$info:          #04aad2;//#193946;//$cyan !default;
+$warning:       #9C6129;
+$danger:        #962734;
+//$light:         #D2ECF1; //gray-100
+//$dark: #011319; //gray-800;
+$dark: $gray-600;
 
 $enable-shadows: false;
 
@@ -89,3 +115,11 @@ $input-btn-focus-box-shadow:    none;
 $btn-box-shadow:                none;
 $btn-focus-box-shadow:          none;
 $btn-focus-width:               0;
+
+//Tables
+$table-dark-bg:               $gray-800;
+.table {
+  thead th {
+    font-family: 'Roboto Slab', serif;
+  }
+}

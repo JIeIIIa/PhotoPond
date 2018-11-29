@@ -9,6 +9,13 @@ var userSettings = new Vue({
         isMenuItemSelected(index){
             return this.activeItem === index;
         },
+        menuItemClass: function(index) {
+            if (this.isMenuItemSelected(index)) {
+                return ['active', 'disabled'];
+            } else {
+                return ['bg-dark'];
+            }
+        },
         setActiveItem(index){
             this.activeItem = index;
         }

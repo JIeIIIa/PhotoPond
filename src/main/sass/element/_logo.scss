@@ -1,13 +1,16 @@
+$logo-color : #ffffe5;
+$logo-color-hover : #e3fde3;
+
 .navbar-brand {
   &:focus .logo-background,
   &:hover .logo-background {
-    transform: scale(1, 0.65);
+    transform: scale(1, 1.65);
     transition-duration: 300ms;
   }
 
   &:focus .logo,
   &:hover .logo {
-    color: lighten($light-blue, 15%);
+    color: $logo-color-hover;
   }
 
   &:focus a,
@@ -17,7 +20,7 @@
 }
 
 .logo {
-  color: $light-blue;
+  color: $logo-color;
   font-family:  'PT Serif', 'Crimson Text', serif;
   font-weight: 900;
   font-size: 4.2rem;
@@ -59,10 +62,10 @@
   display: inline-block;
   position: relative;
   border-radius: 50%;
-  height: 150%;
+  height: 90%;
   width: 100%;
   //left: 5%;
-  top: -25%;
+  top: 5%;
 
   background-color: $main-background;
   z-index: 30;

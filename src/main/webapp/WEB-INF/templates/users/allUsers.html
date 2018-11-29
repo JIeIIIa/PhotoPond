@@ -39,6 +39,18 @@
                     </loader-component>
 
                     <div v-else key="table">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12 col-md-10 offset-md-1 px-1 pb-2">
+                                    <text-filter v-cloak inline-template
+                                                 v-model="filterTemplate">
+                                        <div th:insert="~{fragments/filter :: textFilter}" th:remove="tag">
+
+                                        </div>
+                                    </text-filter>
+                                </div>
+                            </div>
+                        </div>
                         <users-table v-cloak inline-template
                                      v-bind:users-list="filteredData"
                                      v-on:delete-user="onDelete"
@@ -46,12 +58,6 @@
                             <div th:insert="~{users/tableAllUsers :: tableAllUsers}"></div>
                         </users-table>
 
-                        <text-filter v-cloak inline-template
-                                     v-model="filterTemplate">
-                            <div th:insert="~{fragments/filter :: textFilter}" th:remove="tag">
-
-                            </div>
-                        </text-filter>
                         <div class="filler"></div>
                     </div>
                 </transition>

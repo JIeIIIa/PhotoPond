@@ -26,3 +26,13 @@
     float: left;
 }
 
+.table-fit {
+    width: 1px;
+}
+/*
+
+.table td,
+.table th {
+    white-space: nowrap;
+    width: 1%;
+}*/

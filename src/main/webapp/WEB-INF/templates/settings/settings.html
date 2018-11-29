@@ -26,8 +26,8 @@
 
     <div class="row">
         <div class="col-2 col-md-3">
-            <div class="card">
-                <div class="card-header d-inline-block text-center pl-0 pr-0"
+            <div class="card settings-card bg-dark border-primary">
+                <div class="card-header bg-info border-primary d-inline-block text-center pl-0 pr-0"
                      v-tooltip data-toggle="tooltip" data-placement="bottom"
                      title="Settings" th:title="#{pages.settings.menu.header}">
                     <h3 class="truncate">
@@ -43,8 +43,9 @@
                         <a href="javascript:void(0)"
                            v-tooltip data-toggle="tooltip" data-placement="bottom"
                            title="Change password" th:title="#{pages.settings.menu.password.title}"
-                           class="list-group-item list-group-item-action d-inline-block text-center text-md-left pl-0 pr-0 pl-sm-3 pr-sm-3"
-                           v-bind:class="{'active disabled':isMenuItemSelected(1)}"
+                           class="list-group-item list-group-item-action text-light border-primary border-left-0 border-right-0 d-inline-block text-center text-md-left
+                                    pl-0 pr-0 pl-sm-3 pr-sm-3"
+                           v-bind:class="menuItemClass(1)"
                            v-on:click.prevent.stop="setActiveItem(1)">
                             <i class="fa fa-key"></i>
                             <span class="pl-lg-3 d-none d-md-inline" th:text="#{pages.settings.menu.password.text}">Password</span>
@@ -52,8 +53,9 @@
                         <a href="javascript:void(0)"
                            v-tooltip data-toggle="tooltip" data-placement="bottom"
                            title="Change avatar" th:title="#{pages.settings.menu.avatar.title}"
-                           class="list-group-item list-group-item-action d-inline-block text-center text-md-left pl-0 pr-0 pl-sm-3 pr-sm-3"
-                           v-bind:class="{'active disabled':isMenuItemSelected(2)}"
+                           class="list-group-item list-group-item-action text-light border-primary border-left-0 border-right-0 d-inline-block text-center text-md-left
+                                    pl-0 pr-0 pl-sm-3 pr-sm-3"
+                           v-bind:class="menuItemClass(2)"
                            v-on:click.prevent.stop="setActiveItem(2)">
                             <i class="fa fa-user-circle"></i>
                             <span class="pl-lg-3 d-none d-md-inline" th:text="#{pages.settings.menu.avatar.text}">Avatar</span>
@@ -61,8 +63,9 @@
                         <a href="javascript:void(0)"
                            data-toggle="tooltip" data-placement="bottom"
                            v-tooltip title="Associated social accounts" th:title="#{pages.settings.menu.socials.title}"
-                           class="list-group-item list-group-item-action d-inline-block text-center text-md-left pl-0 pr-0 pl-sm-3 pr-sm-3"
-                           v-bind:class="{'active disabled':isMenuItemSelected(3)}"
+                           class="list-group-item list-group-item-action text-light border-left-0 border-primary border-right-0 d-inline-block text-center text-md-left
+                                    pl-0 pr-0 pl-sm-3 pr-sm-3"
+                           v-bind:class="menuItemClass(3)"
                            v-on:click.prevent.stop="setActiveItem(3)">
                             <i class="fa fa-link"></i>
                             <span class="pl-lg-3 d-none d-md-inline" th:text="#{pages.settings.menu.socials.text}">Socials</span>

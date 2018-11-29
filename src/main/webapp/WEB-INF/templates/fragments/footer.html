@@ -26,15 +26,15 @@
 <div th:fragment="footer" th:remove="tag">
     <div class="filler"></div>
     <div class="mt-5" id="footer">
-        <div class="container-fluid bg-dark py-4 footer">
+        <div class="container-fluid py-4 footer text-secondary">
 
             <div class="row">
-                <div class="col-6 order-1 col-sm-8 col-md-4 order-md-0 text-left pb-2">
+                <div class="col-12 order-1 col-sm-8 col-md-4 order-md-0 text-center text-sm-left pb-3">
                     <div class="row">
-                        <div class="col-12 col-xl-8 offset-xl-2  text-truncate">
+                        <div class="col-12 col-xl-8 offset-xl-2 text-truncate">
                             <div class="ml-sm-3 ml-md-0">
                                 <div class="col-12">
-                                    <h4 class="font-weight-bold text-uppercase" th:text="#{footer.contacts}">CONTACTS</h4>
+                                    <h4 class="font-weight-bold text-uppercase caption" th:text="#{footer.contacts}">CONTACTS</h4>
                                 </div>
                                 <div class="col-12">
                                     <i class="fas fa-phone"></i>
@@ -53,7 +53,7 @@
                     </div>
 
                 </div>
-                <div class="col-12 order-0 col-sm-12 col-md-4 order-md-1 text-center pb-2">
+                <div class="col-12 order-0 col-sm-12 col-md-4 order-md-1 text-center pb-3">
                     <div class="row h-100 align-items-center">
                         <div class="col-2 col-md-4 col-lg-2">
                             <h2 class="footer-social"
@@ -110,23 +110,27 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 order-2 col-sm-4 col-md-4 order-md-2 text-left pb-2">
+                <div class="col-12 order-2 col-sm-4 col-md-4 order-md-2 text-center text-sm-left pb-3 pt-3 pt-sm-0">
                     <div class="row">
-                        <div class="col-12 col-xl-10 d-inline-flex justify-content-end">
+                        <div class="col-12 col-xl-10 d-inline-flex justify-content-center justify-content-sm-end">
                             <div class="mr-sm-3 mr-md-0">
                                 <div class="col-12">
-                                    <h4 class="font-weight-bold text-uppercase" th:text="#{footer.links}">LINKS</h4>
+                                    <h4 class="font-weight-bold text-uppercase caption" th:text="#{footer.links}">LINKS</h4>
                                 </div>
                                 <div class="col-12">
                                     <a href="../privacyPolicy.html" th:href="@{/public/privacyPolicy.html}"
+                                       class="link-unstyled px-0 cursor-pointer"
                                        th:text="#{footer.privacyPolicy}">Privacy policy</a>
                                 </div>
                                 <div class="col-12">
                                     <a href="../terms.html" th:href="@{/public/terms.html}"
+                                       class="link-unstyled px-0 cursor-pointer"
                                        th:text="#{footer.terms}">Terms of Service</a>
                                 </div>
                                 <div class="col-12">
-                                    <a href="../about.html" th:href="@{/about}" th:text="#{footer.about}">About</a>
+                                    <a href="../about.html" th:href="@{/about}"
+                                       class="link-unstyled px-0 cursor-pointer"
+                                       th:text="#{footer.about}">About</a>
                                 </div>
                             </div>
                         </div>
@@ -141,12 +145,12 @@
                     <span> | </span>
                     <span th:text="#{footer.designed}">Designed by</span>
                     <span> </span>
-                    <i class="font-weight-bold" th:text="#{footer.developer}">Oleksii Onishchenko</i>
+                    <span class="font-weight-bold caption" th:text="#{footer.developer}">Oleksii Onishchenko</span>
                         </span>
                 </div>
                 <div class="col-12 text-center d-block d-none d-sm-none">
                     <span th:text="#{footer.designed}">Designed by</span>
-                    <i class="font-weight-bold" th:text="#{footer.developer}">Oleksii Onishchenko</i>
+                    <span class="font-weight-bold caption" th:text="#{footer.developer}">Oleksii Onishchenko</span>
                 </div>
             </div>
 

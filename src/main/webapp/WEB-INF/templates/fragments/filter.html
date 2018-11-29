@@ -21,7 +21,7 @@
 <div id="usersApp">
     <text-filter inline-template
                  th:fragment="textFilter" th:remove="tag">
-        <div class="left-corner-container">
+        <div class="left-corner-container position-relative w-100">
             <div class="left-corner-item" :class="{'corner-container-active' : inputVisible}">
                 <transition>
                     <div
@@ -30,7 +30,6 @@
                             v-if="inputVisible">
                         <i class="fa fa-times"></i>
                     </div>
-                    <!--value="&#xf0b0"-->
                     <div class="corner-container-btn left-corner-btn-first corner-container-btn-face"
                          v-on:click="init"
                          v-else>
@@ -39,9 +38,11 @@
                 </transition>
                 <div class="corner-container-btn left-corner-btn-first conner-container-btn-background"></div>
                 <transition name="slide-left">
-                    <input v-model="inputVal" class="corner-container-input"
+
+                    <input v-model="inputVal" class="form-control-sm corner-container-input bg-light"
                            v-if="inputVisible"
                            th:placeholder="#{user.login}">
+
                 </transition>
 
             </div>

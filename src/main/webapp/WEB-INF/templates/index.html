@@ -42,24 +42,24 @@
 
 <div class="container-fluid annotation pt-5 pb-3">
     <div class="row text-center justify-content-center">
-        <div class="col-md-3 col-5">
+        <div class="col-10 col-sm-5 col-md-3 text-info">
             <i class="fa fa-cloud"></i>
-            <h4 th:text="#{pages.index.annotation.cloud.title}">Cloud</h4>
-            <p th:text="#{pages.index.annotation.cloud.body}">
+            <h4 class="font-weight-bold" th:text="#{pages.index.annotation.cloud.title}">Cloud</h4>
+            <p class="text-secondary" th:text="#{pages.index.annotation.cloud.body}">
                 Keep your pictures in PhotoPond. Save and share with friends.
             </p>
         </div>
-        <div class="col-md-3 col-5 ">
+        <div class="col-10 col-sm-5 col-md-3 text-info">
             <i class="fa fa-heart"></i>
-            <h4 th:text="#{pages.index.annotation.design.title}">Design</h4>
-            <p th:text="#{pages.index.annotation.design.body}">
+            <h4 class="font-weight-bold" th:text="#{pages.index.annotation.design.title}">Design</h4>
+            <p class="text-secondary" th:text="#{pages.index.annotation.design.body}">
                 Responsive design using Bootstrap. It looks great on any monitor.
             </p>
         </div>
-        <div class="col-md-3 col-5">
+        <div class="col-10 col-sm-5 col-md-3 text-info">
             <i class="fa fa-trophy"></i>
-            <h4 th:text="#{pages.index.annotation.helpful.title}">Helpful</h4>
-            <p th:text="#{pages.index.annotation.helpful.body}">
+            <h4 class="font-weight-bold" th:text="#{pages.index.annotation.helpful.title}">Helpful</h4>
+            <p class="text-secondary" th:text="#{pages.index.annotation.helpful.body}">
                 User friendly intuitive interface. PhotoPond is simple and easy to use.
             </p>
         </div>
@@ -68,7 +68,7 @@
 
 <div class="container-fluid predefined-accounts pt-5 pb-3">
     <div class="row text-center justify-content-center align-items-center">
-        <div class="col-10 col-md-9" th:include="fragments/predefinedUsers :: predefinedUserRow('')">
+        <div class="col-11 col-sm-10 col-md-9" th:include="fragments/predefinedUsers :: predefinedUserRow('text-primary font-weight-bold')">
            PREDEFINED ACCOUNTS
         </div>
     </div>
