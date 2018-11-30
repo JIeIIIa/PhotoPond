@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import ua.kiev.prog.photopond.core.BindingErrorDTO;
@@ -70,10 +69,9 @@ public class MainControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ResponseEntity bindErrors(MethodArgumentNotValidException ex,
-                                     WebRequest request) {
+                                     Locale locale) {
         LOG.traceEntry("Caught MethodArgumentNotValidException: {}", ex.getMessage());
         BindingResult bindingResult = ex.getBindingResult();
-        Locale locale = request.getLocale();
 
         List<BindingErrorDTO> errors = bindingErrorResolver.resolveAll(bindingResult.getAllErrors(), locale);
         LOG.debug(errors);

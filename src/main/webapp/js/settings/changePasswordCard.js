@@ -114,6 +114,9 @@ var changePassword = Vue.component('change-password-card', {
         },
         closeAlert: function (key) {
             this.clearErrors();
+        },
+        closeInputAlert: function (name) {
+            this.inputs[name].errorMsg = "";
         }
     }
 
