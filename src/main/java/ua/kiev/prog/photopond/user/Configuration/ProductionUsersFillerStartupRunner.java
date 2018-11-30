@@ -46,7 +46,8 @@ public class ProductionUsersFillerStartupRunner extends AbstractUsersFillerStart
 
     private String generatePassword() {
         RandomStringGenerator randomStringGenerator = new RandomStringGenerator.Builder()
-                .filteredBy(CharacterPredicates.LETTERS)
+                .withinRange('0', 'z')
+                .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
                 .build();
         return randomStringGenerator.generate(10, 20);
     }
