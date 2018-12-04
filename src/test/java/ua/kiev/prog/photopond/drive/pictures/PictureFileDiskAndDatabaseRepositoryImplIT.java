@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -123,7 +124,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
         //Then
         assertThatFileContainsData(expected, filename.getBytes());
         assertThat(result).isEqualToIgnoringGivenFields(expected, "id", "creationDate");
-        assertThat(result.getCreationDate()).isBetween(start, new Date());
+        Calendar finish = Calendar.getInstance();
+        finish.add(Calendar.SECOND, 1);
+        assertThat(result.getCreationDate()).isBetween(start, finish.getTime());
 
     }
 
@@ -162,7 +165,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
         //Then
         assertThatFileContainsData(result, expected.getData());
         assertThat(result).isEqualToIgnoringGivenFields(expected, "id", "creationDate");
-        assertThat(result.getCreationDate()).isBetween(start, new Date());
+        Calendar finish = Calendar.getInstance();
+        finish.add(Calendar.SECOND, 1);
+        assertThat(result.getCreationDate()).isBetween(start, finish.getTime());
 
     }
 
@@ -191,7 +196,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
         //Then
         assertThatFileContainsData(result, filename.getBytes());
         assertThat(result).isEqualToIgnoringGivenFields(expected, "id", "creationDate");
-        assertThat(result.getCreationDate()).isBetween(start, new Date());
+        Calendar finish = Calendar.getInstance();
+        finish.add(Calendar.SECOND, 1);
+        assertThat(result.getCreationDate()).isBetween(start, finish.getTime());
 
         assertThat(pictureFileJpaRepository.findFirstByDirectoryAndFilename(directory, filename))
                 .isPresent();

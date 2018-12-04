@@ -5,7 +5,6 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles({"dev", "testDB", "unitTest"})
-@EnableAutoConfiguration
 @DataJpaTest
 @ContextConfiguration(classes = {UserInfoServiceJpaImplITConfiguration.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,

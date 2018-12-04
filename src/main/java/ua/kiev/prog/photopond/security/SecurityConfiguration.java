@@ -33,13 +33,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         web.ignoring()
                 .antMatchers("/css/**")
                 .antMatchers("/libs/**")
+                .antMatchers("/pic/**")
+                .antMatchers("/js/**")
                 .antMatchers("/login");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         log.debug("Configure HttpSecurity.");
-        http.requiresChannel().anyRequest().requiresSecure();
+        http.requiresChannel()
+                .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
+                .requiresSecure();
         http.csrf()
                 .disable()
                 .authorizeRequests()

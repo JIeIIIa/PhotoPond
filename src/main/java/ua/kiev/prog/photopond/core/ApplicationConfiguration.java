@@ -29,9 +29,13 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/libs/**").addResourceLocations("/libs/");
-        registry.addResourceHandler("/css/**").addResourceLocations("/css/");
-        registry.addResourceHandler("/js/**").addResourceLocations("/js/");
-        registry.addResourceHandler("/pic/**").addResourceLocations("/pic/");
+        registry.addResourceHandler("/libs/**")
+                .addResourceLocations("classpath:/static/libs/");
+        registry.addResourceHandler("/css/**")
+                .addResourceLocations("classpath:/static/css/");
+        registry.addResourceHandler("/js/**")
+                .addResourceLocations("classpath:/static/js/");
+        registry.addResourceHandler("/pic/**")
+                .addResourceLocations("classpath:/static/pic/");
     }
 }

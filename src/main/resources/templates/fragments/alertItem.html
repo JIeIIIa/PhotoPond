@@ -1,0 +1,72 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:v-on="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head>
+    <title>PhotoPond - table with all users</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <title>PhotoPond - main page</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../../static/css/photopond.css">
+</head>
+
+<body>
+<div id="usersApp">
+    <alert-item inline-template
+                th:fragment="alertItem" th:remove="tag">
+        <div class="alert-container">
+            <div class="alert alert-dismissible" role="alert" :class="'alert-' + alertType" v-for="(message, key) in messages">
+                <div class="pr-5">
+                    <span v-if="message['text']"> {{ message['text'] }} </span>
+                    <span v-if="message['code']"> (code:&nbsp;<b>{{ message['code'] }}</b>)</span>
+                </div>
+                <button type="button" class="close close-btn" aria-label="Close" v-on:click="close(key)">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </alert-item>
+</div>
+
+<template th:fragment="smallAlert(message)" th:remove="tag">
+    <div class="alert alert-danger alert-dismissible fade show text-sm-left py-1 mb-2" role="alert">
+        <small th:text="${message}">Alert message!</small>
+        <button type="button" class="close px-2 py-1" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</template>
+
+
+<small-alert-item inline-template
+                  th:fragment="smallAlertItem" th:remove="tag">
+    <div class="alert alert-danger alert-dismissible fade show text-sm-left my-1 py-1 mb-2" role="alert"
+         v-if="alertMessage">
+        <small> {{ alertMessage }} </small>
+        <button type="button" class="close px-2 py-1" data-dismiss="alert" aria-label="Close" v-on:click="close(name)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</small-alert-item>
+
+<!-- jQuery -->
+<script src="../../static/libs/jquery/jquery-3.3.1.slim.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="../../static/libs/popper/popper.1.14.3.min.js"></script>
+<script src="../../static/libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+<!-- Vue.js -->
+<script src="../../static/libs/vuejs/vue-2.5.16.js"></script>
+<script src="../../static/libs/axios/axios.0.18.0.min.js"></script>
+<script src="../../static/libs/lodash/lodash.4.17.10.min.js"></script>
+
+</body>
+</html>

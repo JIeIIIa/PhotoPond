@@ -17,7 +17,7 @@ public class UserInfoServiceJpaImplITConfiguration {
     }
 
     @Bean
-    public UserInfoServiceJpaImpl userInfoServiceJpa(UserInfoJpaRepository userInfoJpaRepository) {
+    public UserInfoServiceJpaImpl userInfoServiceJpaImpl(UserInfoJpaRepository userInfoJpaRepository) {
         return new UserInfoServiceJpaImpl(userInfoJpaRepository, passwordEncoder());
     }
 }

@@ -1,0 +1,91 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head th:replace="~{fragments/profiles/activeProfile :: head (pageTitle = 'PhotoPond - start page')}">
+    <title>PhotoPond - start page</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <title>PhotoPond - main page</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../static/css/photopond.css">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/header :: header('startPage')}">Static header</div>
+
+<div class="container-fluid">
+
+    <div class="row text-center px-0">
+        <div id="headerwrap">
+            <div class="col-md-8 offset-md-2 col-12">
+
+                <h1 class="font-weight-bold">
+                    PhotoPond<br>
+                    <span th:text="#{pages.index.headerwrap.brand}">is awesome</span>
+                </h1>
+                <h2 th:text="#{pages.index.headerwrap.description}">
+                    The best place to store your pictures
+                </h2>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid annotation pt-5 pb-3">
+    <div class="row text-center justify-content-center">
+        <div class="col-10 col-sm-5 col-md-3 text-info">
+            <i class="fa fa-cloud"></i>
+            <h4 class="font-weight-bold" th:text="#{pages.index.annotation.cloud.title}">Cloud</h4>
+            <p class="text-secondary" th:text="#{pages.index.annotation.cloud.body}">
+                Keep your pictures in PhotoPond. Save and share with friends.
+            </p>
+        </div>
+        <div class="col-10 col-sm-5 col-md-3 text-info">
+            <i class="fa fa-heart"></i>
+            <h4 class="font-weight-bold" th:text="#{pages.index.annotation.design.title}">Design</h4>
+            <p class="text-secondary" th:text="#{pages.index.annotation.design.body}">
+                Responsive design using Bootstrap. It looks great on any monitor.
+            </p>
+        </div>
+        <div class="col-10 col-sm-5 col-md-3 text-info">
+            <i class="fa fa-trophy"></i>
+            <h4 class="font-weight-bold" th:text="#{pages.index.annotation.helpful.title}">Helpful</h4>
+            <p class="text-secondary" th:text="#{pages.index.annotation.helpful.body}">
+                User friendly intuitive interface. PhotoPond is simple and easy to use.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid predefined-accounts pt-5 pb-3">
+    <div class="row text-center justify-content-center align-items-center">
+        <div class="col-11 col-sm-10 col-md-9" th:include="~{fragments/predefinedUsers :: predefinedUserRow('text-primary font-weight-bold')}">
+           PREDEFINED ACCOUNTS
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}" th:remove="tag"></div>
+
+<div th:replace="~{fragments/profiles/activeProfile :: bottomScripts}" th:remove="tag">
+    <!-- jQuery -->
+    <script src="../static/libs/jquery/jquery-3.3.1.slim.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../static/libs/popper/popper.1.14.3.min.js"></script>
+    <script src="../static/libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="../static/libs/vuejs/vue-2.5.16.js"></script>
+</div>
+
+</body>
+</html>

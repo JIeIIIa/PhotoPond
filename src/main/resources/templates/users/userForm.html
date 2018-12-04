@@ -1,0 +1,112 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:v-on="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+      lang="en">
+
+
+<head>
+    <title>UserForm - vue.js element</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <title>PhotoPond - main page</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../../static/css/photopond.css">
+</head>
+
+<body>
+
+<div>
+    <user-modal-form inline-template th:fragment="modalForm" th:remove="tag">
+        <div class="modal fade" id="modalUserInfoForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content border-info bg-dark">
+                    <div class="modal-header bg-info border-info text-center">
+                        <div class="modal-title w-100 font-weight-bold">
+                            <h4>
+                                <span th:text="#{admin.allUsers.editing.title}">Change data</span>
+                                <span>(id: {{ user.id }})</span>
+                            </h4>
+
+                        </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+
+                    </div>
+                    <div class="modal-body">
+                        <transition name="fade" :duration="100" mode="out-in">
+                            <div class="md-form mb-3" v-if="savingInProgress">
+                                <loader-component inline-template th:insert="~{fragments/loader :: loader}"
+                                                  key="loader">
+                                </loader-component>
+                            </div>
+                            <div v-else key="data">
+                                <h6 class="mb-1" v-show="errorCode">
+                                    <alert-item v-cloak inline-template
+                                                v-bind:messages="errorMessages"
+                                                alert-type="danger"
+                                                v-on:alert-item-close="errorCode = ''"
+                                                th:insert="~{fragments/alertItem :: alertItem}">
+                                    </alert-item>
+                                </h6>
+                                <div class="md-form mb-3">
+                                    <i class="fa fa-user prefix grey-text"></i>
+                                    <label for="user-login" th:text="#{user.login}">Login</label>
+                                    <input type="text" id="user-login" class="form-control bg-light" v-model="user.login">
+                                </div>
+                                <div class="md-form mb-5">
+                                    <label for="user-role" th:text="#{user.role}">Role</label>
+                                    <select id="user-role" class="form-control bg-light" v-model="user.role">
+                                        <option>ADMIN</option>
+                                        <option>USER</option>
+                                        <option>DEACTIVATED</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </transition>
+                    </div>
+                    <div class="modal-footer border-info justify-content-between">
+                        <button class="col-3 btn btn-secondary"
+                                v-on:click="cancel"
+                                v-bind:readonly="savingInProgress"
+                                th:text="#{btn.cancel}">
+                            Cancel
+                        </button>
+                        <button class="col-7 btn btn-success"
+                                v-on:click="saveData"
+                                v-bind:readonly="savingInProgress"
+                                th:text="#{btn.save}">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </user-modal-form>
+    <div class="text-center">
+        <!--<a href="" class="btn btn-default btn-rounded mb-4" data-toggle="modal" data-target="#modalUserInfoForm">Launch Modal Register Form</a>-->
+    </div>
+</div>
+<div th:replace="~{fragments/profiles/activeProfile :: bottomScripts}" th:remove="tag">
+    <!-- jQuery -->
+    <script src="../../static/libs/jquery/jquery-3.3.1.slim.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../../static/libs/popper/popper.1.14.3.min.js"></script>
+    <script src="../../static/libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="../../static/libs/vuejs/vue-2.5.16.js"></script>
+    <script src="../../static/libs/axios/axios.0.18.0.min.js"></script>
+</div>
+
+<script>
+    $('#modalUserInfoForm').modal('show');
+</script>
+
+</body>
+</html>

@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -39,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +63,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
         UserInfoServiceJpaImplITConfiguration.class,
         DriveServiceImplITConfiguration.class
 })
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DatabaseSetup("classpath:datasets/picturefile_dataset_IT.xml")
 @Transactional
 public class DriveServiceImplIT {
@@ -224,8 +224,10 @@ public class DriveServiceImplIT {
         //Then
         assertThat(result)
                       .isEqualToIgnoringGivenFields(expected, "creationDate", "creationDateString");
-        assertThat(result.getCreationDate()).isBetween(start, new Date());
         assertThat(result.getCreationDateString()).isNotNull();
+        Calendar finish = Calendar.getInstance();
+        finish.add(Calendar.SECOND, 1);
+        assertThat(result.getCreationDate()).isBetween(start, finish.getTime());
     }
 
     @Test(expected = DriveException.class)
@@ -392,8 +394,10 @@ public class DriveServiceImplIT {
         assertThat(result)
                 .isNotNull()
                 .isEqualToIgnoringGivenFields(expected, "creationDate", "creationDateString");
-        assertThat(result.getCreationDate()).isBetween(start, new Date());
         assertThat(result.getCreationDateString()).isNotNull();
+        Calendar finish = Calendar.getInstance();
+        finish.add(Calendar.SECOND, 1);
+        assertThat(result.getCreationDate()).isBetween(start, finish.getTime());
     }
 
     @Test

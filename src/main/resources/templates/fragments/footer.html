@@ -1,0 +1,174 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <title>PhotoPond - footer</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="../../static/libs/font-awesome-free-5.1.1-web/css/all.css">
+
+    <link rel="stylesheet" href="../../static/css/photopond.css">
+    <link rel="stylesheet" href="../../static/css/temporary.css">
+
+</head>
+<body>
+
+<div class="filler"></div>
+
+<div th:fragment="footer" th:remove="tag">
+    <div class="filler"></div>
+    <div class="mt-5" id="footer">
+        <div class="container-fluid py-4 footer text-secondary">
+
+            <div class="row">
+                <div class="col-12 order-1 col-sm-8 col-md-4 order-md-0 text-center text-sm-left pb-3">
+                    <div class="row">
+                        <div class="col-12 col-xl-8 offset-xl-2 text-truncate">
+                            <div class="ml-sm-3 ml-md-0">
+                                <div class="col-12">
+                                    <h4 class="font-weight-bold text-uppercase caption" th:text="#{footer.contacts}">CONTACTS</h4>
+                                </div>
+                                <div class="col-12">
+                                    <i class="fas fa-phone"></i>
+                                    <i class="fab fa-viber"></i>
+                                    <i class="fab fa-telegram-plane"></i>
+                                    +380(63)792-37-13
+                                </div>
+                                <div class="col-12">
+                                    <i class="fas fa-envelope"></i> onishchenko.oleksii@gmail.com
+                                </div>
+                                <div class="col-12">
+                                    <i class="fab fa-skype"></i> Pro100JIeIIIa
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-12 order-0 col-sm-12 col-md-4 order-md-1 text-center pb-3">
+                    <div class="row h-100 align-items-center">
+                        <div class="col-2 col-md-4 col-lg-2">
+                            <h2 class="footer-social"
+                                v-tooltip data-placement="top"
+                                title="LinkedIn profile" th:title="#{footer.tooltip.linkedIn}">
+                                <a href="javascript:void(0)" class="link-unstyled">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                            </h2>
+                        </div>
+                        <div class="col-2 col-md-4 col-lg-2">
+                            <h2 class="footer-social"
+                                v-tooltip data-placement="top"
+                                title="Project Github repository" th:title="#{footer.tooltip.github}">
+                                <a href="javascript:void(0)" class="link-unstyled">
+                                    <i class="fab fa-github-square"></i>
+                                </a>
+                            </h2>
+                        </div>
+                        <div class="col-2 col-md-4 col-lg-2">
+                            <h2 class="footer-social"
+                                v-tooltip data-placement="top"
+                                title="Send email" th:title="#{footer.tooltip.email}">
+                                <a href="javascript:void(0)" class="link-unstyled">
+                                    <i class="fas fa-envelope"></i>
+                                </a>
+                            </h2>
+                        </div>
+                        <div class="col-2 col-md-4 col-lg-2">
+                            <h2 class="footer-social"
+                                v-tooltip data-placement="top"
+                                title="Send message in Skype" th:title="#{footer.tooltip.skype}">
+                                <a href="skype:nikname?chat" class="link-unstyled">
+                                    <i class="fab fa-skype"></i>
+                                </a>
+                            </h2>
+                        </div>
+                        <div class="col-2 col-md-4 col-lg-2">
+                            <h2 class="footer-social" v-tooltip data-placement="top"
+                                title="Send message in Viber" th:title="#{footer.tooltip.viber}">
+                                <a href="viber://add?number=380637923713" class="link-unstyled">
+                                    <i class="fab fa-viber"></i>
+                                </a>
+                            </h2>
+                        </div>
+                        <div class="col-2 col-md-4 col-lg-2">
+                            <h2 class="footer-social"
+                                v-tooltip data-placement="top"
+                                title="Send message in Telegram" th:title="#{footer.tooltip.telegram}">
+                                <a href="tg://resolve?domain=JIeIIIa" class="link-unstyled">
+                                    <i class="fab fa-telegram-plane"></i>
+                                </a>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 order-2 col-sm-4 col-md-4 order-md-2 text-center text-sm-left pb-3 pt-3 pt-sm-0">
+                    <div class="row">
+                        <div class="col-12 col-xl-10 d-inline-flex justify-content-center justify-content-sm-end">
+                            <div class="mr-sm-3 mr-md-0">
+                                <div class="col-12">
+                                    <h4 class="font-weight-bold text-uppercase caption" th:text="#{footer.links}">LINKS</h4>
+                                </div>
+                                <div class="col-12">
+                                    <a href="../privacyPolicy.html" th:href="@{/public/privacyPolicy.html}"
+                                       class="link-unstyled px-0 cursor-pointer"
+                                       th:text="#{footer.privacyPolicy}">Privacy policy</a>
+                                </div>
+                                <div class="col-12">
+                                    <a href="../terms.html" th:href="@{/public/terms.html}"
+                                       class="link-unstyled px-0 cursor-pointer"
+                                       th:text="#{footer.terms}">Terms of Service</a>
+                                </div>
+                                <div class="col-12">
+                                    <a href="../about.html" th:href="@{/about}"
+                                       class="link-unstyled px-0 cursor-pointer"
+                                       th:text="#{footer.about}">About</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-12 text-center ">
+                    <span>Copyright &copy;2018 </span>
+                    <span class="d-none d-sm-inline">
+                    <span> | </span>
+                    <span th:text="#{footer.designed}">Designed by</span>
+                    <span> </span>
+                    <span class="font-weight-bold caption" th:text="#{footer.developer}">Oleksii Onishchenko</span>
+                        </span>
+                </div>
+                <div class="col-12 text-center d-block d-none d-sm-none">
+                    <span th:text="#{footer.designed}">Designed by</span>
+                    <span class="font-weight-bold caption" th:text="#{footer.developer}">Oleksii Onishchenko</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div>
+    <!-- jQuery -->
+    <script src="../../static/libs/jquery/jquery-3.3.1.slim.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../../static/libs/popper/popper.1.14.3.min.js"></script>
+    <script src="../../static/libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <script src="../../static/js/main.js"></script>
+</div>
+
+</body>
+</html>

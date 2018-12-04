@@ -13,6 +13,7 @@
                 <pattern>
                     %d{HH:mm:ss.SSS} %highlight{[%-5level]} [%-16.16t] %60.60c{2.4} | %25.25M | - %msg%n
                 </pattern>
+                <disableAnsi>false</disableAnsi>
             </PatternLayout>
         </Console>
         <Appender type="RollingFile" name="App-File-Appender" fileName="${log-path}/${appLog}.log"
