@@ -36,7 +36,7 @@ public class DriveController {
                                       HttpServletRequest request) throws DriveException {
         String tail = getUriTail(request, userLogin);
 
-        modelAndView.setViewName("/drive/directory");
+        modelAndView.setViewName("drive/directory");
 
         LOG.debug("echo:   " + tail);
         return modelAndView;

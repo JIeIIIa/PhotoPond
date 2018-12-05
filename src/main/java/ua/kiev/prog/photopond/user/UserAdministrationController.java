@@ -35,7 +35,7 @@ public class UserAdministrationController {
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public ModelAndView viewAllUsers(ModelAndView modelAndView) {
         LOG.traceEntry();
-        modelAndView.setViewName("/users/allUsers");
+        modelAndView.setViewName("users/allUsers");
 
         return modelAndView;
     }

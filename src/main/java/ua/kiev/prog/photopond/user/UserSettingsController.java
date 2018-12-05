@@ -40,7 +40,7 @@ public class UserSettingsController {
     public String allSettings(@PathVariable("login") String login) {
         LOG.traceEntry("Settings for user = '{}'", login);
 
-        return "/settings/settings";
+        return "settings/settings";
     }
 
     @RequestMapping(value = "/password", method = RequestMethod.PUT)

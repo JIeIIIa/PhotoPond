@@ -50,7 +50,7 @@ public class UserAdministrationControllerTest {
 
         mockMvc.perform(get)
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("/users/allUsers"));
+                .andExpect(MockMvcResultMatchers.view().name("users/allUsers"));
     }
 
     @Test
