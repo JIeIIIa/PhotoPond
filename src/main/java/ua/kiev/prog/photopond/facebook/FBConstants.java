@@ -38,7 +38,7 @@ public class FBConstants {
     private static String loginUrl;
 
 
-    @Value("${server.address}")
+    @Value("${server.address:''}")
     public void setServer(String server) {
         FBConstants.server = server;
     }

@@ -23,7 +23,7 @@ public class TwitterConstants {
 
 
 
-    @Value("${server.address}")
+    @Value("${server.address:''}")
     public void setServer(String server) {
         TwitterConstants.server = server;
     }

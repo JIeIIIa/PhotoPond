@@ -16,14 +16,25 @@
     </parent>
 
     <properties>
+        <application.Name>photo-pond</application.Name>
+        <application.finalName>${application.Name}-${project.version}</application.finalName>
+        <application.fullName>${application.Name}-${project.version}.${project.packaging}</application.fullName>
+
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <skip.integrationTest>false</skip.integrationTest>
         <integrationTest.mask>**/*IT.java</integrationTest.mask>
-    </properties>
 
+        <commons-io.version>2.5</commons-io.version>
+        <commons-text.version>1.6</commons-text.version>
+        <dbunit.version>2.6.0</dbunit.version>
+        <heroku-maven-plugin.version>2.0.6</heroku-maven-plugin.version>
+        <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
+        <sass-maven-plugin.version>3.7.0</sass-maven-plugin.version>
+        <spring-test-dbunit.version>1.3.0</spring-test-dbunit.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -57,7 +68,7 @@
         <dependency>
             <groupId>org.dbunit</groupId>
             <artifactId>dbunit</artifactId>
-            <version>2.6.0</version>
+            <version>${dbunit.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -69,24 +80,34 @@
         <dependency>
             <groupId>com.github.springtestdbunit</groupId>
             <artifactId>spring-test-dbunit</artifactId>
-            <version>1.3.0</version>
+            <version>${spring-test-dbunit.version}</version>
             <scope>test</scope>
         </dependency>
 
+
+        <!-- THYMELEAF -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.3.5.Final</version>
         </dependency>
 
         <dependency>
@@ -97,13 +118,13 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.5</version>
+            <version>${commons-io.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.6</version>
+            <version>${commons-text.version}</version>
         </dependency>
 
         <dependency>
@@ -114,31 +135,16 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <!--<version>6.0.6</version>-->
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
 
-
-        <!-- THYMELEAF -->
-
-        <dependency>
-            <groupId>org.thymeleaf.extras</groupId>
-            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
-        </dependency>
-
         <!-- LOG4J2-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <!--<version>4.1.3.RELEASE</version>-->
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -167,26 +173,7 @@
 
 
     <build>
-        <finalName>photo-pond</finalName>
-<!--
-
-        <resources>
-            <resource>
-                <directory>${project.basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>${project.basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-            </testResource>
-            <testResource>
-                <directory>${project.basedir}/src/test/resources</directory>
-                <filtering>true</filtering>
-            </testResource>
-        </testResources>
--->
+        <finalName>${application.finalName}</finalName>
 
         <plugins>
             <plugin>
@@ -206,7 +193,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
+                <version>${maven-resources-plugin.version}</version>
                 <configuration>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
@@ -217,11 +204,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <useSystemClassLoader>false</useSystemClassLoader>
-                    <argLine>-Dfile.encoding=UTF-8 -Xmx1280m -XX:MaxPermSize=512m</argLine>
+                    <argLine>-Dfile.encoding=UTF-8<!-- -Xmx1280m -XX:MaxPermSize=512m--></argLine>
                     <reuseForks>false</reuseForks>
                     <forkCount>0</forkCount>
                     <forkedProcessTimeoutInSeconds>200</forkedProcessTimeoutInSeconds>
-                    <!--<argLine></argLine>-->
                 </configuration>
                 <executions>
                     <execution>
@@ -244,7 +230,7 @@
             <plugin>
                 <groupId>nl.geodienstencentrum.maven</groupId>
                 <artifactId>sass-maven-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>${sass-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>prepare-package</phase>
@@ -265,33 +251,23 @@
                     </resources>
                 </configuration>
             </plugin>
-            <!--<plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>site</id>
-                        <phase>pre-site</phase>
-                        <goals>
-                            <goal>cobertura</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
--->
-        </plugins>
 
-    </build>
-
-<!--
-    <reporting>
-        <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.5.2</version>
+                <groupId>com.heroku.sdk</groupId>
+                <artifactId>heroku-maven-plugin</artifactId>
+                <version>${heroku-maven-plugin.version}</version>
+                <configuration>
+                    <appName>photopond</appName>
+                    <jdkVersion>${java.version}</jdkVersion>
+                    <includeTarget>false</includeTarget>
+                    <includes>
+                        <include>target/${application.fullName}</include>
+                    </includes>
+                    <processTypes>
+                        <web>java $JAVA_OPTS -Dspring.profiles.active=prod,postgresql -jar target/${application.fullName}</web>
+                    </processTypes>
+                </configuration>
             </plugin>
         </plugins>
-    </reporting>
--->
+    </build>
 </project>

@@ -1,4 +1,12 @@
-/.idea
-/PhotoPond.iml
-/.secrets
 /target
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+/.secrets
+
+### Heroku ###
+/.env
