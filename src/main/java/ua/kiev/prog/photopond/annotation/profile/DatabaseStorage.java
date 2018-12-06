@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Profile("database-storage")
+@Profile(ProfileConstants.DATABASE_STORAGE)
 @Inherited
 public @interface DatabaseStorage {
 }

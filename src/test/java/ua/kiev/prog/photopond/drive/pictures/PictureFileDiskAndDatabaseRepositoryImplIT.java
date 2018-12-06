@@ -35,9 +35,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 
 @RunWith(SpringRunner.class)
-@ActiveProfiles("dev")
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE})
 @DataJpaTest
 @EnableJpaAuditing
 @TestExecutionListeners({

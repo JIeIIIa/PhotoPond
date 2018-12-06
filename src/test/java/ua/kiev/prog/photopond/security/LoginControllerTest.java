@@ -22,6 +22,8 @@ import static org.springframework.security.test.web.servlet.response.SecurityMoc
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = LoginController.class)
@@ -30,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         WebMvcTestContextConfiguration.class,
         SpringSecurityWebAuthenticationTestConfiguration.class
 })
-@ActiveProfiles({"dev", "securityWebAuthTestConfig"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "securityWebAuthTestConfig"})
 public class LoginControllerTest {
     private static final String SERVER_ADDRESS = "https://localhost";
 

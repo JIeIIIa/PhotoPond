@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 import static ua.kiev.prog.photopond.user.UserRole.ADMIN;
 
 @RunWith(SpringRunner.class)
@@ -34,7 +35,7 @@ import static ua.kiev.prog.photopond.user.UserRole.ADMIN;
         WebMvcTestContextConfiguration.class,
         UserInfoServiceMockConfiguration.class
 })
-@ActiveProfiles("unitTest")
+@ActiveProfiles({DISK_DATABASE_STORAGE, "unitTest"})
 public class UserAdministrationControllerTest {
     private static final String URL_PREFIX = "/administration/user";
 

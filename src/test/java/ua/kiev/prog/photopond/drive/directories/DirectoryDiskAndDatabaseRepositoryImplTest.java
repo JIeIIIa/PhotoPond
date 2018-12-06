@@ -33,7 +33,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @RunWith(SpringRunner.class)
-@TestPropertySource("classpath:application.properties")
+@TestPropertySource({"classpath:application.properties", "classpath:application-disk-database-storage.properties"})
 public class DirectoryDiskAndDatabaseRepositoryImplTest {
 
     @MockBean

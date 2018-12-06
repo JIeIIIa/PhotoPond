@@ -15,10 +15,12 @@ import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 
 import java.util.List;
 
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
+
 @RunWith(SpringRunner.class)
-@ActiveProfiles({"dev", "testDB"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "testDB"})
 @DataJpaTest
-//@ComponentScan(value = "ua.kiev.prog.photopond.user", resourcePattern = "/*.class")
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         DbUnitTestExecutionListener.class})
 @DatabaseSetup("classpath:datasets/directories_dataset.xml")
@@ -32,7 +34,7 @@ public class DirectoryJpaRepositoryTest {
     @Test
     public void rename() {
         printAllDirectories(repository.findAll());
-        UserInfo owner = userInfoJpaRepository.findById(1L).get();
+        UserInfo owner = userInfoJpaRepository.findById(1L).orElseThrow(IllegalStateException::new);
         List<Directory> directories = repository.findByOwnerAndPathStartingWith(owner, "/first");
 
 

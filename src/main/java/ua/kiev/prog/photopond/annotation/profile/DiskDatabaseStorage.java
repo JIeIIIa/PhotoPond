@@ -4,9 +4,11 @@ import org.springframework.context.annotation.Profile;
 
 import java.lang.annotation.*;
 
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
+
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Profile("disk-database-storage")
+@Profile(DISK_DATABASE_STORAGE)
 @Inherited
 public @interface DiskDatabaseStorage {
 }

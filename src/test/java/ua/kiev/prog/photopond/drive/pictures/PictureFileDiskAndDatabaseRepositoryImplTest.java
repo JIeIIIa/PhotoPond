@@ -32,7 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
-@TestPropertySource("classpath:application.properties")
+@TestPropertySource({"classpath:application.properties", "classpath:application-disk-database-storage.properties"})
 public class PictureFileDiskAndDatabaseRepositoryImplTest {
     @MockBean
     private PictureFileJpaRepository pictureFileJpaRepository;

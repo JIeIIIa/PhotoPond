@@ -46,12 +46,14 @@ import java.util.Optional;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 import static ua.kiev.prog.photopond.drive.DriveItemDTOMapper.toDTO;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @RunWith(SpringRunner.class)
-@ActiveProfiles({"dev", "unitTest", "testMySQLDB"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "testMySQLDB"})
 @DataJpaTest
 @EnableJpaAuditing
 @TestExecutionListeners({
@@ -63,7 +65,6 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
         UserInfoServiceJpaImplITConfiguration.class,
         DriveServiceImplITConfiguration.class
 })
-//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DatabaseSetup("classpath:datasets/picturefile_dataset_IT.xml")
 @Transactional
 public class DriveServiceImplIT {

@@ -32,12 +32,14 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 
 @RunWith(SpringRunner.class)
-@ActiveProfiles({"dev"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE})
 @DataJpaTest
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class,

@@ -16,6 +16,8 @@ import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 import ua.kiev.prog.photopond.security.SpringSecurityWebAuthenticationTestConfiguration;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = WelcomeController.class)
@@ -24,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         WebMvcTestContextConfiguration.class,
         SpringSecurityWebAuthenticationTestConfiguration.class
 })
-@ActiveProfiles({"dev", "unitTest", "securityWebAuthTestConfig"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "securityWebAuthTestConfig"})
 public class WelcomeControllerTestRunWithSpringRunner {
 
     @Autowired

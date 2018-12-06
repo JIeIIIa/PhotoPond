@@ -26,6 +26,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 import static ua.kiev.prog.photopond.user.registration.RegistrationController.REGISTRATION_USER_ATTRIBUTE_NAME;
 
 @RunWith(SpringRunner.class)
@@ -37,7 +39,7 @@ import static ua.kiev.prog.photopond.user.registration.RegistrationController.RE
         SpringSecurityWebAuthenticationTestConfiguration.class
 })
 
-@ActiveProfiles({"dev", "unitTest", "securityWebAuthTestConfig"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "securityWebAuthTestConfig"})
 public class RegistrationControllerTest {
     private static final String SERVER_ADDRESS = "https://localhost";
 
