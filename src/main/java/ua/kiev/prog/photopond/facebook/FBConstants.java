@@ -29,23 +29,14 @@ public class FBConstants {
         SCOPE_BUILDER.addPermission(FacebookPermissions.PUBLIC_PROFILE);
     }
 
-    private static String server;
-
-    private static int port;
-
+    private static String callbackHost;
     private static String fullCallbackUrl;
     private static String associateAccountUrl;
     private static String loginUrl;
 
-
-    @Value("${server.address:''}")
-    public void setServer(String server) {
-        FBConstants.server = server;
-    }
-
-    @Value("${server.port}")
-    public void setPort(int port) {
-        FBConstants.port = port;
+    @Value("${socials.callback.host}")
+    public void setCallbackHost(String callbackHost) {
+        FBConstants.callbackHost = callbackHost;
     }
 
     @Value("${facebook.application.id}")
@@ -60,7 +51,7 @@ public class FBConstants {
 
     @PostConstruct
     private static void updateFullCallbackUrl() {
-        FBConstants.fullCallbackUrl = String.format("https://%s:%d%s", server, port, FB_CALLBACK_URL);
+        FBConstants.fullCallbackUrl = callbackHost + FB_CALLBACK_URL;
         FBConstants.associateAccountUrl = getOAuthUrl(FBState.ASSOCIATE);
         FBConstants.loginUrl = getOAuthUrl(FBState.LOGIN);
     }

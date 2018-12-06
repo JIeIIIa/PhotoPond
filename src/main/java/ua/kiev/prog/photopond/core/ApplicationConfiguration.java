@@ -37,5 +37,7 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/js/");
         registry.addResourceHandler("/pic/**")
                 .addResourceLocations("classpath:/static/pic/");
+        registry.addResourceHandler("/favicon.ico")
+                .addResourceLocations("classpath:/static/favicon.ico");
     }
 }

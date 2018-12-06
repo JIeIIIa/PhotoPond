@@ -31,6 +31,7 @@
         <commons-text.version>1.6</commons-text.version>
         <dbunit.version>2.6.0</dbunit.version>
         <heroku-maven-plugin.version>2.0.6</heroku-maven-plugin.version>
+        <heroku-maven-plugin.appName>photopond</heroku-maven-plugin.appName>
         <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
         <sass-maven-plugin.version>3.7.0</sass-maven-plugin.version>
         <spring-test-dbunit.version>1.3.0</spring-test-dbunit.version>
@@ -257,7 +258,7 @@
                 <artifactId>heroku-maven-plugin</artifactId>
                 <version>${heroku-maven-plugin.version}</version>
                 <configuration>
-                    <appName>photopond</appName>
+                    <appName>${heroku-maven-plugin.appName}</appName>
                     <jdkVersion>${java.version}</jdkVersion>
                     <includeTarget>false</includeTarget>
                     <includes>
@@ -265,6 +266,7 @@
                     </includes>
                     <configVars>
                         <spring.profiles.active>prod,postgresql,database-storage</spring.profiles.active>
+                        <SOCIALS_CALLBACK_HOST>https://${heroku-maven-plugin.appName}.herokuapp.com</SOCIALS_CALLBACK_HOST>
                     </configVars>
                     <processTypes>
                         <web>java $JAVA_OPTS -jar target/${application.fullName}</web>

@@ -12,33 +12,19 @@ public class TwitterConstants {
     private static String consumerKey;
     private static String consumerSecret;
 
-
-    private static String server;
-
-    private static int port;
-
+    private static String callbackHost;
     private static String associateCallbackUrl;
     private static String loginCallbackUrl;
 
-
-
-
-    @Value("${server.address:''}")
-    public void setServer(String server) {
-        TwitterConstants.server = server;
-    }
-
-    @Value("${server.port}")
-    public void setPort(int port) {
-        TwitterConstants.port = port;
+    @Value("${socials.callback.host}")
+    public void setCallbackHost(String callbackHost) {
+        TwitterConstants.callbackHost = callbackHost;
     }
 
     @PostConstruct
     private static void updateCallbackUrl() {
-        TwitterConstants.associateCallbackUrl = String.format("https://%s:%d%s", server, port,
-                TwitterRequestMappingConstants.ASSOCIATE_CALLBACK_SHORT_URL);
-        TwitterConstants.loginCallbackUrl = String.format("https://%s:%d%s", server, port,
-                TwitterRequestMappingConstants.LOGIN_CALLBACK_SHORT_URL);
+        TwitterConstants.associateCallbackUrl = callbackHost + TwitterRequestMappingConstants.ASSOCIATE_CALLBACK_SHORT_URL;
+        TwitterConstants.loginCallbackUrl = callbackHost + TwitterRequestMappingConstants.LOGIN_CALLBACK_SHORT_URL;
     }
 
     static String getAssociateCallbackUrl() {

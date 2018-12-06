@@ -28,6 +28,11 @@
       "defaultValue": "false"
     },
     {
+      "name": "socials.callback.host",
+      "type": "java.lang.String",
+      "description": "Callback host for social accounts."
+    },
+    {
       "name": "facebook.application.id",
       "type": "java.lang.String",
       "description": "Facebook application id."
