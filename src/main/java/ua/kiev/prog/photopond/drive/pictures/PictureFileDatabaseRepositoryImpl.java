@@ -1,48 +1,34 @@
 package ua.kiev.prog.photopond.drive.pictures;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
-import ua.kiev.prog.photopond.annotation.profile.DiskDatabaseStorage;
+import ua.kiev.prog.photopond.annotation.profile.DatabaseStorage;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 
 import javax.persistence.TransactionRequiredException;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
-
 @SuppressWarnings("Duplicates")
 @Repository
-@DiskDatabaseStorage
-public class PictureFileDiskAndDatabaseRepositoryImpl implements PictureFileRepository {
+@DatabaseStorage
+public class PictureFileDatabaseRepositoryImpl implements PictureFileRepository {
 
-    private static final Logger LOG = LogManager.getLogger(PictureFileDiskAndDatabaseRepositoryImpl.class);
-
-    @Value("${folders.basedir.location}")
-    private String foldersBaseDir;
+    private static final Logger LOG = LogManager.getLogger(PictureFileDatabaseRepositoryImpl.class);
 
     private final PictureFileJpaRepository pictureFileJpaRepository;
 
-    @Autowired
-    public PictureFileDiskAndDatabaseRepositoryImpl(PictureFileJpaRepository pictureFileJpaRepository) {
-        LOG.info("Create instance of {} with parameter {}", PictureFileDiskAndDatabaseRepositoryImpl.class, pictureFileJpaRepository);
-        this.pictureFileJpaRepository = pictureFileJpaRepository;
-    }
+    private final PictureFileDataJpaRepository pictureFileDataJpaRepository;
 
-    public void setFoldersBasedir(String foldersBaseDir) {
-        this.foldersBaseDir = foldersBaseDir;
+    @Autowired
+    public PictureFileDatabaseRepositoryImpl(PictureFileJpaRepository pictureFileJpaRepository, PictureFileDataJpaRepository pictureFileDataJpaRepository) {
+        LOG.info("Create instance of {} with parameter {}", PictureFileDatabaseRepositoryImpl.class, pictureFileJpaRepository);
+        this.pictureFileJpaRepository = pictureFileJpaRepository;
+        this.pictureFileDataJpaRepository = pictureFileDataJpaRepository;
     }
 
     @Override
@@ -99,7 +85,6 @@ public class PictureFileDiskAndDatabaseRepositoryImpl implements PictureFileRepo
         throwExceptionIfNull(file);
 
         deleteFromDatabase(file);
-        deleteFromDisk(file);
     }
 
     private void deleteFromDatabase(PictureFile file) {
@@ -112,14 +97,6 @@ public class PictureFileDiskAndDatabaseRepositoryImpl implements PictureFileRepo
         }
     }
 
-    private void deleteFromDisk(PictureFile file) {
-        try {
-            FileUtils.forceDelete(new File(foldersBaseDir + file.getFullPath()));
-        } catch (IOException e) {
-            LOG.error("Failure deleting from disk for '{}'", file);
-        }
-    }
-
     @Override
     public void move(PictureFile file, Directory targetDirectory, String targetFilename) throws PictureFileException {
         throwExceptionIfNull(file);
@@ -129,24 +106,14 @@ public class PictureFileDiskAndDatabaseRepositoryImpl implements PictureFileRepo
         }
         isPossibleToMove(file, targetDirectory, targetFilename);
 
-        Path source = Paths.get(foldersBaseDir + file.getFullPath());
-        Path target = Paths.get(foldersBaseDir + targetDirectory.getFullPath() + SEPARATOR + targetFilename);
-
         try {
-            Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
             file.setDirectory(targetDirectory);
             file.setFilename(targetFilename);
             pictureFileJpaRepository.save(file);
-        } catch (IOException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             LOG.warn("Exception while moving PictureFile: '{}' -> '{}' + '{}'", file, targetDirectory, targetFilename);
             throw new PictureFileException("Exception while moving PictureFile '" + file +
                     "' to '" + targetDirectory + "' + '" + targetFilename + "'", e);
-        }
-
-        try {
-            Files.delete(source);
-        } catch (IOException e) {
-            LOG.error("Failure deleting from disk for '{}'", source);
         }
     }
 
@@ -158,20 +125,13 @@ public class PictureFileDiskAndDatabaseRepositoryImpl implements PictureFileRepo
     }
 
     private void isPossibleToMove(PictureFile file, Directory targetDirectory, String targetFilename) {
-        if (!Files.exists(Paths.get(foldersBaseDir + file.getFullPath()))) {
-            LOG.debug("PictureFile with name '{}' not found on disk", file.getFullPath());
-            throw new PictureFileException("Cannot move File",
-                    new IllegalAccessException("PictureFile with name '" + file.getFullPath() + "' not found on disk")
-            );
-        }
-
         if (!Objects.equals(file.getDirectory().getOwner(), targetDirectory.getOwner())) {
             LOG.error("Cannot move file from different users: {} -> {}",
                     file.getDirectory().getOwner().getLogin(),
                     targetDirectory.getOwner().getLogin()
             );
             throw new PictureFileException("Cannot move file from different users: " +
-                    file.getDirectory().getOwner().getLogin()  +" -> " +
+                    file.getDirectory().getOwner().getLogin() + " -> " +
                     targetDirectory.getOwner().getLogin()
             );
         }
@@ -196,18 +156,11 @@ public class PictureFileDiskAndDatabaseRepositoryImpl implements PictureFileRepo
 
     private void loadData(PictureFile file) throws PictureFileException {
         LOG.traceEntry("Try to load data for '{}'", file);
-        byte[] data = new byte[0];
 
-        try {
-            String pathOnDisk = getFilePathOnDisk(file);
-            Path path = Paths.get(pathOnDisk);
+        byte[] data = pictureFileDataJpaRepository.findByPictureFile(file)
+                .map(PictureFileData::getData)
+                .orElseGet(() -> new byte[0]);
 
-            if (Files.exists(path)) {
-                data = Files.readAllBytes(path);
-            }
-        } catch (IOException | IllegalArgumentException | IllegalStateException e) {
-            LOG.debug("Read data from {} error.", file);
-        }
         file.setData(data);
     }
 
@@ -225,30 +178,7 @@ public class PictureFileDiskAndDatabaseRepositoryImpl implements PictureFileRepo
             LOG.warn("Try to save file with null data:   {}", file);
             throw new PictureFileException("Try to save file with null data:   " + file);
         }
-        try {
-            String pathOnDisk = getFilePathOnDisk(file);
-            Files.write(Paths.get(pathOnDisk), file.getData());
-        } catch (IOException | IllegalArgumentException | IllegalStateException e) {
-            LOG.error("Save data in file error:  {}", file);
-            throw new PictureFileException("Save data in file error:   " + file, e);
-        }
-    }
-
-    private String getDirectoryPathOnDisk(PictureFile file) {
-        LOG.traceEntry();
-        if (file == null || file.getDirectory() == null) {
-            throw new IllegalArgumentException("Incorrect state file: " + file);
-        }
-        String pathOnDisk = foldersBaseDir + file.getDirectory().getFullPath();
-        if (Files.notExists(Paths.get(pathOnDisk))) {
-            throw new IllegalStateException("Directory not found on disk");
-        }
-        return LOG.traceExit(pathOnDisk);
-    }
-
-    private String getFilePathOnDisk(PictureFile file) throws PictureFileException {
-        LOG.traceEntry();
-        String pathOnDisk = getDirectoryPathOnDisk(file) + SEPARATOR + file.getFilename();
-        return LOG.traceExit(pathOnDisk);
+        PictureFileData pictureFileData = new PictureFileData(file, file.getData());
+        pictureFileDataJpaRepository.save(pictureFileData);
     }
 }

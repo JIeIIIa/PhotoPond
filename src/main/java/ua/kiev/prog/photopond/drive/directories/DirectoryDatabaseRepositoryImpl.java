@@ -1,23 +1,14 @@
 package ua.kiev.prog.photopond.drive.directories;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
-import ua.kiev.prog.photopond.annotation.profile.DiskDatabaseStorage;
+import ua.kiev.prog.photopond.annotation.profile.DatabaseStorage;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 import javax.persistence.TransactionRequiredException;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,23 +17,16 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.*;
 
 @SuppressWarnings("Duplicates")
 @Repository
-@DiskDatabaseStorage
-public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryRepository {
-    private static final Logger LOG = LogManager.getLogger(DirectoryDiskAndDatabaseRepositoryImpl.class);
-
-    @Value("${folders.basedir.location}")
-    private String foldersBaseDir;
+@DatabaseStorage
+public class DirectoryDatabaseRepositoryImpl implements DirectoryRepository {
+    private static final Logger LOG = LogManager.getLogger(DirectoryDatabaseRepositoryImpl.class);
 
     private final DirectoryJpaRepository directoryJpaRepository;
 
     @Autowired
-    public DirectoryDiskAndDatabaseRepositoryImpl(DirectoryJpaRepository directoryJpaRepository) {
-        LOG.info("Create instance of {} with parameter {}", DirectoryDiskAndDatabaseRepositoryImpl.class, directoryJpaRepository);
+    public DirectoryDatabaseRepositoryImpl(DirectoryJpaRepository directoryJpaRepository) {
+        LOG.info("Create instance of {} with parameter {}", DirectoryDatabaseRepositoryImpl.class, directoryJpaRepository);
         this.directoryJpaRepository = directoryJpaRepository;
-    }
-
-    public void setFoldersBasedir(String foldersBaseDir) {
-        this.foldersBaseDir = foldersBaseDir;
     }
 
     private void throwExceptionIfDirectoryNull(Directory directory) {
@@ -64,17 +48,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryReposito
         }
 
         directory = directoryJpaRepository.save(directory);
-        Path pathOnDisk = Paths.get(foldersBaseDir + directory.getFullPath());
-        if (Files.notExists(pathOnDisk, LinkOption.NOFOLLOW_LINKS)) {
-            LOG.trace("Try to create directory:   {}", pathOnDisk);
-            try {
-                Files.createDirectories(pathOnDisk);
-            } catch (IOException e) {
-                LOG.error("Cannot create directory on disk:   {}", pathOnDisk);
-                throw new DirectoryModificationException("Cannot create directory on disk", e);
-            }
-            LOG.debug("Directory was created on disk:   {}", pathOnDisk);
-        }
+
         return LOG.traceExit("Directory was saved in database:   {}", directory);
     }
 
@@ -84,7 +58,6 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryReposito
         throwExceptionIfDirectoryNull(directory);
 
         deleteFromDatabase(directory);
-        deleteFromDisk(directory);
         LOG.traceExit();
     }
 
@@ -99,15 +72,6 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryReposito
         } catch (TransactionRequiredException | DataAccessException | IllegalArgumentException e) {
             LOG.warn("Failure deleting from jpa repository for '{}'", directory);
             throw new DirectoryModificationException("Failure deleting from jpa repository: " + directory, e);
-        }
-    }
-
-    private void deleteFromDisk(Directory directory) {
-        try {
-            FileUtils.deleteDirectory(new File(foldersBaseDir + directory.getFullPath()));
-            LOG.trace("Directory with contents was deleted from disk:   {}", directory);
-        } catch (IOException | IllegalArgumentException e) {
-            LOG.error("Failure deleting from disk for '{}'", directory);
         }
     }
 
@@ -130,12 +94,6 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryReposito
     }
 
     private void isPossibleToRename(OperationArgumentsVO parameters) throws DirectoryModificationException {
-        if (!Files.exists(parameters.currentPathOnDisk())) {
-            LOG.debug("Rename:   directory with name '{}' not found on disk", parameters.currentPathOnDisk());
-            throw new DirectoryModificationException("Cannot rename directory",
-                    new IllegalAccessException("Directory with name '" + parameters.currentPathOnDisk() + "' not found on disk")
-            );
-        }
         if (directoryJpaRepository.findByOwnerAndPath(parameters.owner(), parameters.targetPath()).size() > 0) {
             LOG.debug("Rename:   directory on path '{}' already exists in database for user {}", parameters.targetPath(), parameters.owner.getLogin());
             throw new DirectoryModificationException("Cannot rename directory",
@@ -195,16 +153,8 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryReposito
 
     private void moveDirectories(OperationArgumentsVO args, String error) throws DirectoryModificationException {
         LOG.traceEntry("{}", args);
-        try {
-            FileUtils.copyDirectory(args.currentPathOnDisk().toFile(), args.targetPathOnDisk().toFile());
-        } catch (IOException e) {
-            LOG.debug("Exception while moving directory: {}", e);
-            throw new DirectoryModificationException(error, e);
-        }
-        LOG.trace("Directory on disk was copied: '{}' -> '{}'", args.currentPathOnDisk(), args.targetPathOnDisk());
 
         moveDirectoriesOnDatabase(args);
-        moveDirectoriesOnDisk(args);
 
         LOG.traceExit();
     }
@@ -228,22 +178,6 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryReposito
             directoryJpaRepository.save(dir);
         }
         LOG.debug("Paths was replaced with arguments = {}", args);
-    }
-
-    private void moveDirectoriesOnDisk(OperationArgumentsVO args) {
-        try {
-            Files.walk(args.currentPathOnDisk())
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(path -> {
-                        try {
-                            Files.deleteIfExists(path);
-                        } catch (IOException e) {
-                            LOG.error("Failure delete {} after copy", path);
-                        }
-                    });
-        } catch (IOException e) {
-            LOG.error("Data was copied but source did not removed: {}", e);
-        }
     }
 
     @Override
@@ -322,24 +256,8 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryReposito
             return targetPath;
         }
 
-        String fullTargetPath() {
-            return foldersBaseDir + buildPath(owner.getLogin(), targetPath);
-        }
-
-        Path targetPathOnDisk() {
-            return Paths.get(fullTargetPath());
-        }
-
         String currentPath() {
             return currentPath;
-        }
-
-        public String fullCurrentPath() {
-            return foldersBaseDir + buildPath(owner.getLogin(), currentPath);
-        }
-
-        Path currentPathOnDisk() {
-            return Paths.get(fullCurrentPath());
         }
 
         @Override

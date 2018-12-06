@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
-import ua.kiev.prog.photopond.drive.directories.DirectoryDiskAndDatabaseRepository;
 import ua.kiev.prog.photopond.drive.directories.DirectoryModificationException;
+import ua.kiev.prog.photopond.drive.directories.DirectoryRepository;
 import ua.kiev.prog.photopond.drive.pictures.PictureFile;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileBuilder;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileException;
@@ -33,14 +33,14 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.*;
 public class DriveServiceImpl implements DriveService {
     private static final Logger LOG = LogManager.getLogger(DriveServiceImpl.class);
 
-    private final DirectoryDiskAndDatabaseRepository directoryRepository;
+    private final DirectoryRepository directoryRepository;
 
     private final PictureFileRepository fileRepository;
 
     private final UserInfoJpaRepository userInfoRepository;
 
     @Autowired
-    public DriveServiceImpl(DirectoryDiskAndDatabaseRepository directoryRepository,
+    public DriveServiceImpl(DirectoryRepository directoryRepository,
                             PictureFileRepository fileRepository,
                             UserInfoJpaRepository userInfoRepository) {
         this.directoryRepository = directoryRepository;

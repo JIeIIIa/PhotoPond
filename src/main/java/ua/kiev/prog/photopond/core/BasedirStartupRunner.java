@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
+import ua.kiev.prog.photopond.annotation.profile.DiskDatabaseStorage;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Configuration
+@DiskDatabaseStorage
 public class BasedirStartupRunner implements CommandLineRunner {
     private static Logger log = LogManager.getLogger(BasedirStartupRunner.class);
 

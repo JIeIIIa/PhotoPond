@@ -263,8 +263,11 @@
                     <includes>
                         <include>target/${application.fullName}</include>
                     </includes>
+                    <configVars>
+                        <spring.profiles.active>prod,postgresql,database-storage</spring.profiles.active>
+                    </configVars>
                     <processTypes>
-                        <web>java $JAVA_OPTS -Dspring.profiles.active=prod,postgresql -jar target/${application.fullName}</web>
+                        <web>java $JAVA_OPTS -jar target/${application.fullName}</web>
                     </processTypes>
                 </configuration>
             </plugin>

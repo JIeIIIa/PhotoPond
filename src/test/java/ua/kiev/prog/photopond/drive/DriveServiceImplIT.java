@@ -23,8 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ua.kiev.prog.photopond.Utils.TestUtils;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
-import ua.kiev.prog.photopond.drive.directories.DirectoryDiskAndDatabaseRepository;
 import ua.kiev.prog.photopond.drive.directories.DirectoryJpaRepository;
+import ua.kiev.prog.photopond.drive.directories.DirectoryRepository;
 import ua.kiev.prog.photopond.drive.pictures.PictureFile;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileBuilder;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileJpaRepository;
@@ -79,7 +79,7 @@ public class DriveServiceImplIT {
     private UserInfoJpaRepository userInfoRepository;
 
     @Autowired
-    private DirectoryDiskAndDatabaseRepository directoryRepository;
+    private DirectoryRepository directoryRepository;
 
     @Autowired
     private PictureFileRepository fileRepository;

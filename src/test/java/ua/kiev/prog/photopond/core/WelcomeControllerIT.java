@@ -1,3 +1,4 @@
+
 package ua.kiev.prog.photopond.core;
 
 import org.hamcrest.Matchers;
@@ -15,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @IntegrationTest
-@ActiveProfiles("dev")
+@ActiveProfiles({"dev", "disk-database-storage"})
 public class WelcomeControllerIT {
     @Autowired
     MockMvc mockMvc;

@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import ua.kiev.prog.photopond.drive.directories.DirectoryDiskAndDatabaseRepository;
 import ua.kiev.prog.photopond.drive.directories.DirectoryDiskAndDatabaseRepositoryImpl;
 import ua.kiev.prog.photopond.drive.directories.DirectoryJpaRepository;
+import ua.kiev.prog.photopond.drive.directories.DirectoryRepository;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileDiskAndDatabaseRepositoryImpl;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileJpaRepository;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileRepository;
@@ -18,7 +18,7 @@ public class DriveServiceImplITConfiguration {
     private String foldersBaseDir;
 
     @Bean
-    public DirectoryDiskAndDatabaseRepository directoryDiskAndDatabaseRepository(DirectoryJpaRepository jpaRepository) {
+    public DirectoryRepository directoryDiskAndDatabaseRepository(DirectoryJpaRepository jpaRepository) {
         DirectoryDiskAndDatabaseRepositoryImpl instance = new DirectoryDiskAndDatabaseRepositoryImpl(jpaRepository);
         instance.setFoldersBasedir(foldersBaseDir);
         System.out.println("directoryDiskAndDatabaseRepository:    foldersBaseDir = " + foldersBaseDir);

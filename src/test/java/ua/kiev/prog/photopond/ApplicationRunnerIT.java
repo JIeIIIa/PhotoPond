@@ -11,7 +11,7 @@ import ua.kiev.prog.photopond.annotation.IntegrationTest;
 
 @RunWith(SpringRunner.class)
 @IntegrationTest
-@ActiveProfiles("dev")
+@ActiveProfiles({"dev", "disk-database-storage"})
 public class ApplicationRunnerIT {
 
     @Autowired

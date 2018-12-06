@@ -12,8 +12,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
-import ua.kiev.prog.photopond.drive.directories.DirectoryDiskAndDatabaseRepository;
 import ua.kiev.prog.photopond.drive.directories.DirectoryException;
+import ua.kiev.prog.photopond.drive.directories.DirectoryRepository;
 import ua.kiev.prog.photopond.drive.pictures.PictureFile;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileBuilder;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileException;
@@ -40,7 +40,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 @TestPropertySource("classpath:application.properties")
 public class DriveServiceImplTest {
     @MockBean
-    private DirectoryDiskAndDatabaseRepository directoryRepository;
+    private DirectoryRepository directoryRepository;
 
     @MockBean
     private PictureFileRepository fileRepository;
