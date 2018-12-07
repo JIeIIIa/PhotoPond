@@ -32,9 +32,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         log.debug("Configure WebSecurity: add ignoring paths");
         web.ignoring()
                 .antMatchers("/css/**")
+                .antMatchers("/min/css/**")
                 .antMatchers("/libs/**")
                 .antMatchers("/pic/**")
                 .antMatchers("/js/**")
+                .antMatchers("/min/js/**")
                 .antMatchers("/login");
     }
 

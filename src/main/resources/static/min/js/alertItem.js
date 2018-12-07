@@ -1,0 +1,1 @@
+var alertItem=Vue.component("alert-item",{props:["messages","alertType"],methods:{close:function(a){this.$emit("alert-item-close",a)}}}),smallAlertItem=Vue.component("small-alert-item",{props:["alertMessage","name"],methods:{close:function(a){this.$emit("alert-item-close",a)}}});

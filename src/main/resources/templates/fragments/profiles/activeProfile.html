@@ -29,7 +29,7 @@
 </head>
 <body>
 <div th:fragment="bottomScripts" th:remove="tag">
-    <div th:include="${@environment.acceptsProfiles('prod1')}?
+    <div th:include="${@environment.acceptsProfiles('prod')}?
         ~{fragments/profiles/production :: bottomScripts} :
         ~{fragments/profiles/development :: bottomScripts}" th:remove="tag">
     </div>
