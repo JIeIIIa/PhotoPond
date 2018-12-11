@@ -70,9 +70,9 @@
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 px-0">
                 <transition name="fade" duration="300" mode="out-in">
-                    <user-roles inline-template v-if="isMenuItemSelected(1)" v-bind:key="1"
+                    <general-user-information inline-template v-if="isMenuItemSelected(1)" v-bind:key="1"
                                 th:include="~{administration/users/allUsers :: userRoles}">
-                    </user-roles>
+                    </general-user-information>
                     <used-space inline-template v-if="isMenuItemSelected(2)" v-bind:key="2"
                                 th:include="~{administration/drive/usedSpace :: usedSpace}">
                     </used-space>
@@ -103,9 +103,9 @@
 <script src="../../static/js/textFilter.js" th:src="@{/js/textFilter.js}"></script>
 <script src="../../static/js/alertItem.js" th:src="@{/js/alertItem.js}"></script>
 <script src="../../static/js/confirmModalForm.js" th:src="@{/js/confirmModalForm.js}"></script>
-<script src="../../static/js/administration/users/tableAllUsers.js" th:src="@{/js/administration/users/tableAllUsers.js}"></script>
-<script src="../../static/js/administration/users/userForm.js" th:src="@{/js/administration/users/userForm.js}"></script>
-<script src="../../static/js/administration/users/allUsers.js" th:src="@{/js/administration/users/allUsers.js}"></script>
+<script src="../../static/js/administration/users/generalUserInformationTable.js" th:src="@{/js/administration/users/generalUserInformationTable.js}"></script>
+<script src="../../static/js/administration/users/generalUserInformationForm.js" th:src="@{/js/administration/users/generalUserInformationForm.js}"></script>
+<script src="../../static/js/administration/users/generalUserInformation.js" th:src="@{/js/administration/users/generalUserInformation.js}"></script>
 <script src="../../static/js/administration/drive/usedSpaceTable.js" th:src="@{/js/administration/drive/usedSpaceTable.js}"></script>
 <script src="../../static/js/administration/drive/usedSpace.js" th:src="@{/js/administration/drive/usedSpace.js}"></script>
 <script src="../../static/js/administration/administration.js" th:src="@{/js/administration/administration.js}"></script>

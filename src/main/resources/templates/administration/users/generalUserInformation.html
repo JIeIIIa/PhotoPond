@@ -18,7 +18,7 @@
 
 <body>
 
-<user-roles inline-template th:fragment="userRoles" th:remove="tag">
+<general-user-information inline-template th:fragment="userRoles" th:remove="tag">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-10 offset-md-1 col-12 text-center">
@@ -74,7 +74,7 @@
             </div>
         </div>
     </div>
-</user-roles>
+</general-user-information>
 
 <div th:replace="~{fragments/footer :: footer}" th:remove="tag"></div>
 
@@ -91,12 +91,12 @@
 <script src="../../../static/libs/lodash/lodash.4.17.10.min.js"></script>
 
 <script src="../../../static/js/main.js" th:src="@{/js/main.js}"></script>
-<script src="../../../static/js/administration/users/tableAllUsers.js" th:src="@{/js/users/tableAllUsers.js}"></script>
-<script src="../../../static/js/administration/users/userForm.js" th:src="@{/js/users/userForm.js}"></script>
+<script src="../../../static/js/administration/users/generalUserInformationTable.js" th:src="@{/js/users/generalUserInformationTable.js}"></script>
+<script src="../../../static/js/administration/users/generalUserInformationForm.js" th:src="@{/js/users/generalUserInformationForm.js}"></script>
 <script src="../../../static/js/textFilter.js" th:src="@{/js/textFilter.js}"></script>
 <script src="../../../static/js/alertItem.js" th:src="@{/js/alertItem.js}"></script>
 <script src="../../../static/js/confirmModalForm.js" th:src="@{/js/confirmModalForm.js}"></script>
-<script src="../../../static/js/administration/users/allUsers.js" th:src="@{/js/users/allUsers.js}"></script>
+<script src="../../../static/js/administration/users/generalUserInformation.js" th:src="@{/js/users/generalUserInformation.js}"></script>
 
 </body>
 </html>

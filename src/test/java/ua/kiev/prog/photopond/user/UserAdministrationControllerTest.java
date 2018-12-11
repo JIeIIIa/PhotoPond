@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ua.kiev.prog.photopond.configuration.UserInfoServiceMockConfiguration;
 import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -47,11 +48,11 @@ public class UserAdministrationControllerTest {
 
     @Test
     public void getAllUsers() throws Exception {
-        MockHttpServletRequestBuilder get = get(URL_PREFIX);
+        MockHttpServletRequestBuilder get = get("/administration/users");
+        when(userInfoService.findAllUsers()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get)
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("users/allUsers"));
+                .andExpect(status().isOk());
     }
 
     @Test

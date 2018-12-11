@@ -1,4 +1,4 @@
-var usersApp = Vue.component('user-roles',{
+var generalUserInformation = Vue.component('general-user-information',{
     data: function() {
         return {
             allUsers: [],
