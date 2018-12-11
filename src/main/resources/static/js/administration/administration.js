@@ -4,7 +4,7 @@ var administrationApp = new Vue({
     el: "#administrationApp",
     data: function() {
         return {
-            activeItem: 2
+            activeItem: 1
         }
     },
     methods: {

@@ -1,10 +1,3 @@
-var urlTemplate = {
-    admin: {
-        allUsers: "/administration/users",
-        userById: "/administration/user/"
-    }
-};
-
 function splitApiUrl(serviceName) {
     var apiUrl = document.URL.split('/');
     if (apiUrl.length > 5) {

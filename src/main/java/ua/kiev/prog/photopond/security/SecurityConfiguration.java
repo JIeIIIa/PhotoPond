@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,19 +27,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) {
-        log.debug("Configure WebSecurity: add ignoring paths");
-        web.ignoring()
-                .antMatchers("/css/**")
-                .antMatchers("/min/css/**")
-                .antMatchers("/libs/**")
-                .antMatchers("/pic/**")
-                .antMatchers("/js/**")
-                .antMatchers("/min/js/**")
-                .antMatchers("/login");
-    }
-
-    @Override
     protected void configure(HttpSecurity http) throws Exception {
         log.debug("Configure HttpSecurity.");
         http.requiresChannel()
@@ -49,12 +35,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/", "/index", "/index.html", "/registration", "/registration.html",
+                .antMatchers("/", "/index", "/index.html", "/registration", "/registration.html", "/login",
                         "/about", "/about.html",
                         "/favicon.ico",
                         "/public/**").permitAll()
+                .antMatchers("/min/js/administration/**", "/js/administration/**").hasAnyRole("ADMIN")
                 .antMatchers("/css/**", "/libs/**", "/js/**", "/pic/**").permitAll()
-                .antMatchers("/test/**", "/testingAccessDenied").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/files/**").hasAnyRole("USER", "ADMIN")
                 .antMatchers("/administration/**").hasAnyRole("ADMIN")
                 .anyRequest().authenticated()

@@ -25,7 +25,7 @@ var generalUserInformation = Vue.component('general-user-information',{
         loadAllUsers: function() {
             var ref = this;
             ref.showLoader = true;
-            axios.get(urlTemplate.admin.allUsers)
+            axios.get(adminUrlTemplate.users.all)
                 .then(function (response) {
                     ref.allUsers = response.data;
                     ref.showLoader = false;
@@ -53,7 +53,7 @@ var generalUserInformation = Vue.component('general-user-information',{
             console.log(user);
             var index = this.userByIndex(user);
             var ref = this;
-            axios.delete(urlTemplate.admin.userById + user.id)
+            axios.delete(adminUrlTemplate.users.userById + user.id)
                 .then(function (response) {
                     if (response.status === 200) {
                         ref.errorCode = "";

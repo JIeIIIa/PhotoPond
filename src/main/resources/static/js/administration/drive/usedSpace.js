@@ -24,7 +24,7 @@ var usedSpace = Vue.component('used-space', {
         loadInformation: function () {
             var ref = this;
             ref.showLoader = true;
-            axios.get("/administration/drive/statistics")
+            axios.get(adminUrlTemplate.drive.statistics)
                 .then(function (response) {
                     ref.statisticsDTO = response.data;
                     ref.showLoader = false;

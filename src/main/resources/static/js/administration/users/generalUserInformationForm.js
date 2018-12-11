@@ -10,7 +10,7 @@ var modalForm = Vue.component('user-modal-form', {
         saveData: function() {
             var ref = this;
             ref.savingInProgress = true;
-            axios.post(urlTemplate.admin.userById + this.user.id, this.user)
+            axios.post(adminUrlTemplate.users.userById + this.user.id, this.user)
                 .then(function (response) {
                     if (response.status === 200) {
                         console.log("User was updated");
