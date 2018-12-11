@@ -42,21 +42,21 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group">
-                        <a class="list-group-item list-group-item-action text-light border-primary border-left-0 border-right-0 d-inline-block text-center text-md-left
-                                    pl-0 pr-0 pl-sm-3 pr-sm-3"
-                           data-placement="bottom" data-toggle="tooltip" href="javascript:void(0)"
-                           th:title="#{pages.administration.menu.general.title}" title="General user information"
+                        <a href="javascript:void(0)"
+                           class="list-group-item list-group-item-action text-light border-primary border-left-0 border-right-0 d-inline-block
+                                    text-center text-md-left pl-0 pr-0 pl-sm-3 pr-sm-3"
+                           v-tooltip data-toggle="tooltip" data-placement="bottom"
+                           title="General user information" th:title="#{pages.administration.menu.general.title}"
                            v-bind:class="menuItemClass(1)"
-                           v-on:click.prevent.stop="setActiveItem(1)"
-                           v-tooltip>
+                           v-on:click.prevent.stop="setActiveItem(1)">
                             <i class="fas fa-address-card"></i>
                             <span class="pl-lg-3 d-none d-md-inline" th:text="#{pages.administration.menu.general.text}">General</span>
                         </a>
                         <a href="javascript:void(0)"
+                           class="list-group-item list-group-item-action text-light border-primary border-left-0 border-right-0 d-inline-block
+                                    text-center text-md-left pl-0 pr-0 pl-sm-3 pr-sm-3"
                            v-tooltip data-toggle="tooltip" data-placement="bottom"
-                           title="Change avatar" th:title="#{pages.administration.menu.usedSpace.title}"
-                           class="list-group-item list-group-item-action text-light border-primary border-left-0 border-right-0 d-inline-block text-center text-md-left
-                                    pl-0 pr-0 pl-sm-3 pr-sm-3"
+                           title="Used space by user" th:title="#{pages.administration.menu.usedSpace.title}"
                            v-bind:class="menuItemClass(2)"
                            v-on:click.prevent.stop="setActiveItem(2)">
                             <i class="fas fa-calculator"></i>
@@ -69,14 +69,14 @@
         <div class="col-10 col-md-9">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-10 px-0">
-                <transition name="fade" duration="300" mode="out-in">
-                    <general-user-information inline-template v-if="isMenuItemSelected(1)" v-bind:key="1"
-                                th:include="~{administration/users/allUsers :: userRoles}">
-                    </general-user-information>
-                    <used-space inline-template v-if="isMenuItemSelected(2)" v-bind:key="2"
-                                th:include="~{administration/drive/usedSpace :: usedSpace}">
-                    </used-space>
-                </transition>
+                    <transition name="fade" duration="300" mode="out-in">
+                        <general-user-information inline-template v-if="isMenuItemSelected(1)" v-bind:key="1"
+                                                  th:include="~{administration/users/generalUserInformation :: generalUserInformation}">
+                        </general-user-information>
+                        <used-space inline-template v-if="isMenuItemSelected(2)" v-bind:key="2"
+                                    th:include="~{administration/drive/usedSpace :: usedSpace}">
+                        </used-space>
+                    </transition>
                 </div>
             </div>
         </div>

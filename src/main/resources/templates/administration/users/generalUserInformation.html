@@ -18,7 +18,7 @@
 
 <body>
 
-<general-user-information inline-template th:fragment="userRoles" th:remove="tag">
+<general-user-information inline-template th:fragment="generalUserInformation" th:remove="tag">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-10 offset-md-1 col-12 text-center">
@@ -51,7 +51,7 @@
                                      v-bind:users-list="filteredData"
                                      v-on:delete-user="onDelete"
                                      v-on:edit-user="editUser">
-                            <div th:insert="~{administration/users/tableAllUsers :: tableAllUsers}"></div>
+                            <div th:insert="~{administration/users/generalUserInformationTable :: usersTable}"></div>
                         </users-table>
                     </div>
                 </transition>
@@ -59,7 +59,7 @@
                                  v-bind:user="editedUser"
                                  th:attr="error-message=#{administration.table.allUsers.editing.error}"
                                  v-on:done-edit="doneEdit">
-                    <div th:insert="~{administration/users/userForm :: modalForm}"></div>
+                    <div th:insert="~{administration/users/generalUserInformationForm :: modalForm}"></div>
                 </user-modal-form>
                 <confirm-modal-form inline-template
                                     th:attr=" custom-header=#{administration.table.allUsers.deleting.title},
