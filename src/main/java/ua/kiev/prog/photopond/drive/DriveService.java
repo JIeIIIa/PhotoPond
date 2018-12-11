@@ -22,4 +22,8 @@ public interface DriveService {
     void movePictureFile(String ownerLogin, String path, String newPath) throws DriveException;
 
     void deleteDirectory(String ownerLogin, String path) throws DriveException;
+
+    DriveStatisticsDTO makeStatistics(String ownerLogin) throws DriveException;
+
+    List<DriveStatisticsDTO> fullStatistics() throws DriveException;
 }

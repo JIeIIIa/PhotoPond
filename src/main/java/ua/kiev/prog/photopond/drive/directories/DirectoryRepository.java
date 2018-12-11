@@ -20,6 +20,8 @@ public interface DirectoryRepository {
 
     List<Directory> findByOwnerAndPath(UserInfo owner, String path);
 
+    List<Directory> findByOwnerAndPathStartingWith(UserInfo owner, String pathPattern);
+
     Optional<Directory> findById(Long directoryId);
 
     Optional<Directory> findByOwnerAndId(UserInfo owner, Long directoryId);

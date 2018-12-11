@@ -14,7 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../../static/css/photopond.css">
+    <link rel="stylesheet" href="../../../static/css/photopond.css">
 </head>
 
 <body>
@@ -27,7 +27,7 @@
                     <div class="modal-header bg-info border-info text-center">
                         <div class="modal-title w-100 font-weight-bold">
                             <h4>
-                                <span th:text="#{admin.allUsers.editing.title}">Change data</span>
+                                <span th:text="#{administration.table.allUsers.editing.title}">Change data</span>
                                 <span>(id: {{ user.id }})</span>
                             </h4>
 
@@ -93,15 +93,15 @@
 </div>
 <div th:replace="~{fragments/profiles/activeProfile :: bottomScripts}" th:remove="tag">
     <!-- jQuery -->
-    <script src="../../static/libs/jquery/jquery-3.3.1.slim.min.js"></script>
+    <script src="../../../static/libs/jquery/jquery-3.3.1.slim.min.js"></script>
 
     <!-- Bootstrap JS -->
-    <script src="../../static/libs/popper/popper.1.14.3.min.js"></script>
-    <script src="../../static/libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script src="../../../static/libs/popper/popper.1.14.3.min.js"></script>
+    <script src="../../../static/libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
     <!-- Vue.js -->
-    <script src="../../static/libs/vuejs/vue-2.5.16.js"></script>
-    <script src="../../static/libs/axios/axios.0.18.0.min.js"></script>
+    <script src="../../../static/libs/vuejs/vue-2.5.16.js"></script>
+    <script src="../../../static/libs/axios/axios.0.18.0.min.js"></script>
 </div>
 
 <script>

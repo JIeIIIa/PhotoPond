@@ -19,8 +19,11 @@ import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.LongSummaryStatistics;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static ua.kiev.prog.photopond.drive.DriveItemDTOMapper.toDTO;
@@ -174,6 +177,39 @@ public class DriveServiceImpl implements DriveService {
             LOG.warn(message);
             throw new DriveException(message, e);
         }
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public DriveStatisticsDTO makeStatistics(String ownerLogin) throws DriveException {
+        return userInfoRepository.findByLogin(ownerLogin)
+                .map(this::makeStatistics)
+                .orElseThrow(DriveException::new);
+    }
+
+    private DriveStatisticsDTO makeStatistics(UserInfo userInfo) throws DriveException {
+        LongSummaryStatistics statistics = directoryRepository.findByOwnerAndPathStartingWith(userInfo, SEPARATOR)
+                .stream()
+                .map(fileRepository::findByDirectory)
+                .flatMap(Collection::stream)
+                .map(fileRepository::pictureSize)
+                .mapToLong(Long::longValue)
+                .summaryStatistics();
+
+        DriveStatisticsDTO driveStatisticsDTO = new DriveStatisticsDTO(userInfo.getLogin());
+        driveStatisticsDTO.setDirectoriesSize(statistics.getSum());
+        driveStatisticsDTO.setPictureCount(statistics.getCount());
+
+        return driveStatisticsDTO;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DriveStatisticsDTO> fullStatistics() throws DriveException {
+        return userInfoRepository.findAll().stream()
+                .map(this::makeStatistics)
+                .collect(Collectors.toList());
     }
 
     @Override

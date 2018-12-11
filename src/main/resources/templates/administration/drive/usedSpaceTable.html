@@ -1,0 +1,95 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:v-on="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+      lang="en">
+
+
+<head>
+    <title>PhotoPond - used space table (Vue.js component)</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../../../static/css/photopond.css">
+</head>
+
+<body>
+<div id="usersApp">
+    <used-space-table inline-template
+                      th:fragment="usedSpaceTable" th:remove="tag">
+
+        <div class="container-fluid">
+            <div class="row">
+                <table class="table table-sm h-100">
+                    <thead class="thead-dark">
+                    <tr class="d-flex">
+                        <th class="col-md-6 col-6">
+                            <div class="d-flex cursor-pointer h-100 justify-content-center align-items-center"
+                                 v-on:click="sortBy('login')">
+                                <span class="text-center break-word-wrap"
+                                      th:text="#{user.login}">
+                                    Login
+                                </span>
+                                <i class="textArrow fa ml-sm-1"
+                                   :class="textArrowClass"
+                                   v-if="isSortedByField('login')"></i>
+                            </div>
+                        </th>
+                        <th class="col-md-2 col-3">
+                            <div class="d-flex cursor-pointer h-100 justify-content-center align-items-center"
+                                 v-on:click="sortBy('pictureCount')">
+                                <span class="text-center break-word-wrap"
+                                      th:text="#{administration.table.usedSpace.pictureCount}">
+                                    Picture count
+                                </span>
+                                <i class="textArrow fa ml-sm-1"
+                                   :class="textArrowClass"
+                                   v-if="isSortedByField('pictureCount')"></i>
+                            </div>
+                        </th>
+                        <th class="col-md-4 col-3">
+                            <div class="d-flex cursor-pointer h-100 justify-content-center align-items-center"
+                                 v-on:click="sortBy('sizeInKiloBytes')">
+                                <span class="text-center break-word-wrap"
+                                      th:text="#{administration.table.usedSpace.totalSize}">
+                                    Total size, kB
+                                </span>
+                                <i class="textArrow fa ml-sm-1"
+                                   :class="textArrowClass"
+                                   v-if="isSortedByField('sizeInKiloBytes')"></i>
+                            </div>
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody name="table-row" is="transition-group">
+                    <tr class="d-flex" v-for="(item, key, index) in sortedUsersList" v-bind:key="item.login">
+                        <td class="col-md-6 col-6">{{ item.login }}</td>
+                        <td class="col-md-2 col-3 text-right">{{ item.pictureCount }}</td>
+                        <td class="col-md-4 col-3 text-right">{{ item.sizeInKiloBytes }}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </used-space-table>
+</div>
+
+<!-- jQuery -->
+<script src="../../../static/libs/jquery/jquery-3.3.1.slim.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="../../../static/libs/popper/popper.1.14.3.min.js"></script>
+<script src="../../../static/libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+<!-- Vue.js -->
+<script src="../../../static/libs/vuejs/vue-2.5.16.js"></script>
+<script src="../../../static/libs/axios/axios.0.18.0.min.js"></script>
+<script src="../../../static/libs/lodash/lodash.4.17.10.min.js"></script>
+
+</body>
+</html>

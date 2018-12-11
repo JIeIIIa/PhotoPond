@@ -150,6 +150,20 @@ public class PictureFileDiskAndDatabaseRepositoryImpl implements PictureFileRepo
         }
     }
 
+    @Override
+    public long pictureSize(PictureFile pictureFile) {
+        Path path = Paths.get(foldersBaseDir + pictureFile.getFullPath());
+        long size = 0L;
+        if (!Files.exists(path)) {
+            try {
+                size = Files.size(path);
+            } catch (IOException e) {
+                LOG.warn("Cannot retrieve size for {}", pictureFile );
+            }
+        }
+        return size;
+    }
+
     private void throwExceptionIfNull(PictureFile file) throws IllegalArgumentException {
         if (file == null) {
             LOG.debug("PictureFile:   NULL");

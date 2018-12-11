@@ -117,6 +117,13 @@ public class PictureFileDatabaseRepositoryImpl implements PictureFileRepository 
         }
     }
 
+    @Override
+    public long pictureSize(PictureFile pictureFile) {
+        return pictureFileDataJpaRepository.findByPictureFile(pictureFile)
+                .map(PictureFileData::getSize)
+                .orElse(0L);
+    }
+
     private void throwExceptionIfNull(PictureFile file) throws IllegalArgumentException {
         if (file == null) {
             LOG.debug("PictureFile:   NULL");

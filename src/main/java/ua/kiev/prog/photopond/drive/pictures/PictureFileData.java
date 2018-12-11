@@ -56,7 +56,7 @@ public class PictureFileData implements Serializable {
         this.size = data.length;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 

@@ -1,20 +1,21 @@
-var users = Vue.component('users-table', {
-    props: ['usersList'],
+var users = Vue.component('used-space-table', {
+    props: ['information'],
     data: function() {
         return {
-            sortOptions: new SortOptions("id")
+            sortOptions: new SortOptions("login")
         }
     },
     computed: {
         sortedUsersList: function() {
-            return this.usersList
+            return this.information
                 .sort(dynamicSort(this.sortOptions.fieldName, this.sortOptions.isAscend()));
         },
-        isAsc: function() {
-            return this.sortOptions.isAscend()
-        },
-        isDesc: function() {
-            return !this.sortOptions.isAscend()
+        textArrowClass: function () {
+            if(this.sortOptions.isAscend()) {
+                return 'fa-arrow-up';
+            } else {
+                return 'fa-arrow-down';
+            }
         }
     },
     methods: {

@@ -1,0 +1,77 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+
+
+<head>
+    <title>PhotoPond - used space (Vue.js component)</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../../../static/css/photopond.css">
+</head>
+
+<body>
+
+<used-space inline-template th:fragment="usedSpace" th:remove="tag">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 th:text="#{administration.table.usedSpace.caption}">Used space</h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <transition name="fade" mode="out-in">
+                    <loader-component inline-template th:insert="~{fragments/loader :: loader}"
+                                      v-if="showLoader" key="tableLoader">
+                    </loader-component>
+
+                    <div v-else key="table">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12 px-1 pb-2">
+                                    <text-filter v-cloak inline-template
+                                                 v-model="filterTemplate">
+                                        <div th:insert="~{fragments/filter :: textFilter}" th:remove="tag">
+                                        </div>
+                                    </text-filter>
+                                </div>
+                            </div>
+                        </div>
+                        <used-space-table v-cloak inline-template
+                                          v-bind:information="filteredData">
+                            <div th:insert="~{administration/drive/usedSpaceTable :: usedSpaceTable}"></div>
+                        </used-space-table>
+                    </div>
+                </transition>
+            </div>
+        </div>
+    </div>
+</used-space>
+
+<!-- jQuery -->
+<script src="../../../static/libs/jquery/jquery-3.3.1.slim.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="../../../static/libs/popper/popper.1.14.3.min.js"></script>
+<script src="../../../static/libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+<!-- Vue.js -->
+<script src="../../../static/libs/vuejs/vue-2.5.16.js"></script>
+<script src="../../../static/libs/axios/axios.0.18.0.min.js"></script>
+<script src="../../../static/libs/lodash/lodash.4.17.10.min.js"></script>
+
+<script src="../../../static/js/main.js" th:src="@{/js/main.js}"></script>
+<script src="../../../static/js/textFilter.js" th:src="@{/js/textFilter.js}"></script>
+<script src="../../../static/js/alertItem.js" th:src="@{/js/alertItem.js}"></script>
+<script src="../../../static/js/confirmModalForm.js" th:src="@{/js/confirmModalForm.js}"></script>
+<script src="../../../static/js/administration/users/allUsers.js" th:src="@{/js/users/allUsers.js}"></script>
+
+</body>
+</html>

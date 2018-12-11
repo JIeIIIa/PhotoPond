@@ -1,0 +1,113 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:v-on="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+      lang="en">
+
+
+<head
+        th:replace="~{fragments/profiles/activeProfile :: head (pageTitle = #{pages.administration.title})}"
+>
+    <title>PhotoPond - Administration panel</title>
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../../static/css/photopond.css">
+</head>
+
+<body>
+
+<object th:include="~{fragments/header :: header('administration')}" th:remove="tag"></object>
+
+<!--/*@thymesVar id="startItem" type="java.lang.Integer"*/-->
+<div class="container-fluid" id="administrationApp"
+     th:attrappend="data-start-item=${startItem}"
+     v-cloak>
+    <div class="row">
+        <div class="col-2 col-md-3">
+            <div class="card settings-card bg-dark border-primary">
+                <div class="card-header bg-info border-primary d-inline-block text-center pl-0 pr-0"
+                     v-tooltip data-toggle="tooltip" data-placement="bottom"
+                     title="Admin panel" th:title="#{pages.administration.menu.header}">
+                    <h3 class="truncate">
+                        <i class="fas fa-toolbox"></i>
+                        <span class="pl-lg-2 d-none d-md-inline"
+                              th:text="#{pages.administration.menu.header}">
+                            Settings
+                        </span>
+                    </h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group">
+                        <a class="list-group-item list-group-item-action text-light border-primary border-left-0 border-right-0 d-inline-block text-center text-md-left
+                                    pl-0 pr-0 pl-sm-3 pr-sm-3"
+                           data-placement="bottom" data-toggle="tooltip" href="javascript:void(0)"
+                           th:title="#{pages.administration.menu.general.title}" title="General user information"
+                           v-bind:class="menuItemClass(1)"
+                           v-on:click.prevent.stop="setActiveItem(1)"
+                           v-tooltip>
+                            <i class="fas fa-address-card"></i>
+                            <span class="pl-lg-3 d-none d-md-inline" th:text="#{pages.administration.menu.general.text}">General</span>
+                        </a>
+                        <a href="javascript:void(0)"
+                           v-tooltip data-toggle="tooltip" data-placement="bottom"
+                           title="Change avatar" th:title="#{pages.administration.menu.usedSpace.title}"
+                           class="list-group-item list-group-item-action text-light border-primary border-left-0 border-right-0 d-inline-block text-center text-md-left
+                                    pl-0 pr-0 pl-sm-3 pr-sm-3"
+                           v-bind:class="menuItemClass(2)"
+                           v-on:click.prevent.stop="setActiveItem(2)">
+                            <i class="fas fa-calculator"></i>
+                            <span class="pl-lg-3 d-none d-md-inline" th:text="#{pages.administration.menu.usedSpace.text}">Used space</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-10 col-md-9">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 px-0">
+                <transition name="fade" duration="300" mode="out-in">
+                    <user-roles inline-template v-if="isMenuItemSelected(1)" v-bind:key="1"
+                                th:include="~{administration/users/allUsers :: userRoles}">
+                    </user-roles>
+                    <used-space inline-template v-if="isMenuItemSelected(2)" v-bind:key="2"
+                                th:include="~{administration/drive/usedSpace :: usedSpace}">
+                    </used-space>
+                </transition>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}" th:remove="tag"></div>
+
+<div th:replace="~{fragments/profiles/activeProfile :: bottomScripts}" th:remove="tag">
+    <!-- jQuery -->
+    <script src="../../static/libs/jquery/jquery-3.3.1.slim.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="../../static/libs/popper/popper.1.14.3.min.js"></script>
+    <script src="../../static/libs/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="../../static/libs/vuejs/vue-2.5.16.js"></script>
+    <script src="../../static/libs/axios/axios.0.18.0.min.js"></script>
+    <script src="../../static/libs/lodash/lodash.4.17.10.min.js"></script>
+</div>
+
+<!--<script src="../../static/js/main.js" th:src="@{/js/main.js}"></script>-->
+<script src="../../static/js/textFilter.js" th:src="@{/js/textFilter.js}"></script>
+<script src="../../static/js/alertItem.js" th:src="@{/js/alertItem.js}"></script>
+<script src="../../static/js/confirmModalForm.js" th:src="@{/js/confirmModalForm.js}"></script>
+<script src="../../static/js/administration/users/tableAllUsers.js" th:src="@{/js/administration/users/tableAllUsers.js}"></script>
+<script src="../../static/js/administration/users/userForm.js" th:src="@{/js/administration/users/userForm.js}"></script>
+<script src="../../static/js/administration/users/allUsers.js" th:src="@{/js/administration/users/allUsers.js}"></script>
+<script src="../../static/js/administration/drive/usedSpaceTable.js" th:src="@{/js/administration/drive/usedSpaceTable.js}"></script>
+<script src="../../static/js/administration/drive/usedSpace.js" th:src="@{/js/administration/drive/usedSpace.js}"></script>
+<script src="../../static/js/administration/administration.js" th:src="@{/js/administration/administration.js}"></script>
+</body>
+</html>

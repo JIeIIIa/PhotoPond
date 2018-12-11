@@ -3,6 +3,7 @@ package ua.kiev.prog.photopond.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,14 +63,14 @@ public class Utils {
 
     public static HttpHeaders jsonHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
         return headers;
     }
 
     public static HttpHeaders textHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
+        headers.setContentType(MediaType.TEXT_HTML);
 
         return headers;
     }

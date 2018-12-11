@@ -214,6 +214,12 @@ public class DirectoryDatabaseRepositoryImpl implements DirectoryRepository {
     }
 
     @Override
+    public List<Directory> findByOwnerAndPathStartingWith(UserInfo owner, String pathPattern) {
+        LOG.traceEntry("Find by owner = {} and path starting with = '{}'", owner.getLogin(), pathPattern);
+        return LOG.traceExit(directoryJpaRepository.findByOwnerAndPathStartingWith(owner, pathPattern));
+    }
+
+    @Override
     public Optional<Directory> findById(Long directoryId) {
         return LOG.traceExit(directoryJpaRepository.findById(directoryId));
     }

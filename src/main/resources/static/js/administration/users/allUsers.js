@@ -1,7 +1,4 @@
-var loader = Vue.component('loader-component', {});
-
-var vm = new Vue({
-    el: '#usersApp',
+var usersApp = Vue.component('user-roles',{
     data: function() {
         return {
             allUsers: [],

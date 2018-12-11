@@ -17,4 +17,6 @@ public interface PictureFileRepository {
     void delete(PictureFile file) throws PictureFileException;
 
     void move(PictureFile file, Directory targetDirectory, String targetFilename) throws PictureFileException;
+
+    long pictureSize(PictureFile pictureFile);
 }
