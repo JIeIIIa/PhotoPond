@@ -34,6 +34,9 @@ var moveModalForm = Vue.component('move-modal-form', {
 
             return res;
         },
+        sortedChildDirectories: function () {
+            return this.content.childDirectories.sort(dynamicSort('name', true));
+        },
         subDirectoriesWithUri: function() {
             var list = [];
             if (!jQuery.isEmptyObject(this.content.parent)) {
@@ -44,7 +47,7 @@ var moveModalForm = Vue.component('move-modal-form', {
                 list.push(item);
             }
             if (!jQuery.isEmptyObject(this.content.childDirectories)) {
-                this.content.childDirectories.forEach(function (item) {
+                this.sortedChildDirectories.forEach(function (item) {
                     item.uri = item.parentUri + '/' + item.name;
                     item.nameInHtml = item.name;
                     list.push(item);

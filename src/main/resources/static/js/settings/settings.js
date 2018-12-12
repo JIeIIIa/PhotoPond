@@ -2,7 +2,7 @@ var userSettings = new Vue({
     el: "#settings",
     data: function() {
         return {
-            activeItem: 2
+            activeItem: 1
         }
     },
     methods: {
@@ -25,8 +25,6 @@ var userSettings = new Vue({
         var settings = $("#settings");
         if (settings.data('start-item')) {
             this.activeItem = settings.data('start-item');
-        } else {
-            this.activeItem = 3;
         }
     }
 });
