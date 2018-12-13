@@ -34,6 +34,11 @@
             <!--Path to breadcrumb-->
             <div class="row">
                 <div class="col-12">
+                    <h3 class="font-weight-bold" th:text="#{pages.home.path.caption}">Pictures:</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
                     <ol class="breadcrumb mb-0">
                         <template v-for="(parent, index) in parentDirectories">
                             <li class="breadcrumb-item content-disabled secondary-color" v-if="index < parentDirectories.length - 1">
@@ -51,6 +56,28 @@
 
             <!-- Toolbar -->
             <div th:include="drive/toolbar :: toolbar" th:remove="tag"></div>
+
+            <!-- Upload pictures error alert -->
+            <transition name="fade" :duration="150" mode="out-in">
+                <div class="row" v-if="pictureError.status">
+                    <div class="col-12">
+                        <div class="alert-container">
+                            <div class="alert alert-danger alert-dismissible fade show text-left py-2 pl-3" role="alert">
+                                <small class="pr-5">
+                                <span v-if="pictureError.count">
+                                    {{ pictureError.count }}
+                                    <span th:text="#{pages.home.picture.uploadError}">pictures were not added!</span>
+                                </span>
+                                    <span v-if="pictureError.status"> (code:&nbsp;<b>{{ pictureError.status }}</b>)</span>
+                                </small>
+                                <button type="button" class="close close-btn py-2 pr-3" aria-label="Close" v-on:click="clearPictureError">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
 
             <div class="row">
                 <div class="col-12">

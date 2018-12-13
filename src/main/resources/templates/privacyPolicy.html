@@ -1,6 +1,7 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
 <head th:replace="~{fragments/profiles/activeProfile :: head (pageTitle = #{pages.privacyPolicy.title})}">
     <title>PhotoPond - privacy policy</title>
     <!-- Required meta tags -->
@@ -125,6 +126,8 @@
         </div>
     </div>
 </div>
+
+<div th:replace="~{fragments/footer :: footer}" th:remove="tag"></div>
 
 <div th:replace="~{fragments/profiles/activeProfile :: bottomScripts}" th:remove="tag">
     <!-- jQuery -->

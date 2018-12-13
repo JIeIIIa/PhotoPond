@@ -2,7 +2,7 @@ var loader = Vue.component('loader-component', {});
 
 var app = new Vue({
     el: '#directoryApp',
-    data: function() {
+    data: function () {
         return {
             url: '',
             elements: [],
@@ -12,6 +12,10 @@ var app = new Vue({
             editedItem: '',
             dialogOperationInProgress: false,
             showLoader: false,
+            pictureError: {
+                status: '',
+                count: ''
+            },
             size: {
                 countPerRow: 2,
                 suffix: [12, 6, 4, 3, 2, 1]
@@ -21,23 +25,23 @@ var app = new Vue({
         }
     },
     computed: {
-        elementsWithUri: function() {
+        elementsWithUri: function () {
             return this.elements.map(function (item) {
                 item.data.uri = item.data.parentUri + '/' + item.data.name;
                 return item;
             })
         },
-        sortedDirectories: function() {
+        sortedDirectories: function () {
             return this
                 .filter('DIR')
                 .sort(dynamicSort(this.sortOptions.fieldName, this.sortOptions.isAscend()));
         },
-        sortedFiles: function() {
+        sortedFiles: function () {
             return this
                 .filter('FILE')
                 .sort(dynamicSort(this.sortOptions.fieldName, this.sortOptions.isAscend()));
         },
-        parentDirectories: function() {
+        parentDirectories: function () {
             var splitUrl = this.url.split('/');
             if (splitUrl.length > 0 && splitUrl[splitUrl.length - 1] === '') {
                 splitUrl.splice(splitUrl.length - 1, 1);
@@ -65,7 +69,7 @@ var app = new Vue({
 
             return list;
         },
-        selectedItemCount: function() {
+        selectedItemCount: function () {
             var count = 0;
             this.elements.forEach(function (item) {
                 if (item.selected) {
@@ -74,7 +78,7 @@ var app = new Vue({
             });
             return count;
         },
-        selectedFileCount: function() {
+        selectedFileCount: function () {
             var count = 0;
             var ref = this;
             this.elements.forEach(function (item) {
@@ -84,7 +88,7 @@ var app = new Vue({
             });
             return count;
         },
-        hasDirectory: function() {
+        hasDirectory: function () {
             for (var i = 0; i < this.elements.length; i++) {
                 if (this.isDirectory(this.elements[i])) {
                     return true;
@@ -92,7 +96,7 @@ var app = new Vue({
             }
             return false;
         },
-        hasFile: function() {
+        hasFile: function () {
             for (var i = 0; i < this.elements.length; i++) {
                 if (this.isFile(this.elements[i])) {
                     return true;
@@ -100,19 +104,19 @@ var app = new Vue({
             }
             return false;
         },
-        colSizeClasses: function() {
+        colSizeClasses: function () {
             return ['col-' + this.size.suffix[this.size.countPerRow - 1],
                 'col-sm-' + this.size.suffix[this.size.countPerRow],
                 'col-md-' + this.size.suffix[this.size.countPerRow + 1],
                 'col-xl-' + this.size.suffix[this.size.countPerRow + 2]];
         },
-        heightSizeClasses: function() {
+        heightSizeClasses: function () {
             return ['height-vw-' + this.size.suffix[this.size.countPerRow - 1],
                 'height-vw-sm-' + this.size.suffix[this.size.countPerRow],
                 'height-vw-md-' + this.size.suffix[this.size.countPerRow + 1],
                 'height-vw-xl-' + this.size.suffix[this.size.countPerRow + 2]];
         },
-        images: function() {
+        images: function () {
             var res = [];
             this.sortedFiles.forEach(function (item) {
                 res.push(item.data);
@@ -130,7 +134,7 @@ var app = new Vue({
             }
             return res;
         },
-        isSelectAll: function() {
+        isSelectAll: function () {
             return this.elements.length > 0 && this.selectedItemCount === this.elements.length;
         },
         faSelectedIcon: function () {
@@ -142,7 +146,7 @@ var app = new Vue({
         }
     },
     methods: {
-        dateConvert: function(unixTimeStamp) {
+        dateConvert: function (unixTimeStamp) {
             var dt = eval(unixTimeStamp);
             var myDate = new Date(dt);
             return (myDate.toLocaleString());
@@ -153,7 +157,7 @@ var app = new Vue({
         isSortedByField: function (fieldName) {
             return this.sortOptions.fieldName === fieldName;
         },
-        filter: function(type) {
+        filter: function (type) {
             var ref = this;
             var res = [];
             this.elements.forEach(function (item) {
@@ -164,7 +168,7 @@ var app = new Vue({
             });
             return res;
         },
-        pageNotFound: function() {
+        pageNotFound: function () {
             var redirectedUrl = '/page-not-found';
             var form = $('<form action="' + redirectedUrl + '" method="post" hidden="hidden">' +
                 '<input type="text" name="url" value="' + window.location.href + '" />' +
@@ -172,7 +176,7 @@ var app = new Vue({
             $('body').append(form);
             form.submit();
         },
-        loadDirectoryData: function() {
+        loadDirectoryData: function () {
             var ref = this;
             ref.showLoader = true;
             axios.get(apiUrl('directory'))
@@ -189,42 +193,51 @@ var app = new Vue({
                 })
                 .catch(function (error) {
                     ref.showLoader = false;
+                    console.log(error);
                     ref.pageNotFound();
                 })
         },
-        addElement: function(data) {
+        addElement: function (data) {
             data.uri = data.parentUri + '/' + data.name;
             this.elements.push({
                 data: data,
                 selected: false
             })
         },
-        isDirectory: function(item) {
+        isDirectory: function (item) {
             return item.data.type === 'DIR';
         },
-        isFile: function(item) {
+        isFile: function (item) {
             return item.data.type === 'FILE';
         },
-        clearErrorCode: function() {
+        clearErrorCode: function () {
             this.errorCode = '';
         },
-        makeError: function(errMsg, status) {
+        makeError: function (errMsg, status) {
             console.log('code ' + status + ': ' + errMsg);
             this.errorCode = status;
         },
-        onFileUpload: function() {
+        onFileUpload: function () {
             console.log('start files upload');
             this.$refs.files.click();
         },
-        onFileUploadFinish: function() {
-            console.log('Files upload finish\n');
+        onFileUploadError: function (count, status) {
+            console.log('Error in uploading ' + count + ' file(-s) (status = ' + status + ')');
+            this.pictureError.count = count;
+            this.pictureError.status = status;
+        },
+        onFileUploadFinish: function () {
+            console.log('Files upload finishing\n');
+            this.clearPictureError();
             var uploadedFiles = this.$refs.files.files;
+            var filesCount = uploadedFiles.length;
             var formData = new FormData();
             for (var i = 0; i < uploadedFiles.length; i++) {
                 formData.append('files', uploadedFiles[i]);
             }
 
             var ref = this;
+            ref.showLoader = true;
 
             axios.post(apiUrl('files'), formData, {
                 headers: {
@@ -235,20 +248,31 @@ var app = new Vue({
                     response.data.forEach(function (item) {
                         ref.addElement(item);
                     });
+                    var count = filesCount - response.data.length;
+                    if (count !== 0) {
+                        ref.onFileUploadError(count, response.status);
+                    }
                 } else {
-                    console.log('Error in uploading files (status = ' + response.status + ')');
+                    this.onFileUploadError(uploadedFiles.length, response.status);
                 }
+                ref.showLoader = false;
             }).catch(function (reason) {
-                console.log('Error in uploading files (status = ' + reason.response.status + ')');
-            })
+                ref.showLoader = false;
+                ref.onFileUploadError(uploadedFiles.length, reason.response.status);
+            });
+            this.$refs.files.value = '';
         },
-        onCreateDirectory: function() {
+        clearPictureError: function () {
+            this.pictureError.count = '';
+            this.pictureError.status = '';
+        },
+        onCreateDirectory: function () {
             this.editedValue = '';
             this.clearErrorCode();
             this.dialogOperationInProgress = false;
             $('#createDirectory .singleInputModalForm').modal('show');
         },
-        onCreateDirectorySuccess: function(directoryName) {
+        onCreateDirectorySuccess: function (directoryName) {
             this.clearErrorCode();
             console.log(directoryName);
             var ref = this;
@@ -276,7 +300,7 @@ var app = new Vue({
                     ref.dialogOperationInProgress = false;
                 });
         },
-        onRename: function() {
+        onRename: function () {
             if (this.selectedItemCount !== 1) {
                 console.log('Renaming failure');
                 return;
@@ -293,7 +317,7 @@ var app = new Vue({
             console.log(this.editedValue);
             $('#renameItem .singleInputModalForm').modal('show');
         },
-        onRenameSuccess: function() {
+        onRenameSuccess: function () {
             var ref = this;
             ref.clearErrorCode();
             ref.dialogOperationInProgress = true;
@@ -322,7 +346,7 @@ var app = new Vue({
                     ref.dialogOperationInProgress = false;
                 });
         },
-        onDelete: function() {
+        onDelete: function () {
             if (this.selectedItemCount < 1) {
                 console.log('No selected elements');
                 return;
@@ -333,7 +357,7 @@ var app = new Vue({
             console.log(this.selectedItemCount);
             $('#deleteItems #confirmModalForm').modal('show');
         },
-        onDeleteConfirm: function() {
+        onDeleteConfirm: function () {
             var ref = this;
             this.errorCode = "-1";
             var count = this.selectedItemCount;
@@ -365,7 +389,7 @@ var app = new Vue({
                     });
             });
         },
-        onMove: function() {
+        onMove: function () {
             if (this.selectedItemCount < 1) {
                 console.log('Moving failure');
                 return;
@@ -378,7 +402,7 @@ var app = new Vue({
             this.$refs.moveModalForm.loadSubDirectories(apiUrl('directories'));
             $('#moveItems .moveModalForm').modal('show');
         },
-        onMoveConfirm: function(parentUrl) {
+        onMoveConfirm: function (parentUrl) {
             var targetParentUrl = parentUrl.replace('/api/', '/user/').replace('/directories/', '/drive/');
             var ref = this;
             ref.operationInProgress = true;
@@ -423,18 +447,18 @@ var app = new Vue({
                     });
             });
         },
-        onTweet: function() {
+        onTweet: function () {
             this.editedValue = '';
             this.clearErrorCode();
             this.dialogOperationInProgress = false;
             $('#createTweetMessage .singleTextareaModalForm').modal('show');
         },
-        onTweetSuccess: function() {
+        onTweetSuccess: function () {
             var ref = this;
 
             console.log('Create tweet...\n');
             var paths = [];
-            this.elements.forEach(function (item, index, object) {
+            this.elements.forEach(function (item) {
                 if (!item.selected || ref.isDirectory(item)) {
                     return;
                 }
@@ -466,50 +490,50 @@ var app = new Vue({
                     ref.dialogOperationInProgress = false;
                 });
         },
-        selectAll: function(state) {
+        selectAll: function (state) {
             this.elements.forEach(function (item) {
                 item.selected = state;
             });
         },
-        changeAllSelection: function() {
+        changeAllSelection: function () {
             this.selectAll(!this.isSelectAll);
         },
-        selectDirectories: function() {
+        selectDirectories: function () {
             this.filter('DIR')
                 .forEach(function (item) {
                     item.selected = true;
                 });
         },
-        selectFiles: function() {
+        selectFiles: function () {
             this.filter('FILE')
                 .forEach(function (item) {
                     item.selected = true;
                 });
         },
-        showTweetPublishedForm: function(tweetDTO) {
+        showTweetPublishedForm: function (tweetDTO) {
             this.errorCode = "";
             this.editedValue = tweetDTO['url'];
             this.selectAll(false);
             $('#tweetPublished .singleInputModalForm').modal('show');
         },
-        hideTweetPublishedForm: function() {
+        hideTweetPublishedForm: function () {
             $('#tweetPublished .singleInputModalForm').modal('hide');
         },
-        sizeMenuItemClass: function(countPerRow) {
+        sizeMenuItemClass: function (countPerRow) {
             if (countPerRow !== this.size.countPerRow) {
                 return 'hidden';
             } else {
                 return '';
             }
         },
-        sortOption: function(fieldName) {
+        sortOption: function (fieldName) {
             if (this.isSortedByField(fieldName)) {
                 return '';
             } else {
                 return 'hidden';
             }
         },
-        sortingDirection: function() {
+        sortingDirection: function () {
             this.sortOptions.changeOrder(this.sortOptions.fieldName);
         }
     },
