@@ -13,6 +13,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Bootstrap CSS with custom styles -->
     <link rel="stylesheet" href="../../../static/css/photopond.css">
 </head>
 
@@ -64,8 +65,8 @@
                     <tbody name="table-row" is="transition-group">
                     <tr class="d-flex" v-for="(user, key) in sortedUsersList" v-bind:key="user.id">
                         <td class="col-1">{{ user.id }}</td>
-                        <td class="col-5">{{ user.login }}</td>
-                        <td class="col-3">{{ user.role }}</td>
+                        <td class="col-5 break-word-wrap">{{ user.login }}</td>
+                        <td class="col-3 break-word-wrap">{{ user.role }}</td>
                         <td class="col-3 text-center">
                             <div class="btn-group-vertical btn-group-sm">
                                 <button type="button" class="btn btn-info btn-sm"

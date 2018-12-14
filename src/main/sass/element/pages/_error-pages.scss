@@ -18,6 +18,10 @@
   h1 {
     color: #DDECF7;
     font-size: 14rem;
+
+    &.small {
+      font-size: 12.6rem;
+    }
   }
 
   h2 {

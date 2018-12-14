@@ -9140,6 +9140,9 @@ h1, h2, h3, h4, h5, h6 {
   color: #DDECF7;
   font-size: 14rem;
 }
+#errorwrap h1.small {
+  font-size: 12.6rem;
+}
 #errorwrap h2 {
   color: #DDECF7;
   font-size: 5rem;
