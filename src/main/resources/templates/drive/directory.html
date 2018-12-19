@@ -182,8 +182,8 @@
             th:include="drive/slider :: slider"
             v-bind:images="images"
             v-bind:index="imageIndex"
-            v-on:index-increment="imageIndex++"
-            v-on:index-decrement="imageIndex--"
+            v-on:index-increment="onImageIndexIncrement"
+            v-on:index-decrement="onImageIndexDecrement"
             v-on:close="imageIndex = -1">
     </slider>
 

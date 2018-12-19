@@ -9510,6 +9510,7 @@ h1, h2, h3, h4, h5, h6 {
   white-space: pre-line;
 }
 .drive-item .drive-item-img-body {
+  object-fit: cover;
   border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
 }
 .drive-item-img-footer {

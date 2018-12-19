@@ -1,6 +1,6 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml"
       lang="en">
 
 
@@ -80,7 +80,8 @@
                             <div class="card-body p-0 position-relative"
                                  v-bind:class="heightSizeClasses">
                                 <div class="w-100 h-100">
-                                    <img src="#" v-bind:src="item.data.uri" style="object-fit: cover" class="w-100 h-100 drive-item-img-body"/>
+                                    <img src="#" v-bind:src="item.data.uri" class="w-100 h-100 drive-item-img-body"
+                                         v-on:click="imageIndex = index"/>
                                 </div>
                                 <div class="zoom-in d-flex" style="" v-on:click="imageIndex = index">
                                     <i class="fas fa-search-plus m-1"></i>

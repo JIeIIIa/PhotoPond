@@ -24,7 +24,7 @@
     <slider inline-template id="slider"
             th:fragment="slider" th:remove="tag">
         <transition name="fade">
-            <div v-if="visible">
+            <div v-if="isComponentVisible">
                 <div class="fixed-top slider" style="">
                     <div class="full-fill slider-background">
                     </div>
@@ -43,11 +43,11 @@
                         <div class="m-3 slider-icon icon-close" v-on:click="close">
                             <i class="far fa-times-circle"></i>
                         </div>
-                        <div class="p-3 slider-icon icon-prev" v-bind:class="{'enabled': prevEnable}"
+                        <div class="p-3 slider-icon icon-prev enabled" v-bind:class="{'d-none': isSliderIconNotVisible}"
                              v-on:click="indexDecrement">
                             <i class="fas fa-chevron-circle-left"></i>
                         </div>
-                        <div class="p-3 slider-icon icon-next" v-bind:class="{'enabled': nextEnable}" v-on:click="indexIncrement">
+                        <div class="p-3 slider-icon icon-next enabled" v-bind:class="{'d-none': isSliderIconNotVisible}" v-on:click="indexIncrement">
                             <i class="fas fa-chevron-circle-right"></i>
                         </div>
 

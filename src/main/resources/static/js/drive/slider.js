@@ -1,42 +1,34 @@
 var slider = Vue.component('slider', {
         props: ['images', 'index'],
-        data: function() {
+        data: function () {
             return {
                 transitionGroup: ''
             }
         },
 
         computed: {
-            visible: function() {
+            isComponentVisible: function() {
                 return 0 <= this.index && this.index < this.images.length;
             },
-            nextEnable: function() {
-                return this.index < this.images.length - 1;
-            }
-            ,
-            prevEnable: function() {
-                return 0 < this.index;
+            isSliderIconNotVisible: function () {
+                return this.images.length <= 1;
             }
         }
         ,
         methods: {
-            close: function() {
+            close: function () {
                 this.$emit('close');
             },
-            indexIncrement: function() {
+            indexIncrement: function () {
                 this.transitionGroup = 'slider-move-left';
-                if (this.nextEnable) {
-                    this.$emit('index-increment');
-                }
+                this.$emit('index-increment');
             },
-            indexDecrement: function() {
+            indexDecrement: function () {
                 this.transitionGroup = 'slider-move-right';
-                if (this.prevEnable) {
-                    this.$emit('index-decrement');
-                }
+                this.$emit('index-decrement');
             }
         },
-        mounted: function() {
+        mounted: function () {
             var ref = this;
             window.addEventListener('keyup', function (event) {
                 if (ref.index === -1) {

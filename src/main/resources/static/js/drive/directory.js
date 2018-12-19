@@ -300,6 +300,16 @@ var app = new Vue({
                     ref.dialogOperationInProgress = false;
                 });
         },
+        onImageIndexIncrement: function () {
+            if (this.images.length > 1) {
+                this.imageIndex = (this.imageIndex + 1) % this.images.length;
+            }
+        },
+        onImageIndexDecrement: function () {
+            if (this.images.length > 1) {
+                this.imageIndex = (this.imageIndex + this.images.length - 1) % this.images.length;
+            }
+        },
         onRename: function () {
             if (this.selectedItemCount !== 1) {
                 console.log('Renaming failure');

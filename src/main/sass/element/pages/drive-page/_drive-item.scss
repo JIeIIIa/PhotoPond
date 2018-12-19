@@ -59,6 +59,7 @@ $drive-item-color: $link-blue;
   }
 
   & &-img-body {
+    object-fit: cover;
     @include border-radius($card-inner-border-radius $card-inner-border-radius 0 0);
   }
 
