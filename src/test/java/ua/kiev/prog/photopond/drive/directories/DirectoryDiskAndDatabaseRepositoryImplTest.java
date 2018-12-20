@@ -57,7 +57,9 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         instance.setFoldersBasedir(foldersBasedir);
         basedirPath = Paths.get(foldersBasedir);
 
-        FileUtils.cleanDirectory(basedirPath.toFile());
+        if (Files.exists(basedirPath)) {
+            FileUtils.cleanDirectory(basedirPath.toFile());
+        }
 
         user = new UserInfoBuilder().login("awesomeUser").role(UserRole.USER).build();
         root = createDirectory(1L, "/", user);

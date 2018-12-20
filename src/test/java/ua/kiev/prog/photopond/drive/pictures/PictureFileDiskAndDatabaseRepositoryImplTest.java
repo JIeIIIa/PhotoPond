@@ -57,7 +57,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
         instance = new PictureFileDiskAndDatabaseRepositoryImpl(pictureFileJpaRepository);
         instance.setFoldersBasedir(foldersBasedir);
 
-        FileUtils.cleanDirectory(basedirPath.toFile());
+        if (Files.exists(basedirPath)) {
+            FileUtils.cleanDirectory(basedirPath.toFile());
+        }
 
         user = new UserInfoBuilder().id(7L).login("awesomeUser").role(UserRole.USER).build();
 
