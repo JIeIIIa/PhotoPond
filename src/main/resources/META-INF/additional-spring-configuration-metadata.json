@@ -12,7 +12,7 @@
       "defaultValue": "false"
     },
     {
-      "name": "application.location",
+      "name": "folders.root",
       "type": "java.lang.String",
       "description": "Path to root application folder on disk."
     },
