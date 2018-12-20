@@ -8,13 +8,17 @@ import org.springframework.core.env.Profiles;
 
 import java.util.Arrays;
 
-import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DATABASE_STORAGE;
-import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
+import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.*;
 
 public class ProfileCheckApplicationInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     @Override
     public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
         ConfigurableEnvironment environment = configurableApplicationContext.getEnvironment();
+
+        String[] profiles = {PROD, DEV};
+        if (countActiveProfiles(environment, profiles) != 1) {
+            throw new ApplicationContextException("Choose exact ONE profile of " + Arrays.toString(profiles));
+        }
 
         String[] dataStorageProfile = {DISK_DATABASE_STORAGE, DATABASE_STORAGE};
         if (countActiveProfiles(environment, dataStorageProfile) != 1) {
