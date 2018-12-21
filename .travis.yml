@@ -37,6 +37,7 @@ after_failure:
   - echo "Build was failed"
 
 deploy:
+  skip_cleanup: true
   provider: script
   script: mvn heroku:deploy -B -Dmaven.test.skip=true
   on:
