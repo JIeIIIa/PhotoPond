@@ -35,3 +35,9 @@ after_success:
 
 after_failure:
   - echo "Build was failed"
+
+deploy:
+  provider: script
+  script: mvn heroku:deploy -B -Dmaven.test.skip=true
+  on:
+    branch: master
