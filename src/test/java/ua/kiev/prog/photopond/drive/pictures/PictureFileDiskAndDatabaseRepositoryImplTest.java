@@ -1,15 +1,15 @@
 package ua.kiev.prog.photopond.drive.pictures;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.QueryTimeoutException;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
 import ua.kiev.prog.photopond.user.UserInfo;
@@ -28,10 +28,11 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @TestPropertySource({"classpath:application.properties", "classpath:application-disk-database-storage.properties"})
 public class PictureFileDiskAndDatabaseRepositoryImplTest {
     @MockBean
@@ -50,7 +51,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     private Path pictureFileOnDisk;
     private final byte[] DATA = {1, 2, 3, 4, 5, 6, 7};
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         basedirPath = Paths.get(foldersBasedir);
 
@@ -89,10 +90,12 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
         assertThat(Files.exists(basedirPath)).isTrue();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void saveNullPictureFile() {
         //When
-        instance.save(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> instance.save(null)
+        );
     }
 
     @Test
@@ -112,7 +115,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
         assertThat(result).isEqualToIgnoringGivenFields(pictureFile, "id");
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void saveFileWithNullData() {
         //Given
         when(pictureFileJpaRepository.save(any(PictureFile.class))).thenAnswer(
@@ -122,7 +125,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
         FileUtils.deleteQuietly(pictureFileOnDisk.toFile());
 
         //When
-        instance.save(pictureFile);
+        assertThrows(PictureFileException.class,
+                () -> instance.save(pictureFile)
+        );
     }
 
     @Test
@@ -142,21 +147,20 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
         assertThatFileContainsData(pictureFile, DATA);
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void saveWhenPictureFileExistsInDatabase() {
         //Given
         when(pictureFileJpaRepository.findFirstByDirectoryAndFilename(pictureFile.getDirectory(), pictureFile.getFilename()))
                 .thenReturn(java.util.Optional.ofNullable(pictureFile));
 
         //When
-        try {
-            instance.save(pictureFile);
-        } catch (PictureFileException e) {
-            //Then
-            verify(pictureFileJpaRepository, never()).save(any(PictureFile.class));
-            verify(pictureFileJpaRepository).findFirstByDirectoryAndFilename(pictureFile.getDirectory(), pictureFile.getFilename());
-            throw e;
-        }
+        assertThrows(PictureFileException.class,
+                () -> instance.save(pictureFile)
+        );
+
+        //Then
+        verify(pictureFileJpaRepository, never()).save(any(PictureFile.class));
+        verify(pictureFileJpaRepository).findFirstByDirectoryAndFilename(pictureFile.getDirectory(), pictureFile.getFilename());
     }
 
     @Test
@@ -175,10 +179,12 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
         assertThatFileContainsData(result, DATA);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void deleteNullPictureFile() {
         //When
-        instance.delete(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> instance.delete(null)
+        );
     }
 
     @Test
@@ -191,20 +197,19 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
         assertThat(Files.exists(pictureFileOnDisk)).isFalse();
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void deleteWithJpaRepositoryException() throws IOException {
         //Given
         Files.write(pictureFileOnDisk, new byte[]{1, 2, 3});
         doThrow(QueryTimeoutException.class).when(pictureFileJpaRepository).delete(pictureFile);
 
-        try {
-            //When
-            instance.delete(pictureFile);
-        } catch (PictureFileException e) {
-            //Then
-            verify(pictureFileJpaRepository).delete(pictureFile);
-            throw e;
-        }
+        //When
+        assertThrows(PictureFileException.class,
+                () -> instance.delete(pictureFile)
+        );
+
+        //Then
+        verify(pictureFileJpaRepository).delete(pictureFile);
     }
 
     @Test
@@ -236,7 +241,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
         assertThatFileContainsData(pictureFile, DATA);
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void moveWhenTargetFileAlreadyExistsInDatabase() throws Exception {
         //Given
         String targetFilename = "targetFilename.jpg";
@@ -252,13 +257,12 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
                 .thenReturn(Optional.of(anotherFile));
 
         //When
-        try {
-            instance.move(pictureFile, directory, targetFilename);
-        } catch (PictureFileException e) {
-            //Then
-            assertThatFileContainsData(pictureFile, DATA);
-            throw e;
-        }
+        assertThrows(PictureFileException.class,
+                () -> instance.move(pictureFile, directory, targetFilename)
+        );
+
+        //Then
+        assertThatFileContainsData(pictureFile, DATA);
     }
 
     @Test
@@ -287,7 +291,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
         assertThat(Files.exists(pictureFileOnDisk)).isFalse();
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void moveWhenWrongTargetFileName() {
         //Given
         String targetFilename = "/wrong/file.name";
@@ -296,49 +300,46 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
                 .thenReturn(Optional.empty());
 
         //When
-        try {
-            instance.move(pictureFile, directory, targetFilename);
-        } catch (PictureFileException e) {
-            //Then
-            verify(pictureFileJpaRepository, never()).save(any(PictureFile.class));
-            throw e;
-        }
+        assertThrows(PictureFileException.class,
+                () -> instance.move(pictureFile, directory, targetFilename)
+        );
+
+        //Then
+        verify(pictureFileJpaRepository, never()).save(any(PictureFile.class));
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void moveWhenSourceFileNotExistsOnDisk() {
         //Given
         FileUtils.deleteQuietly(directoryPathOnDisk.toFile());
 
         //When
-        try {
-            instance.move(pictureFile, directory, "newFileName.jpg");
-        } catch (PictureFileException e) {
-            //Then
-            verify(pictureFileJpaRepository, never()).findFirstByDirectoryAndFilename(any(), any());
-            verify(pictureFileJpaRepository, never()).findByDirectoryAndFilename(any(), any());
-            throw e;
-        }
+        assertThrows(PictureFileException.class,
+                () -> instance.move(pictureFile, directory, "newFileName.jpg")
+        );
+
+        //Then
+        verify(pictureFileJpaRepository, never()).findFirstByDirectoryAndFilename(any(), any());
+        verify(pictureFileJpaRepository, never()).findByDirectoryAndFilename(any(), any());
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void moveBetweenDifferentUsers() {
         //Given
         UserInfo anotherUser = new UserInfoBuilder().id(5L).login("anotherUser").password("qwerty123!").build();
         Directory anotherDirectory = new DirectoryBuilder().id(9L).owner(anotherUser).path("/somewhere").build();
 
         //When
-        try {
-            instance.move(pictureFile, anotherDirectory, "newName");
-        } catch (PictureFileException e) {
-            //Then
-            verify(pictureFileJpaRepository, never()).findFirstByDirectoryAndFilename(any(), any());
-            verify(pictureFileJpaRepository, never()).findByDirectoryAndFilename(any(), any());
-            verify(pictureFileJpaRepository, never()).save(any());
-            assertThat(pictureFile.getDirectory().getOwner()).isEqualTo(user);
-            assertThat(pictureFile.getData()).isEqualTo(DATA);
-            throw e;
-        }
+        assertThrows(PictureFileException.class,
+                () -> instance.move(pictureFile, anotherDirectory, "newName")
+        );
+
+        //Then
+        verify(pictureFileJpaRepository, never()).findFirstByDirectoryAndFilename(any(), any());
+        verify(pictureFileJpaRepository, never()).findByDirectoryAndFilename(any(), any());
+        verify(pictureFileJpaRepository, never()).save(any());
+        assertThat(pictureFile.getDirectory().getOwner()).isEqualTo(user);
+        assertThat(pictureFile.getData()).isEqualTo(DATA);
     }
 
     @Test

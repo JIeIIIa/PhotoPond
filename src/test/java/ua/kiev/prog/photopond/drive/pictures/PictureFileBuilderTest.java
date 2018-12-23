@@ -1,15 +1,16 @@
 package ua.kiev.prog.photopond.drive.pictures;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class PictureFileBuilderTest {
 
     @Test
@@ -92,9 +93,11 @@ public class PictureFileBuilderTest {
         assertThat(result.getData()).isEqualTo(new byte[]{1, 2, 3, 4, 5, 6, 7});
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void build() {
         //When
-        PictureFileBuilder.getInstance().build();
+        assertThrows(IllegalArgumentException.class,
+                () -> PictureFileBuilder.getInstance().build()
+        );
     }
 }

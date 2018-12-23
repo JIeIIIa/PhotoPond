@@ -1,14 +1,14 @@
 package ua.kiev.prog.photopond.drive.directories;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.QueryTimeoutException;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoBuilder;
 import ua.kiev.prog.photopond.user.UserRole;
@@ -28,11 +28,12 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @TestPropertySource({"classpath:application.properties", "classpath:application-disk-database-storage.properties"})
 public class DirectoryDiskAndDatabaseRepositoryImplTest {
 
@@ -51,7 +52,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     private Path directoryPathOnDisk;
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         instance = new DirectoryDiskAndDatabaseRepositoryImpl(directoryJpaRepository);
         instance.setFoldersBasedir(foldersBasedir);
@@ -104,10 +105,13 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         assertThat(Files.exists(basedirPath)).isTrue();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void saveNullDirectory() {
         //When
-        instance.save(null);
+        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+                () -> instance.save(null)
+        );
+
     }
 
     @Test
@@ -141,27 +145,28 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         verify(directoryJpaRepository).save(directory);
     }
 
-    @Test(expected = DirectoryModificationException.class)
+    @Test
     public void saveWhenParentDirectoryNotExists() {
         //Given
         String parentPath = buildPath("First");
         directory.setPath(buildPath(parentPath, "second"));
         when(directoryJpaRepository.findByOwnerAndPath(user, parentPath)).thenReturn(emptyList());
 
-        try {
-            //When
-            instance.save(directory);
-        } catch (DirectoryModificationException e) {
-            //Then
-            verify(directoryJpaRepository).findByOwnerAndPath(user, directory.parentPath());
-            throw new DirectoryModificationException();
-        }
+        //When
+        DirectoryModificationException directoryModificationException = assertThrows(DirectoryModificationException.class,
+                () -> instance.save(directory)
+        );
+
+        //Then
+        verify(directoryJpaRepository).findByOwnerAndPath(user, directory.parentPath());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void deleteNullDirectory() {
         //When
-        instance.delete(null);
+        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+                () -> instance.delete(null)
+        );
     }
 
     @Test
@@ -197,20 +202,19 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         }
     }
 
-    @Test(expected = DirectoryModificationException.class)
+    @Test
     public void deleteWithJpaRepositoryException() {
         //Given
         doThrow(QueryTimeoutException.class).when(directoryJpaRepository).deleteAll(singletonList(directory));
 
-        try {
-            //When
-            instance.delete(directory);
-        } catch (DirectoryModificationException e) {
-            //Then
-            verify(directoryJpaRepository).deleteAll(singletonList(directory));
-            assertThat(Files.exists(directoryPathOnDisk)).isTrue();
-            throw e;
-        }
+        //When
+        DirectoryModificationException directoryModificationException = assertThrows(DirectoryModificationException.class,
+                () -> instance.delete(directory)
+        );
+
+        //Then
+        verify(directoryJpaRepository).deleteAll(singletonList(directory));
+        assertThat(Files.exists(directoryPathOnDisk)).isTrue();
     }
 
     @Test
@@ -228,10 +232,12 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         assertThat(Files.exists(Paths.get(basedirPath + expected.getFullPath()))).isTrue();
     }
 
-    @Test(expected = DirectoryModificationException.class)
+    @Test
     public void renameNotExistsDirectory() {
         // When
-        instance.rename(directory, "someName");
+        DirectoryModificationException directoryModificationException = assertThrows(DirectoryModificationException.class,
+                () -> instance.rename(directory, "someName")
+        );
     }
 
     @Test
@@ -287,7 +293,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         }
     }
 
-    @Test(expected = DirectoryModificationException.class)
+    @Test
     public void renameNotExistsOnDiskDirectory() throws Exception {
         //Given
         Files.deleteIfExists(directoryPathOnDisk);
@@ -299,7 +305,9 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
                 .thenReturn(emptyList());
 
         //When
-        instance.rename(directory, buildPath("newName"));
+        DirectoryModificationException directoryModificationException = assertThrows(DirectoryModificationException.class,
+                () -> instance.rename(directory, buildPath("newName"))
+        );
     }
 
     @Test
@@ -328,7 +336,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
 
     }
 
-    @Test(expected = DirectoryModificationException.class)
+    @Test
     public void renameWhenTargetDirectoryAlreadyExistsInDataBase() {
         //Given
         String newName = "anotherDir";
@@ -343,19 +351,26 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
                 .thenReturn(singletonList(root));
 
         //When
-        instance.rename(this.directory, targetPath);
+        DirectoryModificationException directoryModificationException = assertThrows(DirectoryModificationException.class,
+                () -> instance.rename(this.directory, targetPath)
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void moveNullDirectory() {
         //When
-        instance.move(null, directory);
+        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+                () -> instance.move(null, directory)
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void moveToNullDirectory() {
         //When
-        instance.move(directory, null);
+        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+                () -> instance.move(directory, null)
+        );
+
     }
 
     @Test
@@ -370,15 +385,17 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         assertThat(directory).isEqualToComparingFieldByFieldRecursively(expectedDirectory);
     }
 
-    @Test(expected = DirectoryModificationException.class)
+    @Test
     public void moveBetweenDifferentUsers() {
         //Given
         Directory directoryWithAnotherOwner = createDirectory(321L, SEPARATOR + "anotherDirectory");
         //When
-        instance.move(directory, directoryWithAnotherOwner);
+        DirectoryModificationException directoryModificationException = assertThrows(DirectoryModificationException.class,
+                () -> instance.move(directory, directoryWithAnotherOwner)
+        );
     }
 
-    @Test(expected = DirectoryModificationException.class)
+    @Test
     public void moveTargetDirectoryContainsSubDirectoryWithSameName() {
         //Given
         Directory target = createDirectory(321L, SEPARATOR + "targetToMove", user);
@@ -387,24 +404,24 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         when(directoryJpaRepository.findByOwnerAndPath(user, targetSubDirectory.getPath()))
                 .thenReturn(singletonList(targetSubDirectory));
 
+        //When
+        DirectoryModificationException directoryModificationException = assertThrows(DirectoryModificationException.class,
+                () -> instance.move(directory, target)
+        );
 
-        try {
-            //When
-            instance.move(directory, target);
-        } catch (DirectoryModificationException e) {
-            //Then
-            verify(directoryJpaRepository).findByOwnerAndPath(user, targetSubDirectory.getPath());
-            throw new DirectoryModificationException();
-        }
+        //Then
+        verify(directoryJpaRepository).findByOwnerAndPath(user, targetSubDirectory.getPath());
     }
 
-    @Test(expected = DirectoryModificationException.class)
+    @Test
     public void moveToSubDirectory() throws DirectoryModificationException {
         //Given
         Directory subDirectory = createDirectory(121L, buildPath(directory.getPath(), "subDir"), user);
 
         //When
-        instance.move(directory, subDirectory);
+        DirectoryModificationException directoryModificationException = assertThrows(DirectoryModificationException.class,
+                () -> instance.move(directory, subDirectory)
+        );
     }
 
     @Test

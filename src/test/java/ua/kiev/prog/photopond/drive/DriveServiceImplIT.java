@@ -3,9 +3,9 @@ package ua.kiev.prog.photopond.drive;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,7 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,13 +46,14 @@ import java.util.Optional;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 import static ua.kiev.prog.photopond.drive.DriveItemDTOMapper.toDTO;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "testMySQLDB"})
 @DataJpaTest
 @EnableJpaAuditing
@@ -97,7 +98,7 @@ public class DriveServiceImplIT {
 
     private Path basedirPath;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         instance = new DriveServiceImpl(directoryRepository, fileRepository, userInfoRepository);
 
@@ -198,9 +199,9 @@ public class DriveServiceImplIT {
                 .build();
 
         List<DriveItemDTO> expected = asList(
-                        toDTO(new DirectoryBuilder().id(2110L).owner(user).path("/first/second").build()),
-                        toDTO(new DirectoryBuilder().id(2120L).owner(user).path("/first/folder(2)").build())
-                );
+                toDTO(new DirectoryBuilder().id(2110L).owner(user).path("/first/second").build()),
+                toDTO(new DirectoryBuilder().id(2120L).owner(user).path("/first/folder(2)").build())
+        );
 
         //When
         List<DriveItemDTO> result = instance.retrieveContent(user.getLogin(), "/first", true);
@@ -224,26 +225,31 @@ public class DriveServiceImplIT {
 
         //Then
         assertThat(result)
-                      .isEqualToIgnoringGivenFields(expected, "creationDate", "creationDateString");
+                .isEqualToIgnoringGivenFields(expected, "creationDate", "creationDateString");
         assertThat(result.getCreationDateString()).isNotNull();
         Calendar finish = Calendar.getInstance();
         finish.add(Calendar.SECOND, 1);
         assertThat(result.getCreationDate()).isBetween(start, finish.getTime());
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void addDirectoryWhenLoginFailure() {
         //When
-        instance.addDirectory("unknownLogin", ROOT_PATH, "/somePath");
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.addDirectory("unknownLogin", ROOT_PATH, "/somePath")
+        );
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void addDirectoryWhenDirectoryAlreadyExists() {
         //Given
         Directory expected = new DirectoryBuilder().path(buildPath(ROOT_PATH, "first")).owner(user).build();
 
         //When
-        instance.addDirectory(user.getLogin(), ROOT_PATH, expected.getName());
+
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.addDirectory(user.getLogin(), ROOT_PATH, expected.getName())
+        );
     }
 
     @Test
@@ -264,22 +270,29 @@ public class DriveServiceImplIT {
                 .isEqualToIgnoringGivenFields(expected);
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void moveDirectoryWhenUserNotExists() {
         //When
-        instance.moveDirectory("unknownUser", "/first/folder(2)", "/folder/folder(2)");
+
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.moveDirectory("unknownUser", "/first/folder(2)", "/folder/folder(2)")
+        );
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void moveDirectoryWhenSourceDirectoryNotExists() {
         //When
-        instance.moveDirectory(user.getLogin(), "/phantomDirectory/folder(2)", "/folder/folder(2)");
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.moveDirectory(user.getLogin(), "/phantomDirectory/folder(2)", "/folder/folder(2)")
+        );
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void moveDirectoryWhenTargetDirectoryNotExists() {
         //When
-        instance.moveDirectory(user.getLogin(), "/first/folder(2)", "/phantomDirectory/folder(2)");
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.moveDirectory(user.getLogin(), "/first/folder(2)", "/phantomDirectory/folder(2)")
+        );
     }
 
     @Test
@@ -300,16 +313,20 @@ public class DriveServiceImplIT {
                 .isEqualToIgnoringGivenFields(expected);
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void renameDirectoryWhenSourceDirectoryNotExists() {
         //When
-        instance.moveDirectory(user.getLogin(), "/phantomDirectory/folder(2)", "/phantomDirectory/newName");
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.moveDirectory(user.getLogin(), "/phantomDirectory/folder(2)", "/phantomDirectory/newName")
+        );
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void renameDirectoryWhenTargetDirectoryContainsDirectoryWithSameName() {
         //When
-        instance.moveDirectory(user.getLogin(), "/first/folder(2)", "/first/second");
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.moveDirectory(user.getLogin(), "/first/folder(2)", "/first/second")
+        );
     }
 
     @Test
@@ -339,16 +356,20 @@ public class DriveServiceImplIT {
                 .isEmpty();
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void deleteDirectoryWhenOwnerNotExist() {
         //When
-        instance.deleteDirectory("unknownUser", "/someDirectory");
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.deleteDirectory("unknownUser", "/someDirectory")
+        );
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void deleteDirectoryWhenSourceDirectoryNotExists() {
         //When
-        instance.deleteDirectory(user.getLogin(), "/someDirectory");
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.deleteDirectory(user.getLogin(), "/someDirectory")
+        );
     }
 
     @Test
@@ -367,10 +388,12 @@ public class DriveServiceImplIT {
                 .isEqualTo(DATA);
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void retrievePictureFileDataWhenFileNotFound() {
         //When
-        instance.retrievePictureFileData(user.getLogin(), buildPath(ROOT_PATH, "phantomFile.jpg"));
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.retrievePictureFileData(user.getLogin(), buildPath(ROOT_PATH, "phantomFile.jpg"))
+        );
     }
 
     @Test
@@ -424,10 +447,12 @@ public class DriveServiceImplIT {
                 .hasValue(expected);
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void movePictureFileWhenFileNotFound() {
         //When
-        instance.movePictureFile(user.getLogin(), "/unknownFile.jpg", "/first/newName.jpg");
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.movePictureFile(user.getLogin(), "/unknownFile.jpg", "/first/newName.jpg")
+        );
     }
 
     @Test
@@ -441,9 +466,11 @@ public class DriveServiceImplIT {
         assertThat(result).isNotPresent();
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void deletePictureFileWhenDeletedFileNotFound() {
         //When
-        instance.deletePictureFile(user.getLogin(), buildPath(ROOT_PATH, "unknownPicture.jpg"));
+        DriveException driveException = assertThrows(DriveException.class,
+                () -> instance.deletePictureFile(user.getLogin(), buildPath(ROOT_PATH, "unknownPicture.jpg"))
+        );
     }
 }

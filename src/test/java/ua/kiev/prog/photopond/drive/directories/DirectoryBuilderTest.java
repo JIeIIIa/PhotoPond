@@ -1,8 +1,8 @@
 package ua.kiev.prog.photopond.drive.directories;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoBuilder;
 import ua.kiev.prog.photopond.user.UserRole;
@@ -10,7 +10,7 @@ import ua.kiev.prog.photopond.user.UserRole;
 import static org.assertj.core.api.Assertions.assertThat;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
-@RunWith(JUnit4.class)
+@ExtendWith(SpringExtension.class)
 public class DirectoryBuilderTest {
     @Test
     public void id() {

@@ -1,18 +1,18 @@
 package ua.kiev.prog.photopond;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 import ua.kiev.prog.photopond.annotation.IntegrationTest;
 
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @IntegrationTest
 @ActiveProfiles({DEV, DISK_DATABASE_STORAGE})
 public class ApplicationRunnerIT {

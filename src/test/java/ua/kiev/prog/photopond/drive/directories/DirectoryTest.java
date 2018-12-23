@@ -1,17 +1,18 @@
 package ua.kiev.prog.photopond.drive.directories;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class DirectoryTest {
 
     private static final String OWNER_NAME = "awesomeUser";
@@ -19,15 +20,17 @@ public class DirectoryTest {
 
     private Directory directory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         UserInfo owner = new UserInfoBuilder().id(123L).login(OWNER_NAME).build();
         directory = new DirectoryBuilder().owner(owner).build();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void nullPath() {
-        directory.setPath(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> directory.setPath(null)
+        );
     }
 
     @Test
@@ -147,37 +150,45 @@ public class DirectoryTest {
                 .isEqualTo(expectedParentPath);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void getOwnerFolderForNullOwner() {
         //Given
         directory = new Directory();
 
         //When
-        directory.getOwnerFolder();
+        assertThrows(IllegalStateException.class,
+                () -> directory.getOwnerFolder()
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getParentPathForNullPath() {
         //Given
         directory = new Directory();
 
         //When
-        directory.parentPath();
+        assertThrows(IllegalArgumentException.class,
+                () -> directory.parentPath()
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setNullAsOwner() {
         //When
-        directory.setOwner(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> directory.setOwner(null)
+        );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void getDirectoryNamesWhenNullOwner() {
         //Given
         directory = new Directory();
 
         //When
-        directory.getDirectoryNames();
+        assertThrows(IllegalStateException.class,
+                () -> directory.getDirectoryNames()
+        );
     }
 
     @Test
@@ -204,28 +215,36 @@ public class DirectoryTest {
                 .containsExactly(directory.getOwner().getLogin(), "first", "second", "third", "etc");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setPathEndsOnSeparator() {
         //When
-        directory.setPath(SEPARATOR + "someDirectory" + SEPARATOR);
+        assertThrows(IllegalArgumentException.class,
+                () -> directory.setPath(SEPARATOR + "someDirectory" + SEPARATOR)
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setPathWithTwoSeparatorTogether() {
         //When
-        directory.setPath(SEPARATOR + SEPARATOR);
+        assertThrows(IllegalArgumentException.class,
+                () -> directory.setPath(SEPARATOR + SEPARATOR)
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setPathWithSeveralSeparatorTogether() {
         //When
-        directory.setPath(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + "someNameDirectory");
+        assertThrows(IllegalArgumentException.class,
+                () -> directory.setPath(SEPARATOR + SEPARATOR + SEPARATOR + SEPARATOR + "someNameDirectory")
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setPathNotStartsWithSeparator() {
         //When
-        directory.setPath("somePath");
+        assertThrows(IllegalArgumentException.class,
+                () -> directory.setPath("somePath")
+        );
     }
 
     @Test
@@ -314,22 +333,28 @@ public class DirectoryTest {
                 .isEqualTo(expectedPath);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void buildPathFromNullName() {
         //When
-        buildPath(null, "first", "second");
+        assertThrows(IllegalArgumentException.class,
+                () -> buildPath(null, "first", "second")
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void buildPathWhenNamesContainNull() {
         //When
-        buildPath("first", null, "second");
+        assertThrows(IllegalArgumentException.class,
+                () -> buildPath("first", null, "second")
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void buildPathFromEmptyName() {
         //When
-        buildPath("first", "", "second");
+        assertThrows(IllegalArgumentException.class,
+                () -> buildPath("first", "", "second")
+        );
     }
 
     @Test
@@ -345,22 +370,28 @@ public class DirectoryTest {
                 .isEqualTo(expected);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void buildPathWhenDirectoryContentsTwoSeparator() {
         //When
-        buildPath("first", SEPARATOR + SEPARATOR + "third");
+        assertThrows(IllegalArgumentException.class,
+                () -> buildPath("first", SEPARATOR + SEPARATOR + "third")
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void retrieveParentPathFromNull() {
         //When
-        Directory.retrieveParentPath(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> Directory.retrieveParentPath(null)
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void retrieveParentPathFromEmptyPath() {
         //When
-        Directory.retrieveParentPath("");
+        assertThrows(IllegalArgumentException.class,
+                () -> Directory.retrieveParentPath("")
+        );
     }
 
     @Test

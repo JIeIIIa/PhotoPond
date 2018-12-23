@@ -4,16 +4,16 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,10 +35,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles({DEV, DISK_DATABASE_STORAGE})
 @DataJpaTest
 @EnableJpaAuditing
@@ -68,7 +69,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
     private Directory directory;
     private PictureFile pictureFile;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         instance = new PictureFileDiskAndDatabaseRepositoryImpl(pictureFileJpaRepository);
         instance.setFoldersBasedir(foldersBasedir);
@@ -102,10 +103,12 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
         Assertions.assertThat(Files.exists(basedirPath)).isTrue();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void saveNullPictureFile() {
         //When
-        instance.save(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> instance.save(null)
+        );
     }
 
     @Test
@@ -132,7 +135,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
 
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void saveFileWithNullData() {
         //Given
         String filename = "anotherFile.jpg";
@@ -143,15 +146,14 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
         file.setData(null);
 
         //When
-        try {
-            instance.save(file);
-        } catch (PictureFileException e) {
-            //Then
-            assertThat(pictureFileJpaRepository.findFirstByDirectoryAndFilename(directory, filename))
-                    .isNotPresent();
-            assertThat(Files.exists(Paths.get(basedirPath + directory.getFullPath() + "/" + filename))).isFalse();
-            throw e;
-        }
+        assertThrows(PictureFileException.class,
+                () -> instance.save(file)
+        );
+
+        //Then
+        assertThat(pictureFileJpaRepository.findFirstByDirectoryAndFilename(directory, filename))
+                .isNotPresent();
+        assertThat(Files.exists(Paths.get(basedirPath + directory.getFullPath() + "/" + filename))).isFalse();
     }
 
     @Test
@@ -173,10 +175,12 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
 
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void saveWhenPictureFileExistsInDatabase() {
         //When
-        instance.save(pictureFile);
+        assertThrows(PictureFileException.class,
+                () -> instance.save(pictureFile)
+        );
     }
 
     @Test
@@ -207,10 +211,12 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void deleteNullPictureFile() {
         //When
-        instance.delete(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> instance.delete(null)
+        );
     }
 
 
@@ -261,7 +267,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
         assertThatFileContainsData(pictureFile, DATA);
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void moveWhenTargetFileAlreadyExistsInDatabase() throws Exception {
         //Given
         String targetFilename = "targetFilename.jpg";
@@ -272,16 +278,15 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
         PictureFile expectedTarget = PictureFileBuilder.getInstance().from(anotherFile).build();
 
         //When
-        try {
-            instance.move(pictureFile, directory, targetFilename);
-        } catch (PictureFileException e) {
-            //Then
-            assertThatFileContainsData(expectedSource, expectedSource.getData());
-            assertThatFileContainsData(expectedTarget, expectedTarget.getData());
-            assertThat(pictureFileJpaRepository.findFirstByDirectoryAndFilename(directory, expectedSource.getFilename())).isPresent();
-            assertThat(pictureFileJpaRepository.findFirstByDirectoryAndFilename(directory, expectedTarget.getFilename())).isPresent();
-            throw e;
-        }
+        assertThrows(PictureFileException.class,
+                () -> instance.move(pictureFile, directory, targetFilename)
+        );
+
+        //Then
+        assertThatFileContainsData(expectedSource, expectedSource.getData());
+        assertThatFileContainsData(expectedTarget, expectedTarget.getData());
+        assertThat(pictureFileJpaRepository.findFirstByDirectoryAndFilename(directory, expectedSource.getFilename())).isPresent();
+        assertThat(pictureFileJpaRepository.findFirstByDirectoryAndFilename(directory, expectedTarget.getFilename())).isPresent();
     }
 
     @Test
@@ -302,31 +307,37 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
         assertThat(Files.exists(pictureFileOnDisk)).isFalse();
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void moveWhenWrongTargetFileName() {
         //Given
         String targetFilename = "/wrong/file.name";
 
         //When
-        instance.move(pictureFile, directory, targetFilename);
+        assertThrows(PictureFileException.class,
+                () -> instance.move(pictureFile, directory, targetFilename)
+        );
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void moveWhenSourceFileNotExistsOnDisk() {
         //Given
         FileUtils.deleteQuietly(new File(basedirPath + pictureFile.getFullPath()));
 
         //When
-        instance.move(pictureFile, directory, "newFileName.jpg");
+        assertThrows(PictureFileException.class,
+                () ->instance.move(pictureFile, directory, "newFileName.jpg")
+        );
     }
 
-    @Test(expected = PictureFileException.class)
+    @Test
     public void moveBetweenDifferentUsers() {
         //Given
         Directory adminDirectory = directoryJpaRepository.findById(1000L).orElseThrow(IllegalStateException::new);
 
         //When
-        instance.move(pictureFile, adminDirectory, "newName");
+        assertThrows(PictureFileException.class,
+                () ->instance.move(pictureFile, adminDirectory, "newName")
+        );
     }
 
     @Test

@@ -1,15 +1,17 @@
 package ua.kiev.prog.photopond.twitter;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import twitter4j.auth.RequestToken;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TwitterRequestTokenStorageTest {
 
     private TwitterRequestTokenStorage instance;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         instance = new TwitterRequestTokenStorage();
     }
@@ -51,19 +53,23 @@ public class TwitterRequestTokenStorageTest {
 
         //Then
         Assertions.assertThat(instance.toString())
-                .contains("maxSize=" + MAX_SIZE +", ");
+                .contains("maxSize=" + MAX_SIZE + ", ");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setZeroAsMaxSize() {
         //When
-        instance.setMaxSize(-1);
+        assertThrows(IllegalArgumentException.class,
+                () -> instance.setMaxSize(-1)
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setNegativeNumberAsMaxSize() {
         //When
-        instance.setMaxSize(-123);
+        assertThrows(IllegalArgumentException.class,
+                () -> instance.setMaxSize(-123)
+        );
     }
 
     @Test

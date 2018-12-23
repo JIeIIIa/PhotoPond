@@ -1,15 +1,15 @@
 package ua.kiev.prog.photopond.security;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 import ua.kiev.prog.photopond.user.UserRole;
@@ -18,18 +18,19 @@ import java.util.Collection;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class UserDetailsServiceImplTest {
     @Mock
     private UserInfoJpaRepository userInfoRepository;
 
     private UserDetailsService userDetailsService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         userDetailsService = new UserDetailsServiceImpl(userInfoRepository);
     }
@@ -61,12 +62,14 @@ public class UserDetailsServiceImplTest {
         assertThat(userDetails.isEnabled()).isTrue();
     }
 
-    @Test(expected = UsernameNotFoundException.class)
+    @Test
     public void userNotFound() {
         when(userInfoRepository.findByLogin("someLogin"))
                 .thenReturn(Optional.empty());
 
-        userDetailsService.loadUserByUsername("someLogin");
+        assertThrows(UsernameNotFoundException.class,
+                () -> userDetailsService.loadUserByUsername("someLogin")
+        );
     }
 
     @Test

@@ -1,9 +1,9 @@
 package ua.kiev.prog.photopond.user;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
 import java.util.Arrays;
@@ -12,14 +12,15 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class EmbeddedUserInfoRepositoryTest {
     private static final String USER_LOGIN = "user";
     private EmbeddedUserInfoRepository embeddedUserInfoRepository;
     private UserInfo testUser = null;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         testUser = new UserInfo(USER_LOGIN, "user", UserRole.USER);
         UserInfo first = new UserInfo("someUser", "password", UserRole.ADMIN);
@@ -85,10 +86,12 @@ public class EmbeddedUserInfoRepositoryTest {
                 .hasValue(anotherUser);
     }
 
-    @Test(expected = AddToRepositoryException.class)
+    @Test
     public void addNullAsUser() throws AddToRepositoryException {
         //When
-        embeddedUserInfoRepository.addUser(null);
+        assertThrows(AddToRepositoryException.class,
+                () -> embeddedUserInfoRepository.addUser(null)
+        );
     }
 
     @Test

@@ -1,14 +1,14 @@
 package ua.kiev.prog.photopond.drive;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
@@ -31,12 +31,13 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static ua.kiev.prog.photopond.drive.DriveItemDTOMapper.toDTO;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application.properties")
 public class DriveServiceImplTest {
     @MockBean
@@ -54,7 +55,7 @@ public class DriveServiceImplTest {
 
     private Directory root;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         instance = new DriveServiceImpl(directoryRepository, fileRepository, userInfoRepository);
         user = new UserInfoBuilder()
@@ -69,15 +70,13 @@ public class DriveServiceImplTest {
     }
 
     private void callMoveDirectoryWhenMockMoveAndRenameNotInvocation(String sourcePath, String targetPath) {
-        try {
-            instance.moveDirectory(user.getLogin(), sourcePath, targetPath);
-        } catch (DriveException e) {
-            //Then
-            verify(directoryRepository, never()).move(any(Directory.class), any(Directory.class));
-            verify(directoryRepository, never()).rename(any(Directory.class), anyString());
+        assertThrows(DriveException.class,
+                () -> instance.moveDirectory(user.getLogin(), sourcePath, targetPath)
+        );
 
-            throw e;
-        }
+        //Then
+        verify(directoryRepository, never()).move(any(Directory.class), any(Directory.class));
+        verify(directoryRepository, never()).rename(any(Directory.class), anyString());
     }
 
     @Test
@@ -108,7 +107,7 @@ public class DriveServiceImplTest {
         assertThat(result).hasSameElementsAs(expected);
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void userHasNoDirectoryAndFailureCreating() {
         //Given
         Directory expectedRoot = new DirectoryBuilder()
@@ -125,16 +124,14 @@ public class DriveServiceImplTest {
                 .thenReturn(Optional.of(user));
 
         //When
-        try {
-            instance.retrieveContent(user.getLogin(), SEPARATOR, true);
-        } catch (DriveException e) {
-            //Then
-            ArgumentCaptor<Directory> rootDirectory = ArgumentCaptor.forClass(Directory.class);
-            verify(directoryRepository).save(rootDirectory.capture());
-            assertThat(rootDirectory.getValue()).isEqualToIgnoringGivenFields(expectedRoot, "id");
+        assertThrows(DriveException.class,
+                () -> instance.retrieveContent(user.getLogin(), SEPARATOR, true)
+        );
 
-            throw e;
-        }
+        //Then
+        ArgumentCaptor<Directory> rootDirectory = ArgumentCaptor.forClass(Directory.class);
+        verify(directoryRepository).save(rootDirectory.capture());
+        assertThat(rootDirectory.getValue()).isEqualToIgnoringGivenFields(expectedRoot, "id");
     }
 
     @Test
@@ -244,23 +241,22 @@ public class DriveServiceImplTest {
         assertThat(result).isEqualToComparingFieldByField(expectedDTO);
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void addDirectoryWhenLoginFailure() {
         //Given
         when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.empty());
 
         //When
-        try {
-            instance.addDirectory(user.getLogin(), root.getPath(), "/somePath");
-        } catch (DriveException e) {
-            //Then
-            verify(directoryRepository, never()).save(any(Directory.class));
-            throw e;
-        }
+        assertThrows(DriveException.class,
+                () -> instance.addDirectory(user.getLogin(), root.getPath(), "/somePath")
+        );
+
+        //Then
+        verify(directoryRepository, never()).save(any(Directory.class));
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void addDirectoryWhenDirectoryAlreadyExists() {
         //Given
         String newDirectoryPath = buildPath(root.getPath(), "existsDirectory");
@@ -269,16 +265,15 @@ public class DriveServiceImplTest {
         when(directoryRepository.exists(user, newDirectoryPath)).thenReturn(true);
 
         //When
-        try {
-            instance.addDirectory(user.getLogin(), root.getPath(), newDirectoryPath);
-        } catch (DriveException e) {
-            //Then
-            verify(directoryRepository, never()).save(any(Directory.class));
-            throw e;
-        }
+        assertThrows(DriveException.class,
+                () -> instance.addDirectory(user.getLogin(), root.getPath(), newDirectoryPath)
+        );
+
+        //Then
+        verify(directoryRepository, never()).save(any(Directory.class));
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void addDirectoryWhenDirectoryRepositoryThrowsException() {
         //Given
         Directory expected = new DirectoryBuilder().path(buildPath(root.getPath(), "first")).owner(user).build();
@@ -288,13 +283,12 @@ public class DriveServiceImplTest {
         when(directoryRepository.save(any(Directory.class))).thenThrow(new DirectoryException());
 
         //When
-        try {
-            instance.addDirectory(user.getLogin(), root.getPath(), expected.getPath());
-        } catch (DriveException e) {
-            //Then
-            verify(directoryRepository).save(expected);
-            throw e;
-        }
+        assertThrows(DriveException.class,
+                () -> instance.addDirectory(user.getLogin(), root.getPath(), expected.getPath())
+        );
+
+        //Then
+        verify(directoryRepository).save(expected);
     }
 
     @Test
@@ -333,7 +327,7 @@ public class DriveServiceImplTest {
         assertThat(source).isEqualToIgnoringGivenFields(expected, "id");
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void moveDirectoryWhenDirectoryRepositoryThrowsException() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
@@ -355,20 +349,19 @@ public class DriveServiceImplTest {
 
 
         //When
-        try {
-            instance.moveDirectory(user.getLogin(), source.getPath(), expected.getPath());
-        } catch (DriveException e) {
-            //Then
-            verify(directoryRepository).findByOwnerAndPath(user, sourcePath);
-            verify(directoryRepository).findByOwnerAndPath(user, targetPath);
-            verify(directoryRepository).move(source, target);
-            verify(directoryRepository, never()).rename(any(Directory.class), anyString());
-            throw e;
-        }
+        assertThrows(DriveException.class,
+                () -> instance.moveDirectory(user.getLogin(), source.getPath(), expected.getPath())
+        );
+
+        //Then
+        verify(directoryRepository).findByOwnerAndPath(user, sourcePath);
+        verify(directoryRepository).findByOwnerAndPath(user, targetPath);
+        verify(directoryRepository).move(source, target);
+        verify(directoryRepository, never()).rename(any(Directory.class), anyString());
     }
 
 
-    @Test(expected = DriveException.class)
+    @Test
     public void moveDirectoryWhenUserNotExists() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
@@ -383,7 +376,7 @@ public class DriveServiceImplTest {
         callMoveDirectoryWhenMockMoveAndRenameNotInvocation(sourcePath, targetPath);
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void moveDirectoryWhenSourceDirectoryNotExists() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first").build();
@@ -403,7 +396,7 @@ public class DriveServiceImplTest {
     }
 
 
-    @Test(expected = DriveException.class)
+    @Test
     public void moveDirectoryWhenTargetDirectoryNotExists() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
@@ -459,7 +452,7 @@ public class DriveServiceImplTest {
         assertThat(source).isEqualToIgnoringGivenFields(expected, "id");
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void renameDirectoryWhenDirectoryRepositoryThrowsException() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
@@ -482,20 +475,18 @@ public class DriveServiceImplTest {
 
 
         //When
-        try {
-            instance.moveDirectory(user.getLogin(), source.getPath(), expected.getPath());
-        } catch (DriveException e) {
-            //Then
-            verify(directoryRepository).findByOwnerAndPath(user, sourcePath);
-            verify(directoryRepository).findByOwnerAndPath(user, parentPath);
-            verify(directoryRepository).rename(source, targetPath);
-            verify(directoryRepository, never()).move(any(Directory.class), any(Directory.class));
+        assertThrows(DriveException.class,
+                () -> instance.moveDirectory(user.getLogin(), source.getPath(), expected.getPath())
+        );
 
-            throw e;
-        }
+        //Then
+        verify(directoryRepository).findByOwnerAndPath(user, sourcePath);
+        verify(directoryRepository).findByOwnerAndPath(user, parentPath);
+        verify(directoryRepository).rename(source, targetPath);
+        verify(directoryRepository, never()).move(any(Directory.class), any(Directory.class));
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void renameDirectoryWhenSourceDirectoryNotExists() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
@@ -533,22 +524,21 @@ public class DriveServiceImplTest {
         verify(directoryRepository).delete(source);
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void deleteDirectoryWhenOwnerNotExist() {
         //Given
         when(userInfoRepository.findByLogin(anyString()))
                 .thenReturn(Optional.empty());
 
         //When
-        try {
-            instance.deleteDirectory(user.getLogin(), "/someDirectory");
-        } catch (DriveException e) {
-            verify(userInfoRepository).findByLogin(user.getLogin());
-            verify(directoryRepository, never()).findByOwnerAndPath(any(UserInfo.class), anyString());
-            verify(directoryRepository, never()).delete(any(Directory.class));
+        assertThrows(DriveException.class,
+                () -> instance.deleteDirectory(user.getLogin(), "/someDirectory")
+        );
 
-            throw e;
-        }
+        //Then
+        verify(userInfoRepository).findByLogin(user.getLogin());
+        verify(directoryRepository, never()).findByOwnerAndPath(any(UserInfo.class), anyString());
+        verify(directoryRepository, never()).delete(any(Directory.class));
     }
 
     @Test
@@ -606,7 +596,7 @@ public class DriveServiceImplTest {
         verify(fileRepository).findByDirectoryAndFilename(directory, filename);
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void retrievePictureFileDataWhenFoundTooManyFiles() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/first/second").build();
@@ -630,10 +620,12 @@ public class DriveServiceImplTest {
                 ));
 
         //When
-        instance.retrievePictureFileData(user.getLogin(), filePath);
+        assertThrows(DriveException.class,
+                () -> instance.retrievePictureFileData(user.getLogin(), filePath)
+        );
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void retrievePictureFileDataWhenFileNotFound() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/first/second").build();
@@ -649,10 +641,12 @@ public class DriveServiceImplTest {
                 .thenReturn(emptyList());
 
         //When
-        instance.retrievePictureFileData(user.getLogin(), filePath);
+        assertThrows(DriveException.class,
+                () -> instance.retrievePictureFileData(user.getLogin(), filePath)
+        );
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void retrievePictureFileDataWhenFileRepositoryThrowsException() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/first/second").build();
@@ -667,7 +661,9 @@ public class DriveServiceImplTest {
         doThrow(new PictureFileException()).when(fileRepository).findByDirectoryAndFilename(directory, filename);
 
         //When
-        instance.retrievePictureFileData(user.getLogin(), filePath);
+        assertThrows(DriveException.class,
+                () -> instance.retrievePictureFileData(user.getLogin(), filePath)
+        );
     }
 
     @Test
@@ -701,7 +697,7 @@ public class DriveServiceImplTest {
                 .isEqualToComparingFieldByField(expectedDTO);
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void addPictureFileWhenMultipartFileThrowsException() throws IOException {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/someDirectory").build();
@@ -715,18 +711,16 @@ public class DriveServiceImplTest {
         when(directoryRepository.findByOwnerAndPath(user, directory.getPath())).thenReturn(singletonList(directory));
 
         //When
-        try {
-            instance.addPictureFile(user.getLogin(), directory.getPath(), file);
-        } catch (DriveException e) {
-            //Then
-            verify(userInfoRepository).findByLogin(user.getLogin());
-            verify(fileRepository, never()).save(any(PictureFile.class));
+        assertThrows(DriveException.class,
+                () -> instance.addPictureFile(user.getLogin(), directory.getPath(), file)
+        );
 
-            throw e;
-        }
+        //Then
+        verify(userInfoRepository).findByLogin(user.getLogin());
+        verify(fileRepository, never()).save(any(PictureFile.class));
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void addPictureFileWhenPictureFileRepositoryThrowsException() throws IOException {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/someDirectory").build();
@@ -741,15 +735,13 @@ public class DriveServiceImplTest {
         when(fileRepository.save(any(PictureFile.class))).thenThrow(new PictureFileException());
 
         //When
-        try {
-            instance.addPictureFile(user.getLogin(), directory.getPath(), file);
-        } catch (DriveException e) {
-            //Then
-            verify(userInfoRepository).findByLogin(user.getLogin());
-            verify(fileRepository).save(any(PictureFile.class));
+        assertThrows(DriveException.class,
+                () -> instance.addPictureFile(user.getLogin(), directory.getPath(), file)
+        );
 
-            throw e;
-        }
+        //Then
+        verify(userInfoRepository).findByLogin(user.getLogin());
+        verify(fileRepository).save(any(PictureFile.class));
     }
 
     @Test
@@ -794,7 +786,7 @@ public class DriveServiceImplTest {
         assertThat(file).isEqualToIgnoringGivenFields(expected, "id");
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void movePictureFileWhenFileNotFound() {
         //Given
         Directory sourceDirectory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
@@ -811,22 +803,19 @@ public class DriveServiceImplTest {
                 .thenReturn(emptyList());
 
         //When
-        try {
-            instance.movePictureFile(
-                    user.getLogin(),
-                    buildPath(sourceDirectory.getPath(), filename),
-                    buildPath(targetDirectory.getPath(), filename)
-            );
-        }catch (DriveException e) {
-            //Then
-            verify(fileRepository, never()).move(any(PictureFile.class), any(Directory.class), anyString());
+        assertThrows(DriveException.class,
+                () -> instance.movePictureFile(
+                        user.getLogin(),
+                        buildPath(sourceDirectory.getPath(), filename),
+                        buildPath(targetDirectory.getPath(), filename))
+        );
 
-            throw e;
-        }
+        //Then
+        verify(fileRepository, never()).move(any(PictureFile.class), any(Directory.class), anyString());
     }
 
 
-    @Test(expected = DriveException.class)
+    @Test
     public void movePictureWhenFoundTooManyFiles() {
         //Given
         Directory sourceDirectory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
@@ -848,17 +837,15 @@ public class DriveServiceImplTest {
                 .thenReturn(asList(file, file));
 
         //When
-        try {
-            instance.movePictureFile(user.getLogin(), file.getPath(), buildPath(targetDirectory.getPath(), filename));
-        } catch (DriveException e) {
-            //Then
-            verify(fileRepository, never()).move(any(PictureFile.class), any(Directory.class), anyString());
+        assertThrows(DriveException.class,
+                () -> instance.movePictureFile(user.getLogin(), file.getPath(), buildPath(targetDirectory.getPath(), filename))
+        );
 
-            throw e;
-        }
+        //Then
+        verify(fileRepository, never()).move(any(PictureFile.class), any(Directory.class), anyString());
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void movePictureWhenPictureFileRepositoryThrowsExceptionOnFind() {
         //Given
         Directory sourceDirectory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
@@ -875,21 +862,18 @@ public class DriveServiceImplTest {
                 .thenThrow(new PictureFileException());
 
         //When
-        try {
-            instance.movePictureFile(
-                    user.getLogin(),
-                    buildPath(sourceDirectory.getPath(), filename),
-                    buildPath(targetDirectory.getPath(), filename)
-            );
-        } catch (DriveException e) {
-            //Then
-            verify(fileRepository, never()).move(any(PictureFile.class), any(Directory.class), anyString());
+        assertThrows(DriveException.class,
+                () -> instance.movePictureFile(
+                        user.getLogin(),
+                        buildPath(sourceDirectory.getPath(), filename),
+                        buildPath(targetDirectory.getPath(), filename))
+        );
 
-            throw e;
-        }
+        //Then
+        verify(fileRepository, never()).move(any(PictureFile.class), any(Directory.class), anyString());
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void movePictureWhenPictureFileRepositoryThrowsExceptionOnMove() {
         //Given
         Directory sourceDirectory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
@@ -913,14 +897,12 @@ public class DriveServiceImplTest {
                 .when(fileRepository).move(any(PictureFile.class), any(Directory.class), anyString());
 
         //When
-        try {
-            instance.movePictureFile(user.getLogin(), file.getPath(), buildPath(targetDirectory.getPath(), filename));
-        } catch (DriveException e) {
-            //Then
-            verify(fileRepository).move(file, targetDirectory, filename);
+        assertThrows(DriveException.class,
+                () -> instance.movePictureFile(user.getLogin(), file.getPath(), buildPath(targetDirectory.getPath(), filename))
+        );
 
-            throw e;
-        }
+        //Then
+        verify(fileRepository).move(file, targetDirectory, filename);
     }
 
     @Test
@@ -951,7 +933,7 @@ public class DriveServiceImplTest {
     }
 
 
-    @Test(expected = DriveException.class)
+    @Test
     public void deletePictureFileWhenDeletedFileNotFound() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
@@ -965,20 +947,18 @@ public class DriveServiceImplTest {
                 .thenReturn(emptyList());
 
         //When
-        try {
-            instance.deletePictureFile(user.getLogin(), buildPath(directory.getPath(), originalFilename));
-        } catch (DriveException e) {
-            //Then
-            verify(userInfoRepository).findByLogin(user.getLogin());
-            verify(fileRepository).findByDirectoryAndFilename(directory, originalFilename);
-            verify(fileRepository, never()).delete(any(PictureFile.class));
+        assertThrows(DriveException.class,
+                () -> instance.deletePictureFile(user.getLogin(), buildPath(directory.getPath(), originalFilename))
+        );
 
-            throw e;
-        }
+        //Then
+        verify(userInfoRepository).findByLogin(user.getLogin());
+        verify(fileRepository).findByDirectoryAndFilename(directory, originalFilename);
+        verify(fileRepository, never()).delete(any(PictureFile.class));
     }
 
 
-    @Test(expected = DriveException.class)
+    @Test
     public void deletePictureFileWhenFoundTooManyFiles() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
@@ -1000,17 +980,15 @@ public class DriveServiceImplTest {
                 ));
 
         //When
-        try {
-            instance.deletePictureFile(user.getLogin(), buildPath(directory.getPath(), originalFilename));
-        } catch (DriveException e) {
-            //Then
-            verify(fileRepository, never()).delete(any(PictureFile.class));
+        assertThrows(DriveException.class,
+                () -> instance.deletePictureFile(user.getLogin(), buildPath(directory.getPath(), originalFilename))
+        );
 
-            throw e;
-        }
+        //Then
+        verify(fileRepository, never()).delete(any(PictureFile.class));
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void deletePictureFileWhenPictureFileThrowsExceptionOnDelete() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
@@ -1030,21 +1008,19 @@ public class DriveServiceImplTest {
         doThrow(new PictureFileException()).when(fileRepository).delete(any(PictureFile.class));
 
         //When
-        try {
-            instance.deletePictureFile(user.getLogin(), buildPath(directory.getPath(), originalFilename));
-        } catch (DriveException e) {
-            //Then
-            ArgumentCaptor<PictureFile> argumentCaptor = ArgumentCaptor.forClass(PictureFile.class);
-            verify(fileRepository).delete(argumentCaptor.capture());
-            assertThat(argumentCaptor.getValue())
-                    .isNotNull()
-                    .isEqualToIgnoringGivenFields(deletedFile, "id");
+        assertThrows(DriveException.class,
+                () -> instance.deletePictureFile(user.getLogin(), buildPath(directory.getPath(), originalFilename))
+        );
 
-            throw e;
-        }
+        //Then
+        ArgumentCaptor<PictureFile> argumentCaptor = ArgumentCaptor.forClass(PictureFile.class);
+        verify(fileRepository).delete(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue())
+                .isNotNull()
+                .isEqualToIgnoringGivenFields(deletedFile, "id");
     }
 
-    @Test(expected = DriveException.class)
+    @Test
     public void deletePictureFileWhenPictureFileThrowsExceptionOnFind() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
@@ -1058,14 +1034,12 @@ public class DriveServiceImplTest {
                 .thenThrow(new PictureFileException());
 
         //When
-        try {
-            instance.deletePictureFile(user.getLogin(), buildPath(directory.getPath(), originalFilename));
-        } catch (DriveException e) {
-            //Then
-            verify(fileRepository).findByDirectoryAndFilename(directory, originalFilename);
-            verify(fileRepository, never()).delete(any());
+        assertThrows(DriveException.class,
+                () -> instance.deletePictureFile(user.getLogin(), buildPath(directory.getPath(), originalFilename))
+        );
 
-            throw e;
-        }
+        //Then
+        verify(fileRepository).findByDirectoryAndFilename(directory, originalFilename);
+        verify(fileRepository, never()).delete(any());
     }
 }

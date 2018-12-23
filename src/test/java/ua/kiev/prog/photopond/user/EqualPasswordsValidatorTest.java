@@ -1,10 +1,10 @@
 package ua.kiev.prog.photopond.user;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.transfer.ChangePassword;
 
 import javax.validation.ConstraintViolation;
@@ -14,12 +14,12 @@ import javax.validation.ValidatorFactory;
 import java.util.Set;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class EqualPasswordsValidatorTest {
 
     private Validator validator;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();

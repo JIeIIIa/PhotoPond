@@ -1,20 +1,20 @@
 package ua.kiev.prog.photopond.core;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ua.kiev.prog.photopond.TestControllerBasicConfiguration;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class WelcomeControllerTest extends TestControllerBasicConfiguration {
 
     private static final String ROOT_VIEW_NAME = "index";
 
-    @Before
+    @BeforeEach
     public void setup() {
         configure(new WelcomeController());
     }

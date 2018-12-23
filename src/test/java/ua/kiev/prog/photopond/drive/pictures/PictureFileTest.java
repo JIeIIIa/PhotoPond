@@ -1,22 +1,23 @@
 package ua.kiev.prog.photopond.drive.pictures;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class PictureFileTest {
 
     private PictureFile file;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         file = new PictureFile();
     }
@@ -34,38 +35,48 @@ public class PictureFileTest {
                 .isEqualTo(filename);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setFilenameFailure() {
         //When
-        file.setFilename(SEPARATOR + "failureFilename.jpg");
+        assertThrows(IllegalArgumentException.class,
+                () -> file.setFilename(SEPARATOR + "failureFilename.jpg")
+        );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void getPathWhenDirectoryNull() {
-        file.getPath();
+        assertThrows(IllegalStateException.class,
+                () -> file.getPath()
+        );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void getFullPathWhenDirectoryNull() {
-        file.getFullPath();
+        assertThrows(IllegalStateException.class,
+                () -> file.getFullPath()
+        );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void getPathWhenFilenameNull() {
         //Given
         file.setDirectory(new Directory(new UserInfo(), "/path"));
 
         //When
-        file.getPath();
+        assertThrows(IllegalStateException.class,
+                () -> file.getPath()
+        );
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void getFullPathWhenFilenameNull() {
         //Given
         file.setDirectory(new Directory(new UserInfo(), "/path"));
 
         //When
-        file.getFullPath();
+        assertThrows(IllegalStateException.class,
+                () -> file.getFullPath()
+        );
     }
 
     @Test
