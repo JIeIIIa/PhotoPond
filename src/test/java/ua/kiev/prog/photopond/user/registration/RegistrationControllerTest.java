@@ -39,7 +39,7 @@ import static ua.kiev.prog.photopond.user.registration.RegistrationController.RE
         SpringSecurityWebAuthenticationTestConfiguration.class
 })
 
-@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "securityWebAuthTestConfig"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "securityWebAuthTestConfig", "test"})
 public class RegistrationControllerTest {
     private static final String SERVER_ADDRESS = "https://localhost";
 

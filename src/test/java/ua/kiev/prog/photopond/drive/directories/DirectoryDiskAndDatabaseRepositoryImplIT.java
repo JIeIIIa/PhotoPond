@@ -4,6 +4,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +42,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles({DEV, DISK_DATABASE_STORAGE})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "test"})
 @DataJpaTest
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class,
@@ -66,16 +68,26 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
 
     @BeforeEach
     public void setUp() throws IOException {
-        instance = new DirectoryDiskAndDatabaseRepositoryImpl(directoryJpaRepository);
-        instance.setFoldersBasedir(foldersBasedir);
+        basedirPath = Paths.get(foldersBasedir + "/" + ThreadLocalRandom.current().nextInt());
 
-        basedirPath = Paths.get(foldersBasedir);
+        instance = new DirectoryDiskAndDatabaseRepositoryImpl(directoryJpaRepository);
+        instance.setFoldersBasedir(basedirPath.toString());
+
 
         TestUtils.createDirectories(basedirPath, directoryJpaRepository);
 
         user = userInfoJpaRepository.findByLogin("User")
                 .orElseThrow(() -> new IllegalStateException("Failure retrieve User"));
         directory = new DirectoryBuilder().id(2100L).owner(user).path("/first").build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        try {
+            Files.deleteIfExists(basedirPath);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test
@@ -103,7 +115,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
         instance.save(dir);
 
         //Then
-        assertThat(Files.exists(Paths.get(foldersBasedir + dir.getFullPath()))).isTrue();
+        assertThat(Files.exists(Paths.get(basedirPath.toString() + dir.getFullPath()))).isTrue();
         List<Directory> saved = directoryJpaRepository.findByOwnerAndPath(user, newPath);
         assertThat(saved)
                 .isNotNull()
@@ -135,7 +147,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     public void deleteEmptyDirectory() {
         //Given
         directory = new DirectoryBuilder().id(2111L).owner(user).path("/first/second/third").build();
-        Path path = Paths.get(foldersBasedir + directory.getFullPath());
+        Path path = Paths.get(basedirPath.toString() + directory.getFullPath());
         long count = directoryJpaRepository.countByOwner(user);
 
         //When
@@ -154,8 +166,8 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
         //Given
         directory = new DirectoryBuilder().id(2110L).owner(user).path("/first/second").build();
         Directory subDirectory = new DirectoryBuilder().id(2111L).owner(user).path("/first/second/third").build();
-        Path path = Paths.get(foldersBasedir + directory.getFullPath());
-        Path subPath = Paths.get(foldersBasedir + subDirectory.getFullPath());
+        Path path = Paths.get(basedirPath.toString() + directory.getFullPath());
+        Path subPath = Paths.get(basedirPath.toString() + subDirectory.getFullPath());
         long count = directoryJpaRepository.countByOwner(user);
 
         //When
@@ -200,7 +212,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     @Test
     public void renameSuccess() {
         //Given
-        Path oldPath = Paths.get(foldersBasedir + directory.getFullPath());
+        Path oldPath = Paths.get(basedirPath.toString() + directory.getFullPath());
         String targetPath = buildPath(directory.parentPath(), "target");
 
         List<Directory> directories = new LinkedList<>();
@@ -226,11 +238,11 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
         assertThat(afterRename).hasSize(5);
 
         for (Directory dir : directories) {
-            assertThat(Files.exists(Paths.get(foldersBasedir + dir.getFullPath())))
+            assertThat(Files.exists(Paths.get(basedirPath.toString() + dir.getFullPath())))
                     .isFalse();
         }
         for (Directory dir : afterRename) {
-            assertThat(Files.exists(Paths.get(foldersBasedir + dir.getFullPath())))
+            assertThat(Files.exists(Paths.get(basedirPath.toString() + dir.getFullPath())))
                     .isTrue();
         }
     }
@@ -238,7 +250,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     @Test
     public void renameNotExistsOnDiskDirectory() throws Exception {
         //Given
-        FileUtils.deleteDirectory(new File(foldersBasedir + directory.getFullPath()));
+        FileUtils.deleteDirectory(new File(basedirPath.toString() + directory.getFullPath()));
 
         //When
         assertThrows(DirectoryModificationException.class,

@@ -11,27 +11,54 @@ import ua.kiev.prog.photopond.drive.pictures.PictureFileDiskAndDatabaseRepositor
 import ua.kiev.prog.photopond.drive.pictures.PictureFileJpaRepository;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileRepository;
 
+import javax.annotation.PostConstruct;
+import java.util.concurrent.ThreadLocalRandom;
+
 @TestConfiguration
-@Profile("unitTest")
+@Profile({"unitTest", "test"})
 public class DriveServiceImplITConfiguration {
-    @Value("${folders.basedir.location}")
+
     private String foldersBaseDir;
 
+    private String generatedFoldersBaseDir;
+
+    @Value("${folders.basedir.location}")
+    public void setFoldersBaseDir(String foldersBaseDir) {
+        this.foldersBaseDir = foldersBaseDir;
+        this.generatedFoldersBaseDir = foldersBaseDir + "/" + ThreadLocalRandom.current().nextInt();
+    }
+
+    private DirectoryDiskAndDatabaseRepositoryImpl directoryRepository;
+    private PictureFileDiskAndDatabaseRepositoryImpl fileRepository;
+
+    @PostConstruct
+    public void postConstruct() {
+        this.directoryRepository.setFoldersBasedir(generatedFoldersBaseDir);
+        this.fileRepository.setFoldersBasedir(generatedFoldersBaseDir);
+    }
+
     @Bean
-    public DirectoryRepository directoryDiskAndDatabaseRepository(DirectoryJpaRepository jpaRepository) {
+    public DirectoryRepository directoryRepository(DirectoryJpaRepository jpaRepository) {
         DirectoryDiskAndDatabaseRepositoryImpl instance = new DirectoryDiskAndDatabaseRepositoryImpl(jpaRepository);
-        instance.setFoldersBasedir(foldersBaseDir);
-        System.out.println("directoryDiskAndDatabaseRepository:    foldersBaseDir = " + foldersBaseDir);
+        instance.setFoldersBasedir(generatedFoldersBaseDir);
+        System.out.println("directoryDiskAndDatabaseRepository:    foldersBaseDir = " + generatedFoldersBaseDir);
+        this.directoryRepository = instance;
 
         return instance;
     }
 
     @Bean
-    public PictureFileRepository pictureFileRepository(PictureFileJpaRepository jpaRepository) {
+    public PictureFileRepository fileRepository(PictureFileJpaRepository jpaRepository) {
         PictureFileDiskAndDatabaseRepositoryImpl instance = new PictureFileDiskAndDatabaseRepositoryImpl(jpaRepository);
-        instance.setFoldersBasedir(foldersBaseDir);
-        System.out.println("pictureFileRepository:    foldersBaseDir = " + foldersBaseDir);
+        instance.setFoldersBasedir(generatedFoldersBaseDir);
+        System.out.println("pictureFileRepository:    foldersBaseDir = " + generatedFoldersBaseDir);
+        this.fileRepository = instance;
 
         return instance;
+    }
+
+    @Bean
+    public String generatedFoldersBaseDir() {
+        return generatedFoldersBaseDir;
     }
 }

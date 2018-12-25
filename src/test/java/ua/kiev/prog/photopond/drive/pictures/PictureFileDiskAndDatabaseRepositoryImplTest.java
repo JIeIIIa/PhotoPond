@@ -1,6 +1,7 @@
 package ua.kiev.prog.photopond.drive.pictures;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,6 +9,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.QueryTimeoutException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.drive.directories.Directory;
@@ -24,6 +26,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -34,6 +37,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource({"classpath:application.properties", "classpath:application-disk-database-storage.properties"})
+@ActiveProfiles({"test"})
 public class PictureFileDiskAndDatabaseRepositoryImplTest {
     @MockBean
     private PictureFileJpaRepository pictureFileJpaRepository;
@@ -53,10 +57,10 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        basedirPath = Paths.get(foldersBasedir);
+        basedirPath = Paths.get(foldersBasedir + "/" + ThreadLocalRandom.current().nextInt());
 
         instance = new PictureFileDiskAndDatabaseRepositoryImpl(pictureFileJpaRepository);
-        instance.setFoldersBasedir(foldersBasedir);
+        instance.setFoldersBasedir(basedirPath.toString());
 
         if (Files.exists(basedirPath)) {
             FileUtils.cleanDirectory(basedirPath.toFile());
@@ -76,6 +80,15 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
                 .build();
         pictureFileOnDisk = Paths.get(basedirPath + pictureFile.getFullPath());
         Files.write(pictureFileOnDisk, DATA);
+    }
+
+    @AfterEach
+    void tearDown() {
+        try {
+            Files.deleteIfExists(basedirPath);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void assertThatFileContainsData(PictureFile pictureFile, byte[] data) throws IOException {

@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @TestConfiguration
-@Profile("unitTest")
+@Profile({"unitTest", "test"})
 public class UserInfoServiceJpaImplITConfiguration {
 
     @Bean

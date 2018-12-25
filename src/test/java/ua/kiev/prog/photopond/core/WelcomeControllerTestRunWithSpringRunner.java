@@ -26,7 +26,7 @@ import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DA
         WebMvcTestContextConfiguration.class,
         SpringSecurityWebAuthenticationTestConfiguration.class
 })
-@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "securityWebAuthTestConfig"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "securityWebAuthTestConfig", "test"})
 public class WelcomeControllerTestRunWithSpringRunner {
 
     @Autowired

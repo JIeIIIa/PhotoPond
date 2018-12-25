@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +40,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application.properties")
+@ActiveProfiles({"test"})
 public class DriveServiceImplTest {
     @MockBean
     private DirectoryRepository directoryRepository;

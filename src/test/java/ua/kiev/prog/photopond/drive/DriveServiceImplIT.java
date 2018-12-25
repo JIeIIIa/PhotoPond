@@ -3,11 +3,12 @@ package ua.kiev.prog.photopond.drive;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -36,6 +37,7 @@ import ua.kiev.prog.photopond.user.UserInfoServiceJpaImplITConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
@@ -54,7 +56,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "testMySQLDB"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "testMySQLDB", "test"})
 @DataJpaTest
 @EnableJpaAuditing
 @TestExecutionListeners({
@@ -68,11 +70,15 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 })
 @DatabaseSetup("classpath:datasets/picturefile_dataset_IT.xml")
 @Transactional
+@Disabled
 public class DriveServiceImplIT {
     private final String ROOT_PATH = SEPARATOR;
 
-    @Value(value = "${folders.basedir.location}")
-    private String foldersBasedir;
+//    @Value(value = "${folders.basedir.location}")
+//    private String foldersBasedir;
+
+    @Autowired
+    private String generatedFoldersBaseDir;
 
     @Autowired
     private TestEntityManager entityManager;
@@ -100,6 +106,8 @@ public class DriveServiceImplIT {
 
     @BeforeEach
     public void setUp() throws IOException {
+        basedirPath = Paths.get(generatedFoldersBaseDir);
+
         instance = new DriveServiceImpl(directoryRepository, fileRepository, userInfoRepository);
 
         user = new UserInfoBuilder()
@@ -108,11 +116,19 @@ public class DriveServiceImplIT {
                 .password("password")
                 .build();
 
-        basedirPath = Paths.get(foldersBasedir);
 
         TestUtils.createDirectories(basedirPath, directoryJpaRepository);
         TestUtils.createPictureFiles(basedirPath, pictureFileJpaRepository);
 
+    }
+
+    @AfterEach
+    void tearDown() {
+        try {
+            Files.deleteIfExists(basedirPath);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test

@@ -1,12 +1,14 @@
 package ua.kiev.prog.photopond.drive.directories;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.QueryTimeoutException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.user.UserInfo;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource({"classpath:application.properties", "classpath:application-disk-database-storage.properties"})
+@ActiveProfiles({"test"})
 public class DirectoryDiskAndDatabaseRepositoryImplTest {
 
     @MockBean
@@ -54,9 +58,10 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
 
     @BeforeEach
     public void setUp() throws Exception {
+        basedirPath = Paths.get(foldersBasedir + "/" + ThreadLocalRandom.current().nextInt(1000, Integer.MAX_VALUE));
+
         instance = new DirectoryDiskAndDatabaseRepositoryImpl(directoryJpaRepository);
-        instance.setFoldersBasedir(foldersBasedir);
-        basedirPath = Paths.get(foldersBasedir);
+        instance.setFoldersBasedir(basedirPath.toString());
 
         if (Files.exists(basedirPath)) {
             FileUtils.cleanDirectory(basedirPath.toFile());
@@ -65,7 +70,16 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         user = new UserInfoBuilder().login("awesomeUser").role(UserRole.USER).build();
         root = createDirectory(1L, "/", user);
         directory = createDirectory(7L, "/first", user);
-        directoryPathOnDisk = Paths.get(foldersBasedir + directory.getFullPath());
+        directoryPathOnDisk = Paths.get(basedirPath.toString() + directory.getFullPath());
+    }
+
+    @AfterEach
+    void tearDown() {
+        try {
+            Files.deleteIfExists(basedirPath);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private List<Directory> createSubdirectoryList(Directory directory, String... subDirectoryNames) {
@@ -83,7 +97,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
                 .owner(owner)
                 .path(path)
                 .build();
-        Path pathOnDisk = Paths.get(foldersBasedir + directory.getFullPath());
+        Path pathOnDisk = Paths.get(basedirPath.toString() + directory.getFullPath());
         if (!Files.exists(pathOnDisk)) {
             try {
                 Files.createDirectories(pathOnDisk);
@@ -198,7 +212,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
         deleted.add(directory);
         verify(directoryJpaRepository).deleteAll(deleted);
         for (Directory d : deleted) {
-            assertThat(Files.exists(Paths.get(foldersBasedir + d.getFullPath()))).isFalse();
+            assertThat(Files.exists(Paths.get(basedirPath.toString() + d.getFullPath()))).isFalse();
         }
     }
 
@@ -455,7 +469,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
             String expectedSubDirectoryPath = expectedPath + SEPARATOR + subDirectoryNames[i];
             assertThat(subDir.getPath())
                     .isEqualTo(expectedSubDirectoryPath);
-            assertThat(Files.exists(Paths.get(foldersBasedir + subDir.getFullPath())))
+            assertThat(Files.exists(Paths.get(basedirPath.toString() + subDir.getFullPath())))
                     .isTrue();
         }
     }

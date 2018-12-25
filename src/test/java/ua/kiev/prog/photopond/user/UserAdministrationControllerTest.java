@@ -37,7 +37,7 @@ import static ua.kiev.prog.photopond.user.UserRole.ADMIN;
         WebMvcTestContextConfiguration.class,
         UserInfoServiceMockConfiguration.class
 })
-@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "test"})
 public class UserAdministrationControllerTest {
     private static final String URL_PREFIX = "/administration/user";
 

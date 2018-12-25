@@ -4,6 +4,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,7 +42,7 @@ import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles({DEV, DISK_DATABASE_STORAGE})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "test"})
 @DataJpaTest
 @EnableJpaAuditing
 @TestExecutionListeners({
@@ -71,10 +73,10 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
 
     @BeforeEach
     public void setUp() throws IOException {
-        instance = new PictureFileDiskAndDatabaseRepositoryImpl(pictureFileJpaRepository);
-        instance.setFoldersBasedir(foldersBasedir);
+        basedirPath = Paths.get(foldersBasedir + "/" + ThreadLocalRandom.current().nextInt());
 
-        basedirPath = Paths.get(foldersBasedir);
+        instance = new PictureFileDiskAndDatabaseRepositoryImpl(pictureFileJpaRepository);
+        instance.setFoldersBasedir(basedirPath.toString());
 
         TestUtils.createDirectories(basedirPath, directoryJpaRepository);
         TestUtils.createPictureFiles(basedirPath, pictureFileJpaRepository);
@@ -89,6 +91,15 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
                 .data("root.jpg".getBytes())
                 .directory(directory)
                 .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        try {
+            Files.deleteIfExists(basedirPath);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void assertThatFileContainsData(PictureFile pictureFile, byte[] data) throws IOException {

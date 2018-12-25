@@ -22,7 +22,7 @@ import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "testDB", "unitTest"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "testDB", "unitTest", "test"})
 @DataJpaTest
 @ContextConfiguration(classes = {UserInfoServiceJpaImplITConfiguration.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,

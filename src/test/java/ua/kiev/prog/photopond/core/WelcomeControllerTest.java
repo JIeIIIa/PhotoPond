@@ -3,6 +3,7 @@ package ua.kiev.prog.photopond.core;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -10,6 +11,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ua.kiev.prog.photopond.TestControllerBasicConfiguration;
 
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles({"test"})
 public class WelcomeControllerTest extends TestControllerBasicConfiguration {
 
     private static final String ROOT_VIEW_NAME = "index";

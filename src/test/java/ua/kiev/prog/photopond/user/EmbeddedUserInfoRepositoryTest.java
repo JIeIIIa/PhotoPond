@@ -3,6 +3,7 @@ package ua.kiev.prog.photopond.user;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.exception.AddToRepositoryException;
 
@@ -15,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles({"test"})
 public class EmbeddedUserInfoRepositoryTest {
     private static final String USER_LOGIN = "user";
     private EmbeddedUserInfoRepository embeddedUserInfoRepository;

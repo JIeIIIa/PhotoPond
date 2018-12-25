@@ -32,7 +32,7 @@ import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DA
         WebMvcTestContextConfiguration.class,
         SpringSecurityWebAuthenticationTestConfiguration.class
 })
-@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "securityWebAuthTestConfig"})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "securityWebAuthTestConfig", "test"})
 public class LoginControllerTest {
     private static final String SERVER_ADDRESS = "https://localhost";
 

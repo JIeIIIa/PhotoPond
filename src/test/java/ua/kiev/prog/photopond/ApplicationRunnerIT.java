@@ -14,7 +14,7 @@ import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DA
 
 @ExtendWith(SpringExtension.class)
 @IntegrationTest
-@ActiveProfiles({DEV, DISK_DATABASE_STORAGE})
+@ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "test"})
 public class ApplicationRunnerIT {
 
     @Autowired
