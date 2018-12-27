@@ -1,6 +1,7 @@
 # PhotoPond
 
 [![Build Status](https://travis-ci.org/JIeIIIa/PhotoPond.svg?branch=master)](https://travis-ci.org/JIeIIIa/PhotoPond)
+[![Coverage Status](https://coveralls.io/repos/github/JIeIIIa/PhotoPond/badge.svg?branch=master)](https://coveralls.io/github/JIeIIIa/PhotoPond?branch=master)
 
 PhotoPond is a java study project. It available by https://photopond.herokuapp.com
 
