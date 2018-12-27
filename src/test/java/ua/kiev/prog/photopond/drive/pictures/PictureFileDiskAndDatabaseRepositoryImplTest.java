@@ -1,6 +1,8 @@
 package ua.kiev.prog.photopond.drive.pictures;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,9 @@ import static org.mockito.Mockito.*;
 @TestPropertySource({"classpath:application.properties", "classpath:application-disk-database-storage.properties"})
 @ActiveProfiles({"test"})
 public class PictureFileDiskAndDatabaseRepositoryImplTest {
+
+    private static final Logger LOG = LogManager.getLogger(PictureFileDiskAndDatabaseRepositoryImplTest.class);
+
     @MockBean
     private PictureFileJpaRepository pictureFileJpaRepository;
 
@@ -85,9 +90,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     @AfterEach
     void tearDown() {
         try {
-            Files.deleteIfExists(basedirPath);
+            FileUtils.deleteDirectory(basedirPath.toFile());
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            LOG.warn(e.getMessage());
         }
     }
 

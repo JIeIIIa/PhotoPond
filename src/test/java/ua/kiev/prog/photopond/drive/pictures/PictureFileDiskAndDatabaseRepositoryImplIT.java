@@ -3,6 +3,8 @@ package ua.kiev.prog.photopond.drive.pictures;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +54,9 @@ import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DA
 @DatabaseSetup("classpath:datasets/picturefile_dataset_IT.xml")
 @Transactional
 public class PictureFileDiskAndDatabaseRepositoryImplIT {
+
+    private static final Logger LOG = LogManager.getLogger(PictureFileDiskAndDatabaseRepositoryImplIT.class);
+
     @Value(value = "${folders.basedir.location}")
     private String foldersBasedir;
 
@@ -96,9 +101,9 @@ public class PictureFileDiskAndDatabaseRepositoryImplIT {
     @AfterEach
     void tearDown() {
         try {
-            Files.deleteIfExists(basedirPath);
+            FileUtils.deleteDirectory(basedirPath.toFile());
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            LOG.warn(e.getMessage());
         }
     }
 

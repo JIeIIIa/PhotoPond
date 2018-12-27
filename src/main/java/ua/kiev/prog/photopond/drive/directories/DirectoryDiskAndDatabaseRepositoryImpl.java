@@ -236,7 +236,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryReposito
                     .sorted(Comparator.reverseOrder())
                     .forEach(path -> {
                         try {
-                            Files.deleteIfExists(path);
+                            FileUtils.deleteDirectory(path.toFile());
                         } catch (IOException e) {
                             LOG.error("Failure delete {} after copy", path);
                         }

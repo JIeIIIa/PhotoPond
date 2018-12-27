@@ -3,6 +3,8 @@ package ua.kiev.prog.photopond.drive.directories;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +53,9 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 @DatabaseSetup("classpath:datasets/directories_dataset_IT.xml")
 @Transactional
 public class DirectoryDiskAndDatabaseRepositoryImplIT {
+
+    private static final Logger LOG = LogManager.getLogger(DirectoryDiskAndDatabaseRepositoryImplIT.class);
+
     @Autowired
     private DirectoryJpaRepository directoryJpaRepository;
 
@@ -84,9 +89,9 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     @AfterEach
     void tearDown() {
         try {
-            Files.deleteIfExists(basedirPath);
+            FileUtils.deleteDirectory(basedirPath.toFile());
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            LOG.warn(e.getMessage());
         }
     }
 

@@ -1,6 +1,8 @@
 package ua.kiev.prog.photopond.drive.directories;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +43,8 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 @ActiveProfiles({"test"})
 public class DirectoryDiskAndDatabaseRepositoryImplTest {
 
+    private static final Logger LOG = LogManager.getLogger(DirectoryDiskAndDatabaseRepositoryImplTest.class);
+
     @MockBean
     private DirectoryJpaRepository directoryJpaRepository;
 
@@ -76,9 +80,9 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     @AfterEach
     void tearDown() {
         try {
-            Files.deleteIfExists(basedirPath);
+            FileUtils.deleteDirectory(basedirPath.toFile());
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            LOG.warn(e.getMessage());
         }
     }
 
@@ -310,7 +314,7 @@ public class DirectoryDiskAndDatabaseRepositoryImplTest {
     @Test
     public void renameNotExistsOnDiskDirectory() throws Exception {
         //Given
-        Files.deleteIfExists(directoryPathOnDisk);
+        FileUtils.deleteDirectory(directoryPathOnDisk.toFile());
         when(directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.getPath()))
                 .thenReturn(singletonList(directory));
         when(directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.parentPath()))

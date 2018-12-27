@@ -2,6 +2,8 @@ package ua.kiev.prog.photopond.drive.directories;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DA
         DbUnitTestExecutionListener.class})
 @DatabaseSetup("classpath:datasets/directories_dataset.xml")
 public class DirectoryJpaRepositoryTest {
+
+    private static final Logger LOG = LogManager.getLogger(DirectoryJpaRepositoryTest.class);
+
     @Autowired
     private DirectoryJpaRepository repository;
 
@@ -33,19 +38,16 @@ public class DirectoryJpaRepositoryTest {
 
     @Test
     public void rename() {
-        printAllDirectories(repository.findAll());
+        printDirectories(repository.findAll());
         UserInfo owner = userInfoJpaRepository.findById(1L).orElseThrow(IllegalStateException::new);
         List<Directory> directories = repository.findByOwnerAndPathStartingWith(owner, "/first");
 
-
-        System.out.println("After renaming:");
-        printAllDirectories(directories);
+        printDirectories(directories);
     }
 
-    private void printAllDirectories(List<Directory> list) {
-         repository.findAll();
+    private void printDirectories(List<Directory> list) {
         for (Directory directory : list) {
-            System.out.println(directory.toString());
+            LOG.info(directory.toString());
         }
     }
 

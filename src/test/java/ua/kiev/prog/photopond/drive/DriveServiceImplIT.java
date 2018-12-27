@@ -3,9 +3,10 @@ package ua.kiev.prog.photopond.drive;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,6 @@ import ua.kiev.prog.photopond.user.UserInfoServiceJpaImplITConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
@@ -70,12 +70,11 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 })
 @DatabaseSetup("classpath:datasets/picturefile_dataset_IT.xml")
 @Transactional
-@Disabled
 public class DriveServiceImplIT {
-    private final String ROOT_PATH = SEPARATOR;
 
-//    @Value(value = "${folders.basedir.location}")
-//    private String foldersBasedir;
+    private static final Logger LOG = LogManager.getLogger(DriveServiceImplIT.class);
+
+    private final String ROOT_PATH = SEPARATOR;
 
     @Autowired
     private String generatedFoldersBaseDir;
@@ -125,9 +124,9 @@ public class DriveServiceImplIT {
     @AfterEach
     void tearDown() {
         try {
-            Files.deleteIfExists(basedirPath);
+            FileUtils.deleteDirectory(basedirPath.toFile());
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            LOG.warn(e.getMessage());
         }
     }
 
