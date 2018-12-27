@@ -25,7 +25,7 @@ before_script:
   - mysql -u root -ppassword -e "GRANT ALL ON PhotoPondTest.* TO 'travis'@'%';"
 
 script:
-  - mvn clean package -B -Dfolders-root=${HOME} -Dlog-path=${HOME}/logs
+  - mvn clean install -B -Dfolders-root=${HOME} -Dlog-path=${HOME}/logs
 
 after_script:
   - echo "Script finished"
