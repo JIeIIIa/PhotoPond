@@ -258,6 +258,18 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>prepare-integration-test-agent</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>generate-integration-test-report</id>
+                        <goals>
+                            <goal>report-integration</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
 
