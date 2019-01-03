@@ -22,6 +22,9 @@ public class SettingsPageUtils {
         if (isNull(authentication) || !authentication.isAuthenticated()) {
             throw new IllegalArgumentException("Can not build settings page url for unauthenticated user");
         }
+        if (isNull(redirectAttributes)) {
+            throw new IllegalArgumentException("Can not build settings page url: redirectAttributes is null");
+        }
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setView(new RedirectView(url(authentication), true, true, false));

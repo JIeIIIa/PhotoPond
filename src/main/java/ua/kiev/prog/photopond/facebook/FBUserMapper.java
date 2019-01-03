@@ -7,6 +7,8 @@ import ua.kiev.prog.photopond.user.UserInfo;
 import java.time.ZoneId;
 import java.util.Objects;
 
+import static java.util.Objects.isNull;
+
 public class FBUserMapper {
     public static FBUserDTO toDto(FBUser fbUser) {
         return FBUserDTOBuilder.getInstance()
@@ -17,6 +19,9 @@ public class FBUserMapper {
     }
 
     public static FBUser toEntity(User user, FacebookClient.AccessToken accessToken, UserInfo userInfo) {
+        if (isNull(user)) {
+            throw new IllegalArgumentException("user is null");
+        }
         FBUserBuilder fbUserBuilder = FBUserBuilder.getInstance()
                 .fbId(user.getId())
                 .email(user.getEmail())
@@ -26,10 +31,6 @@ public class FBUserMapper {
             fbUserBuilder
                     .accessToken(accessToken.getAccessToken())
                     .tokenExpires(accessToken.getExpires().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-        }
-        if (Objects.nonNull(userInfo)) {
-            fbUserBuilder
-                    .userInfo(userInfo);
         }
         return fbUserBuilder.build();
     }
