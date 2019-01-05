@@ -1,0 +1,119 @@
+<dataset>
+    <usersinfo
+            id="1"
+            login="Administrator"
+            password="qwerty123!"
+            role="0"
+    />
+    <usersinfo
+            id="2"
+            login="User"
+            password="password"
+            role="1"
+    />
+
+    <!--   USER 1 -->
+    <directories
+            id="1000"
+            level="0"
+            path="/"
+            owner_id="1"
+    />
+    <directories
+            id="1100"
+            level="1"
+            path="/first"
+            owner_id="1"
+    />
+
+    <pictureFiles
+            id="100"
+            filename="qwerty.jpg"
+            directory_id="1000"
+    />
+    <!-- picturefilesdata: data is string 'qwerty.jpg' Base64 encoded -->
+    <picturefilesdata
+            id="7100"
+            data="cXdlcnR5LmpwZw=="
+            size="10"
+            picturefile_id="100"
+    />
+    <!--    USER 2   -->
+    <directories
+            id="2000"
+            level="0"
+            path="/"
+            owner_id="2"
+    />
+    <directories
+            id="2100"
+            level="1"
+            path="/first"
+            owner_id="2"
+    />
+    <directories
+            id="2110"
+            level="2"
+            path="/first/second"
+            owner_id="2"
+    />
+    <directories
+            id="2111"
+            level="3"
+            path="/first/second/third"
+            owner_id="2"
+    />
+    <directories
+            id="2120"
+            level="2"
+            path="/first/folder(2)"
+            owner_id="2"
+    />
+
+    <directories
+            id="2200"
+            level="1"
+            path="/folder"
+            owner_id="2"
+    />
+    <directories
+            id="2210"
+            level="2"
+            path="/folder/second"
+            owner_id="2"
+    />
+    <directories
+            id="2211"
+            level="3"
+            path="/folder/second/third"
+            owner_id="2"
+    />
+
+
+    <picturefiles
+            id="200"
+            filename="root.jpg"
+            directory_id="2000"
+    />
+    <!-- picturefilesdata: data is string 'root.jpg' Base64 encoded -->
+    <picturefilesdata
+            id="7200"
+            data="cm9vdC5qcGc="
+            size="8"
+            picturefile_id="200"
+    />
+
+    <picturefiles
+            id="201"
+            filename="targetFilename.jpg"
+            directory_id="2000"
+    />
+    <!-- picturefilesdata: data is string 'targetFilename.jpg' Base64 encoded -->
+    <picturefilesdata
+            id="7201"
+            data="dGFyZ2V0RmlsZW5hbWUuanBn"
+            size="18"
+            picturefile_id="201"
+    />
+
+</dataset>

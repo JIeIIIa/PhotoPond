@@ -24,7 +24,7 @@ public class DriveStatisticsDTO {
 
     public DriveStatisticsDTO(String login, Long directoriesSize) {
         this.login = login;
-        this.directoriesSize = directoriesSize;
+        setDirectoriesSize(directoriesSize);
     }
 
     public String getLogin() {
@@ -40,6 +40,9 @@ public class DriveStatisticsDTO {
     }
 
     public void setDirectoriesSize(Long directoriesSize) {
+        if (directoriesSize < 0) {
+            throw new IllegalArgumentException("Directories size should be greater than 0. Actual value: " + directoriesSize);
+        }
         this.directoriesSize = directoriesSize;
     }
 
@@ -48,6 +51,9 @@ public class DriveStatisticsDTO {
     }
 
     public void setPictureCount(Long pictureCount) {
+        if (pictureCount < 0) {
+            throw new IllegalArgumentException("Pictures count should be greater than 0. Actual value: " + pictureCount);
+        }
         this.pictureCount = pictureCount;
     }
 

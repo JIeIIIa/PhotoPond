@@ -1,5 +1,6 @@
 package ua.kiev.prog.photopond.Utils;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
@@ -14,6 +15,10 @@ public interface TestDataStreams {
     }
 
     static LongStream longs() {
-        return LongStream.range(1, Long.MAX_VALUE).limit(5);
+        return ThreadLocalRandom.current().longs(5,1, Long.MAX_VALUE);
+    }
+
+    static LongStream negativeLongs() {
+        return ThreadLocalRandom.current().longs(5, Long.MIN_VALUE, -1);
     }
 }
