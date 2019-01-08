@@ -1,5 +1,7 @@
 package ua.kiev.prog.photopond.Utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryJpaRepository;
@@ -34,5 +36,11 @@ public class TestUtils {
             Path path = Paths.get(basedirPath + file.getFullPath());
             FileUtils.writeByteArrayToFile(path.toFile(), file.getFilename().getBytes(), false);
         }
+    }
+
+    public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return mapper.writeValueAsBytes(object);
     }
 }
