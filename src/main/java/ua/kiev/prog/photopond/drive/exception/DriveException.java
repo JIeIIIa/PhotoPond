@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.drive;
+package ua.kiev.prog.photopond.drive.exception;
 
 import ua.kiev.prog.photopond.exception.PhotoPondException;
 

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
 import ua.kiev.prog.photopond.drive.directories.DirectoryJpaRepository;
+import ua.kiev.prog.photopond.drive.exception.PictureFileException;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 

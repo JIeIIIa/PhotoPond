@@ -20,6 +20,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import ua.kiev.prog.photopond.Utils.TestUtils;
+import ua.kiev.prog.photopond.drive.exception.DirectoryModificationException;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 

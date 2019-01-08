@@ -1,6 +1,7 @@
 package ua.kiev.prog.photopond.drive;
 
 import org.springframework.web.multipart.MultipartFile;
+import ua.kiev.prog.photopond.drive.exception.DriveException;
 
 import java.util.List;
 

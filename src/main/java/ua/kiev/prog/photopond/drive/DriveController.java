@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import ua.kiev.prog.photopond.drive.exception.DriveException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;

@@ -27,6 +27,7 @@ import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
 import ua.kiev.prog.photopond.drive.directories.DirectoryJpaRepository;
 import ua.kiev.prog.photopond.drive.directories.DirectoryRepository;
+import ua.kiev.prog.photopond.drive.exception.DriveException;
 import ua.kiev.prog.photopond.drive.pictures.PictureFile;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileBuilder;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileJpaRepository;

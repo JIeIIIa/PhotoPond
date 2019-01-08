@@ -7,6 +7,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.kiev.prog.photopond.annotation.profile.DatabaseStorage;
 import ua.kiev.prog.photopond.drive.directories.Directory;
+import ua.kiev.prog.photopond.drive.exception.PictureFileException;
 
 import javax.persistence.TransactionRequiredException;
 import java.util.List;

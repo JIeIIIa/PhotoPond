@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.drive.directories;
+package ua.kiev.prog.photopond.drive.exception;
 
 public class DirectoryModificationException extends DirectoryException {
 

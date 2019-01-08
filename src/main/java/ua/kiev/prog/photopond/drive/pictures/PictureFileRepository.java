@@ -1,6 +1,7 @@
 package ua.kiev.prog.photopond.drive.pictures;
 
 import ua.kiev.prog.photopond.drive.directories.Directory;
+import ua.kiev.prog.photopond.drive.exception.PictureFileException;
 
 import java.util.List;
 import java.util.Optional;

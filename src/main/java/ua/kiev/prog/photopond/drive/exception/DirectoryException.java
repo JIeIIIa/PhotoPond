@@ -1,6 +1,4 @@
-package ua.kiev.prog.photopond.drive.directories;
-
-import ua.kiev.prog.photopond.drive.DriveException;
+package ua.kiev.prog.photopond.drive.exception;
 
 public class DirectoryException extends DriveException {
 
