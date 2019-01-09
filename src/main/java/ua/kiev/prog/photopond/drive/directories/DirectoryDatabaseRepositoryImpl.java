@@ -237,7 +237,7 @@ public class DirectoryDatabaseRepositoryImpl implements DirectoryRepository {
         );
     }
 
-    private class OperationArgumentsVO {
+    class OperationArgumentsVO {
 
         private final Directory source;
         private final UserInfo owner;

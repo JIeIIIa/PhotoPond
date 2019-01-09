@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles({"test"})
-public class EmbeddedUserInfoRepositoryTest {
+class EmbeddedUserInfoRepositoryTest {
     private static final String USER_LOGIN = "user";
     private EmbeddedUserInfoRepository embeddedUserInfoRepository;
     private UserInfo testUser = null;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         testUser = new UserInfo(USER_LOGIN, "user", UserRole.USER);
         UserInfo first = new UserInfo("someUser", "password", UserRole.ADMIN);
         UserInfo second = new UserInfo("admin", "admin", UserRole.DEACTIVATED);
@@ -37,19 +37,31 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void existsByLogin() {
+    void existsByLogin() {
         assertThat(embeddedUserInfoRepository.existsByLogin(USER_LOGIN))
                 .isTrue();
     }
 
     @Test
-    public void notExistsByLogin() {
+    void notExistsByLogin() {
         assertThat(embeddedUserInfoRepository.existsByLogin("UnknownUser"))
                 .isFalse();
     }
 
     @Test
-    public void findUserByLogin() {
+    void existsByLoginExceptId() {
+        assertThat(embeddedUserInfoRepository.existsByLogin(USER_LOGIN, 2L))
+                .isTrue();
+    }
+
+    @Test
+    void notExistsByLoginExceptId() {
+        assertThat(embeddedUserInfoRepository.existsByLogin(USER_LOGIN, 1L))
+                .isFalse();
+    }
+
+    @Test
+    void findUserByLogin() {
         assertThat(embeddedUserInfoRepository.findUserByLogin(USER_LOGIN))
                 .isNotNull()
                 .isPresent()
@@ -57,21 +69,21 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void findUserWithNullLogin() {
+    void findUserWithNullLogin() {
         assertThat(embeddedUserInfoRepository.findUserByLogin(null))
                 .isNotNull()
                 .isNotPresent();
     }
 
     @Test
-    public void findUserByLoginFailure() {
+    void findUserByLoginFailure() {
         assertThat(embeddedUserInfoRepository.findUserByLogin("UnknownUser"))
                 .isNotNull()
                 .isNotPresent();
     }
 
     @Test
-    public void addUser() throws AddToRepositoryException {
+    void addUser() throws AddToRepositoryException {
         //Given
         final String anotherUserLogin = "anotherUser";
         UserInfo anotherUser = new UserInfo(anotherUserLogin, "pass", UserRole.USER);
@@ -89,7 +101,7 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void addNullAsUser() throws AddToRepositoryException {
+    void addNullAsUser() throws AddToRepositoryException {
         //When
         assertThrows(AddToRepositoryException.class,
                 () -> embeddedUserInfoRepository.addUser(null)
@@ -97,7 +109,7 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void findAllUsers() {
+    void findAllUsers() {
         //When
         List<UserInfo> allUsers = embeddedUserInfoRepository.findAllUsers();
 
@@ -108,9 +120,9 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void deleteExistsUser() {
+    void deleteExistsUser() {
         //Given
-        Long id = testUser.getId();
+        long id = testUser.getId();
 
         //When
         embeddedUserInfoRepository.delete(id);
@@ -123,9 +135,9 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void deleteNotExistsUser() {
+    void deleteNotExistsUser() {
         //Given
-        Long id = -123L;
+        long id = -123L;
 
         //When
         embeddedUserInfoRepository.delete(id);
@@ -139,7 +151,7 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void updateExistsUser() {
+    void updateExistsUser() {
         //Given
         testUser.setLogin("qwertyLogin");
         testUser.setPassword("aassddffgg");
@@ -154,7 +166,7 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void updateNotExistsUser() {
+    void updateNotExistsUser() {
         //Given
         UserInfo user = new UserInfoBuilder().id(-123L).login("phantomUser").password("Password").build();
         //When
@@ -165,7 +177,7 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void findByIdSuccess() {
+    void findByIdSuccess() {
         //When
         Optional<UserInfo> result = embeddedUserInfoRepository.findById(testUser.getId());
 
@@ -176,7 +188,7 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void findByIdFailure() {
+    void findByIdFailure() {
         //When
         Optional<UserInfo> result = embeddedUserInfoRepository.findById(-123L);
 
@@ -186,7 +198,7 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void findAllByRole() {
+    void findAllByRole() {
         //When
         List<UserInfo> result = embeddedUserInfoRepository.findAllByRole(UserRole.USER);
 
@@ -197,7 +209,7 @@ public class EmbeddedUserInfoRepositoryTest {
     }
 
     @Test
-    public void countByRole() {
+    void countByRole() {
         //When
         Long count = embeddedUserInfoRepository.countByRole(UserRole.ADMIN);
 

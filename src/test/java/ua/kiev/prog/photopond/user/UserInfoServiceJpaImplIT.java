@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -221,6 +222,113 @@ public class UserInfoServiceJpaImplIT {
                 .get()
                 .isEqualToIgnoringGivenFields(expectedUser, "password")
                 .matches(u -> passwordEncoder.matches(newPassword, u.getPassword()));
+    }
+
+    @Test
+    void resetPasswordSuccess() {
+        //Given
+        String login = "someUser";
+        String newPassword = "awesomePassword";
+        String oldPassword = "password";
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
+                .login(login)
+                .oldPassword(oldPassword)
+                .password(newPassword)
+                .passwordConfirmation(newPassword)
+                .build();
+
+        UserInfoDTO expectedUser = UserInfoDTOBuilder.getInstance()
+                .id(777L)
+                .login(login)
+                .password(passwordEncoder.encode(newPassword))
+                .role(UserRole.USER)
+                .build();
+
+        //When
+        boolean result = userInfoServiceJpaImpl.resetPassword(userInfoDTO.getLogin(), userInfoDTO.getPassword());
+
+        //Then
+        assertThat(result).isTrue();
+
+        Optional<UserInfoDTO> afterUpdate = userInfoServiceJpaImpl.findById(expectedUser.getId());
+        assertThat(afterUpdate)
+                .isPresent()
+                .get()
+                .isEqualToIgnoringGivenFields(expectedUser, "password")
+                .matches(u -> passwordEncoder.matches(newPassword, u.getPassword()));
+    }
+
+
+    @Test
+    void resetPasswordFailure() {
+        //When
+        boolean result = userInfoServiceJpaImpl.resetPassword("phantomUser", "somePassword");
+
+        //Then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void updateAvatarSuccess() {
+        //Given
+        String login = "someUser";
+        String filename = "avatar.jpg";
+        MockMultipartFile file = new MockMultipartFile("avatar", filename, "img/jpg", filename.getBytes());
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
+                .login(login)
+                .avatar(file)
+                .build();
+
+        //When
+        boolean result = userInfoServiceJpaImpl.updateAvatar(userInfoDTO);
+
+        //Then
+        assertThat(result).isTrue();
+        byte[] avatarAfterUpdate = userInfoJpaRepository.findByLogin(login)
+                .map(UserInfo::getAvatar)
+                .orElse(new byte[0]);
+        assertThat(avatarAfterUpdate)
+                .isEqualTo(filename.getBytes());
+    }
+
+
+    @Test
+    void updateAvatarFailure() {
+        //Given
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
+                .login("phantomUser")
+                .build();
+
+        //When
+        boolean result = userInfoServiceJpaImpl.updateAvatar(userInfoDTO);
+
+        //Then
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void retrieveAvatar() {
+        //Given
+        byte[] expectedAvatar = "qwerty.jpg".getBytes();
+
+        //When
+        byte[] result = userInfoServiceJpaImpl.retrieveAvatar("someUser");
+
+        //Then
+        assertThat(result).isEqualTo(expectedAvatar);
+    }
+
+    @Test
+    void retrieveAvatarWithDefaultValue() {
+        //Given
+        String avatarString = "someAvatarString";
+        userInfoServiceJpaImpl.setDefaultAvatar(avatarString.getBytes());
+
+        //When
+        byte[] result = userInfoServiceJpaImpl.retrieveAvatar("Administrator");
+
+        //Then
+        assertThat(result).isEqualTo(avatarString.getBytes());
     }
 
     @Test

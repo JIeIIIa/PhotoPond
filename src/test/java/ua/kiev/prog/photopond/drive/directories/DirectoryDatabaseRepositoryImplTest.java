@@ -1,5 +1,6 @@
 package ua.kiev.prog.photopond.drive.directories;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +47,7 @@ class DirectoryDatabaseRepositoryImplTest {
 
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         instance = new DirectoryDatabaseRepositoryImpl(directoryJpaRepository);
 
         user = new UserInfoBuilder().login("awesomeUser").role(UserRole.USER).build();
@@ -77,7 +78,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveNullDirectory() {
+    void saveNullDirectory() {
         //When
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
                 () -> instance.save(null)
@@ -86,7 +87,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveWhenDirectoryNotExists() {
+    void saveWhenDirectoryNotExists() {
         //Given
         when(directoryJpaRepository.save(any(Directory.class))).thenAnswer(
                 invocationOnMock -> invocationOnMock.getArguments()[0]
@@ -100,7 +101,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveWhenDirectoryExists() {
+    void saveWhenDirectoryExists() {
         //Given
         when(directoryJpaRepository.save(any(Directory.class))).thenAnswer(
                 invocationOnMock -> invocationOnMock.getArguments()[0]
@@ -114,7 +115,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveWhenParentDirectoryNotExists() {
+    void saveWhenParentDirectoryNotExists() {
         //Given
         String parentPath = buildPath("First");
         directory.setPath(buildPath(parentPath, "second"));
@@ -130,7 +131,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteNullDirectory() {
+    void deleteNullDirectory() {
         //When
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
                 () -> instance.delete(null)
@@ -138,7 +139,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteEmptyDirectory() {
+    void deleteEmptyDirectory() {
         //Given
         when(directoryJpaRepository.findByOwnerAndPathStartingWith(directory.getOwner(), directory.getPath() + SEPARATOR))
                 .thenReturn(new LinkedList<>());
@@ -151,7 +152,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteWithSubdirectories() {
+    void deleteWithSubdirectories() {
         //Given
         List<Directory> subdirectories = createSubdirectoryList(directory, "one", "two", "three");
         when(directoryJpaRepository.findByOwnerAndPathStartingWith(directory.getOwner(), directory.getPath() + SEPARATOR))
@@ -167,7 +168,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteWithJpaRepositoryException() {
+    void deleteWithJpaRepositoryException() {
         //Given
         doThrow(QueryTimeoutException.class).when(directoryJpaRepository).deleteAll(singletonList(directory));
 
@@ -181,7 +182,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void renameTargetEqualsSource() throws DirectoryModificationException {
+    void renameTargetEqualsSource() throws DirectoryModificationException {
         //Given
         Directory expected = new DirectoryBuilder().from(directory).build();
 
@@ -195,7 +196,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void renameNotExistsDirectory() {
+    void renameNotExistsDirectory() {
         // When
         DirectoryModificationException directoryModificationException = assertThrows(DirectoryModificationException.class,
                 () -> instance.rename(directory, "someName")
@@ -203,7 +204,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void renameSuccess() {
+    void renameSuccess() {
         //Given
         long id = 767L;
         String sourceName = "source";
@@ -247,7 +248,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void renameWhenTargetDirectoryAlreadyExistsOnDisk() {
+    void renameWhenTargetDirectoryAlreadyExistsOnDisk() {
         //Given
         String newName = "anotherDir";
         String targetPath = buildPath(directory.parentPath(), newName);
@@ -267,7 +268,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void renameWhenTargetDirectoryAlreadyExistsInDataBase() {
+    void renameWhenTargetDirectoryAlreadyExistsInDataBase() {
         //Given
         String newName = "anotherDir";
         String targetPath = buildPath(directory.parentPath(), newName);
@@ -287,7 +288,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveNullDirectory() {
+    void moveNullDirectory() {
         //When
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
                 () -> instance.move(null, directory)
@@ -295,7 +296,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveToNullDirectory() {
+    void moveToNullDirectory() {
         //When
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
                 () -> instance.move(directory, null)
@@ -304,7 +305,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveTargetDirectoryEqualsCurrentDirectory() {
+    void moveTargetDirectoryEqualsCurrentDirectory() {
         //Given
         Directory expectedDirectory = new DirectoryBuilder().from(directory).build();
 
@@ -316,7 +317,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveBetweenDifferentUsers() {
+    void moveBetweenDifferentUsers() {
         //Given
         Directory directoryWithAnotherOwner = createDirectory(321L, SEPARATOR + "anotherDirectory");
         //When
@@ -326,7 +327,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveTargetDirectoryContainsSubDirectoryWithSameName() {
+    void moveTargetDirectoryContainsSubDirectoryWithSameName() {
         //Given
         Directory target = createDirectory(321L, SEPARATOR + "targetToMove", user);
         Directory targetSubDirectory = createDirectory(322L, target.getPath() + SEPARATOR + directory.getName(), user);
@@ -344,7 +345,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveToSubDirectory() throws DirectoryModificationException {
+    void moveToSubDirectory() throws DirectoryModificationException {
         //Given
         Directory subDirectory = createDirectory(121L, buildPath(directory.getPath(), "subDir"), user);
 
@@ -355,7 +356,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveSuccess() {
+    void moveSuccess() {
         //Given
         String[] subDirectoryNames = {"qwerty", "New folder", "New folder (2)"};
         List<Directory> subDirectories = createSubdirectoryList(directory, subDirectoryNames);
@@ -389,7 +390,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findTopLevelSubDirectoriesForRoot() {
+    void findTopLevelSubDirectoriesForRoot() {
         // Given
         Directory root = new DirectoryBuilder().owner(user).path(SEPARATOR).build();
         String[] subDirectoryNames = {"qwerty", "New folder", "New folder (2)"};
@@ -407,7 +408,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findTopLevelSubDirectoriesForNonRoot() {
+    void findTopLevelSubDirectoriesForNonRoot() {
         // Given
         String[] subDirectoryNames = {"qwerty", "New folder", "New folder (2)"};
         List<Directory> subDirectories = createSubdirectoryList(directory, subDirectoryNames);
@@ -424,7 +425,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void countByOwner() {
+    void countByOwner() {
         //Given
         String[] subDirectoryNames = {"qwerty", "New folder", "New folder (2)"};
         List<Directory> directories = createSubdirectoryList(directory, subDirectoryNames);
@@ -441,7 +442,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByOwnerAndPathSuccess() {
+    void findByOwnerAndPathSuccess() {
         //Given
         Directory expected = new DirectoryBuilder().from(directory).build();
         when(directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.getPath()))
@@ -459,7 +460,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByOwnerAndPathFailure() {
+    void findByOwnerAndPathFailure() {
         //Given
         when(directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.getPath()))
                 .thenReturn(emptyList());
@@ -474,7 +475,41 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByIdSuccess() {
+    void findByOwnerAndPathStartingWithSuccess() {
+        //Given
+        Directory expected = new DirectoryBuilder().from(directory).build();
+        Directory expectedRoot = new DirectoryBuilder().from(root).build();
+        when(directoryJpaRepository.findByOwnerAndPathStartingWith(root.getOwner(), root.getPath()))
+                .thenReturn(asList(root, directory));
+
+        //When
+        List<Directory> result = instance.findByOwnerAndPathStartingWith(root.getOwner(), root.getPath());
+
+        //Then
+        verify(directoryJpaRepository).findByOwnerAndPathStartingWith(expectedRoot.getOwner(), expectedRoot.getPath());
+        assertThat(result)
+                .isNotNull()
+                .hasSize(2)
+                .containsExactly(expectedRoot, expected);
+    }
+
+    @Test
+    void findByOwnerAndPathStartingWithFailure() {
+        //Given
+        when(directoryJpaRepository.findByOwnerAndPathStartingWith(directory.getOwner(), directory.getPath()))
+                .thenReturn(emptyList());
+
+        //When
+        List<Directory> result = instance.findByOwnerAndPathStartingWith(directory.getOwner(), directory.getPath());
+
+        //Then
+        assertThat(result)
+                .isNotNull()
+                .isEmpty();
+    }
+
+    @Test
+    void findByIdSuccess() {
         //Given
         Directory expected = new DirectoryBuilder().from(directory).build();
         when(directoryJpaRepository.findById(directory.getId()))
@@ -492,7 +527,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByIdFailure() {
+    void findByIdFailure() {
         //Given
         when(directoryJpaRepository.findById(any(Long.class)))
                 .thenReturn(Optional.empty());
@@ -510,7 +545,7 @@ class DirectoryDatabaseRepositoryImplTest {
 
 
     @Test
-    public void findByOwnerAndIdSuccess() {
+    void findByOwnerAndIdSuccess() {
         //Given
         Directory expected = new DirectoryBuilder().from(directory).build();
         when(directoryJpaRepository.findByOwnerAndId(directory.getOwner(), directory.getId()))
@@ -528,7 +563,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByOwnerAndIdFailure() {
+    void findByOwnerAndIdFailure() {
         //Given
         when(directoryJpaRepository.findByOwnerAndId(any(UserInfo.class), any(Long.class)))
                 .thenReturn(Optional.empty());
@@ -546,7 +581,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void directoryExists() {
+    void directoryExists() {
         //Given
         when(directoryJpaRepository.findByOwnerAndPath(directory.getOwner(), directory.getPath()))
                 .thenReturn(singletonList(directory));
@@ -558,7 +593,7 @@ class DirectoryDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void directoryNotExists() {
+    void directoryNotExists() {
         //Given
         String path = "/phantomDirectory";
         when(directoryJpaRepository.findByOwnerAndPath(user, path))
@@ -571,4 +606,10 @@ class DirectoryDatabaseRepositoryImplTest {
         assertThat(result).isFalse();
     }
 
+    @Test
+    void OperationArgumentsVOEquals() {
+        EqualsVerifier.forClass(DirectoryDatabaseRepositoryImpl.OperationArgumentsVO.class)
+                .usingGetClass()
+                .verify();
+    }
 }

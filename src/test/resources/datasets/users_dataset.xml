@@ -1,9 +1,12 @@
 <dataset>
-    <!-- password = "password" -->
+    <!-- password = "password"
+         avatar = 'qwerty.jpg'
+    -->
     <usersinfo
             id="777"
             login="someUser"
             password="$2a$10$FZHMBv523fWnAjneEkPzSe6G30oGV7kL17Ncm5sUcoyL8IC6MqAAm"
+            avatar="cXdlcnR5LmpwZw=="
             role="1"
     />
 

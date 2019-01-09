@@ -73,14 +73,13 @@ public class PictureFileData implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PictureFileData that = (PictureFileData) o;
-        return id.equals(that.id) &&
-                Arrays.equals(data, that.data) &&
-                pictureFile.equals(that.pictureFile);
+        return Arrays.equals(data, that.data) &&
+                Objects.equals(pictureFile, that.pictureFile);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, pictureFile);
+        int result = Objects.hash(pictureFile);
         result = 31 * result + Arrays.hashCode(data);
         return result;
     }

@@ -12,36 +12,50 @@ import ua.kiev.prog.photopond.TestControllerBasicConfiguration;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles({"test"})
-public class WelcomeControllerTest extends TestControllerBasicConfiguration {
+class WelcomeControllerTest extends TestControllerBasicConfiguration {
 
     private static final String ROOT_VIEW_NAME = "index";
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         configure(new WelcomeController());
     }
 
     @Test
-    public void rootUrlTest() throws Exception {
+    void rootUrlTest() throws Exception {
         matchViewNameAfterGetRequest("/", ROOT_VIEW_NAME);
     }
 
     @Test
-    public void indexWithoutSuffixUrlTest() throws Exception {
+    void indexWithoutSuffixUrlTest() throws Exception {
         matchViewNameAfterGetRequest("/index", ROOT_VIEW_NAME);
     }
 
     @Test
-    public void indexWithSuffixTest() throws Exception {
+    void indexWithSuffixTest() throws Exception {
         matchViewNameAfterGetRequest("/index.html", ROOT_VIEW_NAME);
     }
 
     @Test
-    public void indexWithBadSuffixUrlTest() throws Exception {
+    void indexWithBadSuffixUrlTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("index.hhttmmll"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andDo(MockMvcResultHandlers.print());
     }
 
+    @Test
+    void about() throws Exception {
+        matchViewNameAfterGetRequest("/about", "about");
+    }
 
+    @Test
+    void privacyPolicy() throws Exception {
+        matchViewNameAfterGetRequest("/public/privacyPolicy", "privacyPolicy");
+    }
+
+
+    @Test
+    void terms() throws Exception {
+        matchViewNameAfterGetRequest("/public/terms", "terms");
+    }
 }
