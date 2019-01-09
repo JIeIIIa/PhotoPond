@@ -1,6 +1,9 @@
 package ua.kiev.prog.photopond.drive;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -66,5 +69,14 @@ class DriveStatisticsDTOTest implements TestDataStreams {
 
         //Then
         assertThrows(IllegalArgumentException.class, executable);
+    }
+
+    @Test
+    void equals() {
+        EqualsVerifier.forClass(DriveStatisticsDTO.class)
+                .usingGetClass()
+//                .withIgnoredFields("creationDate", "creationDateString")
+                .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
     }
 }

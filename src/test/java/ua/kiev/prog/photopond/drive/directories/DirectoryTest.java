@@ -1,5 +1,6 @@
 package ua.kiev.prog.photopond.drive.directories;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -486,5 +487,13 @@ public class DirectoryTest {
 
         //Then
         assertThat(result).isFalse();
+    }
+
+    @Test
+    void equals() {
+        EqualsVerifier.forClass(Directory.class)
+                .usingGetClass()
+                .withIgnoredFields("id", "creationDate")
+                .verify();
     }
 }
