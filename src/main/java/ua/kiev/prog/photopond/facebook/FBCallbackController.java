@@ -19,6 +19,7 @@ import ua.kiev.prog.photopond.user.UserInfoDTO;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 
+import static java.util.Objects.isNull;
 import static ua.kiev.prog.photopond.facebook.FBConstants.FB_CALLBACK_URL;
 import static ua.kiev.prog.photopond.facebook.FBRequestMappingConstants.ERROR_ATTRIBUTE_NAME;
 import static ua.kiev.prog.photopond.facebook.FBRequestMappingConstants.ERROR_AUTH_ATTRIBUTE_NAME;
@@ -49,7 +50,7 @@ public class FBCallbackController {
                                          RedirectAttributes redirectAttributes) {
         LOG.traceEntry("Associate Facebook account [code = {}], [state = {}]", code, state);
 
-        if (!authentication.isAuthenticated()) {
+        if (isNull(authentication) || !authentication.isAuthenticated()) {
             LOG.error("Unauthorized user request [code = {}]", code);
             redirectAttributes.addFlashAttribute(
                     ERROR_ATTRIBUTE_NAME,
