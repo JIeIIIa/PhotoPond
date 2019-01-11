@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.multipart.MultipartFile;
 import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
+import ua.kiev.prog.photopond.drive.exception.DriveException;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -198,6 +199,43 @@ class DriveApiControllerTest {
                 .andExpect(jsonPath("$[*].parentUri", everyItem(is(path))))
                 .andExpect(jsonPath("$[0].name", is(mockMultipartFiles[0].getOriginalFilename())))
                 .andExpect(jsonPath("$[1].name", is(mockMultipartFiles[1].getOriginalFilename())));
+        verify(driveService, times(1)).addPictureFile(login, path, mockMultipartFiles[0]);
+        verify(driveService, times(1)).addPictureFile(login, path, mockMultipartFiles[1]);
+        verifyNoMoreInteractions(driveService);
+    }
+
+    @Test
+    void addFilesWithSomeServiceError() throws Exception {
+        //Given
+        String path = "/someDirectory";
+        MockMultipartFile[] mockMultipartFiles = {
+                new MockMultipartFile("files", "one.jpg", "image/png", "dataOne".getBytes()),
+                new MockMultipartFile("files", "two.jpg", "image/png", "anotherData".getBytes())
+        };
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.multipart("/api/{login}/files{path}", login, path)
+                .file(mockMultipartFiles[0])
+                .file(mockMultipartFiles[1]);
+
+        when(driveService.addPictureFile(ArgumentMatchers.any(String.class), ArgumentMatchers.any(String.class), eq(mockMultipartFiles[0])))
+                .thenAnswer(mockInvocation ->
+                        DriveItemDTOBuilder.getInstance()
+                                .name(((MultipartFile) mockInvocation.getArguments()[2]).getOriginalFilename())
+                                .parentUri((String) mockInvocation.getArguments()[1])
+                                .type(FILE)
+                                .build());
+        when(driveService.addPictureFile(ArgumentMatchers.any(String.class), ArgumentMatchers.any(String.class), eq(mockMultipartFiles[1])))
+                .thenThrow(DriveException.class);
+
+        //When
+        ResultActions perform = mockMvc.perform(requestBuilder);
+
+        //Then
+        perform
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].parentUri", everyItem(is(path))))
+                .andExpect(jsonPath("$[0].name", is(mockMultipartFiles[0].getOriginalFilename())));
         verify(driveService, times(1)).addPictureFile(login, path, mockMultipartFiles[0]);
         verify(driveService, times(1)).addPictureFile(login, path, mockMultipartFiles[1]);
         verifyNoMoreInteractions(driveService);

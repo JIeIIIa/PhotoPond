@@ -155,11 +155,11 @@ public class PictureFileDiskAndDatabaseRepositoryImpl implements PictureFileRepo
     public long pictureSize(PictureFile pictureFile) {
         Path path = Paths.get(foldersBaseDir + pictureFile.getFullPath());
         long size = 0L;
-        if (!Files.exists(path)) {
+        if (Files.exists(path)) {
             try {
                 size = Files.size(path);
             } catch (IOException e) {
-                LOG.warn("Cannot retrieve size for {}", pictureFile );
+                LOG.warn("Cannot retrieve size for {}", pictureFile);
             }
         }
         return size;
@@ -186,7 +186,7 @@ public class PictureFileDiskAndDatabaseRepositoryImpl implements PictureFileRepo
                     targetDirectory.getOwner().getLogin()
             );
             throw new PictureFileException("Cannot move file from different users: " +
-                    file.getDirectory().getOwner().getLogin()  +" -> " +
+                    file.getDirectory().getOwner().getLogin() + " -> " +
                     targetDirectory.getOwner().getLogin()
             );
         }

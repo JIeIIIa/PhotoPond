@@ -111,7 +111,7 @@ public class DriveServiceImpl implements DriveService {
 
             DriveItemDTO parent = new DriveItemDTO();
             parent.setType(DriveItemType.DIR);
-            parent.setName(getName(directory.getPath()));
+            parent.setName(getName(directory.parentPath()));
             parent.setParentUri(appendToPath(baseUrl, directory.parentPath()));
 
             directoriesDTO.setParent(parent);

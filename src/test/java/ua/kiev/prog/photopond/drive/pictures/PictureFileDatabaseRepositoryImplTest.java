@@ -34,7 +34,7 @@ import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DATABAS
 @ExtendWith(SpringExtension.class)
 @TestPropertySource({"classpath:application.properties"})
 @ActiveProfiles({DATABASE_STORAGE, "test"})
-public class PictureFileDatabaseRepositoryImplTest {
+class PictureFileDatabaseRepositoryImplTest {
 
     private static final Logger LOG = LogManager.getLogger(PictureFileDatabaseRepositoryImplTest.class);
 
@@ -53,7 +53,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     private final byte[] DATA = {1, 2, 3, 4, 5, 6, 7};
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         instance = new PictureFileDatabaseRepositoryImpl(pictureFileJpaRepository, pictureFileDataJpaRepository);
 
         user = new UserInfoBuilder().id(7L).login("awesomeUser").role(UserRole.USER).build();
@@ -73,7 +73,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveNullPictureFile() {
+    void saveNullPictureFile() {
         //When
         assertThrows(IllegalArgumentException.class,
                 () -> instance.save(null)
@@ -81,7 +81,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveWhenPictureFileNotExists() {
+    void saveWhenPictureFileNotExists() {
         //Given
         when(pictureFileJpaRepository.save(any(PictureFile.class))).thenAnswer(
                 invocationOnMock -> invocationOnMock.getArguments()[0]
@@ -98,7 +98,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveFileWithNullData() {
+    void saveFileWithNullData() {
         //Given
         when(pictureFileJpaRepository.save(any(PictureFile.class))).thenAnswer(
                 invocationOnMock -> invocationOnMock.getArguments()[0]
@@ -112,7 +112,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveWhenPictureFileExistsInDatabase() {
+    void saveWhenPictureFileExistsInDatabase() {
         //Given
         when(pictureFileJpaRepository.findFirstByDirectoryAndFilename(pictureFile.getDirectory(), pictureFile.getFilename()))
                 .thenReturn(Optional.ofNullable(pictureFile));
@@ -129,7 +129,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveSuccess() {
+    void saveSuccess() {
         //Given
         PictureFile expected = PictureFileBuilder.getInstance().from(pictureFile).build();
         when(pictureFileJpaRepository.save(any(PictureFile.class)))
@@ -144,7 +144,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteNullPictureFile() {
+    void deleteNullPictureFile() {
         //When
         assertThrows(IllegalArgumentException.class,
                 () -> instance.delete(null)
@@ -152,7 +152,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteSuccess() {
+    void deleteSuccess() {
         //When
         instance.delete(pictureFile);
 
@@ -161,7 +161,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteWithJpaRepositoryException() {
+    void deleteWithJpaRepositoryException() {
         //Given
         doThrow(QueryTimeoutException.class).when(pictureFileJpaRepository).delete(pictureFile);
 
@@ -175,7 +175,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveTargetEqualsSource() {
+    void moveTargetEqualsSource() {
         //Given
         PictureFile expected = PictureFileBuilder.getInstance().from(pictureFile).build();
 
@@ -191,7 +191,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveWhenTargetFileAlreadyExistsInDatabase() {
+    void moveWhenTargetFileAlreadyExistsInDatabase() {
         //Given
         String targetFilename = "targetFilename.jpg";
         final byte[] SOME_DATA = {7, 8, 7, 8, 7};
@@ -212,7 +212,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveWhenWrongTargetFileName() {
+    void moveWhenWrongTargetFileName() {
         //Given
         String targetFilename = "/wrong/file.name";
 
@@ -230,7 +230,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveBetweenDifferentUsers() {
+    void moveBetweenDifferentUsers() {
         //Given
         UserInfo anotherUser = new UserInfoBuilder().id(5L).login("anotherUser").password("qwerty123!").build();
         Directory anotherDirectory = new DirectoryBuilder().id(9L).owner(anotherUser).path("/somewhere").build();
@@ -250,7 +250,28 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveToAnotherDirectorySuccess() {
+    void moveWhenPictureFileThrowsException() {
+        //Given
+        Directory targetDirectory = new DirectoryBuilder().id(3L).owner(user).path("/second").build();
+        String targetFilename = "targetFilename.jpg";
+        PictureFile expectedFile = PictureFileBuilder.getInstance()
+                .id(pictureFile.getId())
+                .directory(targetDirectory)
+                .filename(targetFilename)
+                .data(DATA)
+                .build();
+        pictureFile = spy(pictureFile);
+
+        when(pictureFileJpaRepository.findFirstByDirectoryAndFilename(expectedFile.getDirectory(), expectedFile.getFilename()))
+                .thenReturn(Optional.empty());
+        doThrow(IllegalArgumentException.class).when(pictureFile).setFilename(any());
+
+        //When
+        assertThrows(PictureFileException.class, () -> instance.move(pictureFile, targetDirectory, targetFilename));
+    }
+
+    @Test
+    void moveToAnotherDirectorySuccess() {
         //Given
         Directory targetDirectory = new DirectoryBuilder().id(3L).owner(user).path("/second").build();
         String targetFilename = "targetFilename.jpg";
@@ -272,7 +293,31 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByIdSuccess() {
+    void pictureSizeWhenFileNotExists() {
+        //Given
+        when(pictureFileDataJpaRepository.findByPictureFile(pictureFile)).thenReturn(Optional.empty());
+
+        //When
+        long size = instance.pictureSize(pictureFile);
+
+        //Then
+        assertThat(size).isEqualTo(0);
+    }
+
+    @Test
+    void pictureSizeSuccess() {
+        //Given
+        when(pictureFileDataJpaRepository.findByPictureFile(pictureFile)).thenReturn(Optional.of(pictureFileData));
+
+        //When
+        long size = instance.pictureSize(pictureFile);
+
+        //Then
+        assertThat(size).isEqualTo(DATA.length);
+    }
+
+    @Test
+    void findByIdSuccess() {
         //Given
         PictureFile expected = PictureFileBuilder.getInstance().from(pictureFile).build();
         when(pictureFileJpaRepository.findById(pictureFile.getId()))
@@ -292,7 +337,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByIdFailure() {
+    void findByIdFailure() {
         //Given
         Long id = 5L;
         when(pictureFileJpaRepository.findById(id)).thenReturn(Optional.empty());
@@ -308,7 +353,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByDirectorySuccess() {
+    void findByDirectorySuccess() {
         //Given
         final byte[] OTHER_DATA = {7, 8, 7, 8, 7};
         PictureFile otherFile = PictureFileBuilder.getInstance()
@@ -340,7 +385,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByDirectoryFailure() {
+    void findByDirectoryFailure() {
         //Given
         when(pictureFileJpaRepository.findByDirectory(directory)).thenReturn(emptyList());
 
@@ -355,7 +400,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByDirectoryAndFilenameSuccess() {
+    void findByDirectoryAndFilenameSuccess() {
         //Given
         List<PictureFile> expected = new LinkedList<>();
         PictureFile expectedFile = PictureFileBuilder.getInstance().from(pictureFile).build();
@@ -379,7 +424,7 @@ public class PictureFileDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByDirectoryAndFileNameFailure() {
+    void findByDirectoryAndFileNameFailure() {
         //Given
         when(pictureFileJpaRepository.findByDirectoryAndFilename(pictureFile.getDirectory(), pictureFile.getFilename()))
                 .thenReturn(emptyList());

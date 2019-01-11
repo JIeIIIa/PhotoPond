@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.facebook.Exception.AssociateFBAccountException;
 import ua.kiev.prog.photopond.facebook.Exception.DisassociateFBAccountException;
+import ua.kiev.prog.photopond.facebook.Exception.FBAccountAlreadyAssociateException;
 import ua.kiev.prog.photopond.facebook.Exception.FBAuthenticationException;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoDTO;
@@ -133,6 +134,67 @@ class FBServiceImplTest {
         //Then
         assertThat(result)
                 .isNotPresent();
+    }
+
+    @Nested
+    class AssociateAccount {
+        @Test
+        void notPresentInUserInfoJpaRepository() {
+            //Given
+            when(userInfoJpaRepository.findByLogin(any())).thenReturn(Optional.empty());
+
+            //When
+            assertThrows(AssociateFBAccountException.class, () -> instance.associateAccount("login", "code"));
+
+            //Then
+            verify(userInfoJpaRepository, times(1)).findByLogin("login");
+            verifyNoMoreInteractions(userInfoJpaRepository);
+            verifyNoMoreInteractions(fbUserJpaRepository);
+        }
+
+        @Test
+        void presentInFbUserJpaRepository() {
+            //Given
+            final UserInfo userInfo = new UserInfo("login", "password");
+            when(userInfoJpaRepository.findByLogin(eq("login"))).thenReturn(Optional.of(userInfo));
+            when(fbUserJpaRepository.findByUserInfo(userInfo)).thenReturn(Optional.of(new FBUser()));
+
+            //When
+            assertThrows(FBAccountAlreadyAssociateException.class, () -> instance.associateAccount("login", "code"));
+
+            //Then
+            verify(userInfoJpaRepository, times(1)).findByLogin("login");
+            verifyNoMoreInteractions(userInfoJpaRepository);
+            verify(fbUserJpaRepository, times(1)).findByUserInfo(userInfo);
+            verifyNoMoreInteractions(fbUserJpaRepository);
+        }
+
+        @Test
+        void success() {
+            //Given
+            final UserInfo userInfo = new UserInfo("login", "password");
+            final FBUser fbUser = FBUserBuilder.getInstance()
+                    .id(123L).name("fbUserName").email("some@email.com").fbId("1234567").userInfo(userInfo)
+                    .build();
+            FBUserDTO expected = FBUserMapper.toDto(fbUser);
+            when(userInfoJpaRepository.findByLogin(eq("login"))).thenReturn(Optional.of(userInfo));
+            when(fbUserJpaRepository.findByUserInfo(eq(userInfo))).thenReturn(Optional.empty());
+            FBServiceImpl fbService = spy(instance);
+            doReturn(fbUser).when(fbService).createFBUser(userInfo, "code");
+
+            //When
+            FBUserDTO fbUserDTO = fbService.associateAccount("login", "code");
+
+            //Then
+            assertThat(fbUserDTO)
+                    .isNotNull()
+                    .isEqualToComparingFieldByFieldRecursively(expected);
+            verify(userInfoJpaRepository, times(1)).findByLogin("login");
+            verifyNoMoreInteractions(userInfoJpaRepository);
+            verify(fbUserJpaRepository, times(1)).findByUserInfo(userInfo);
+            verify(fbUserJpaRepository, times(1)).saveAndFlush(fbUser);
+            verifyNoMoreInteractions(fbUserJpaRepository);
+        }
     }
 
     @Nested

@@ -1,11 +1,13 @@
 package ua.kiev.prog.photopond.drive;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -42,7 +44,7 @@ import static ua.kiev.prog.photopond.drive.directories.Directory.buildPath;
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application.properties")
 @ActiveProfiles({"test"})
-public class DriveServiceImplTest {
+class DriveServiceImplTest {
     @MockBean
     private DirectoryRepository directoryRepository;
 
@@ -59,7 +61,8 @@ public class DriveServiceImplTest {
     private Directory root;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
+        reset(directoryRepository, fileRepository, userInfoRepository);
         instance = new DriveServiceImpl(directoryRepository, fileRepository, userInfoRepository);
         user = new UserInfoBuilder()
                 .id(123L)
@@ -83,7 +86,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void userHasNoDirectory() {
+    void userHasNoDirectory() {
         //Given
         Directory expectedRoot = new DirectoryBuilder()
                 .from(root)
@@ -111,7 +114,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void userHasNoDirectoryAndFailureCreating() {
+    void userHasNoDirectoryAndFailureCreating() {
         //Given
         Directory expectedRoot = new DirectoryBuilder()
                 .from(root)
@@ -138,7 +141,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void rootDirectoryWithoutContent() {
+    void rootDirectoryWithoutContent() {
         //Given
         when(directoryRepository.countByOwner(user)).thenReturn(1L);
         when(directoryRepository.findByOwnerAndPath(user, SEPARATOR)).thenReturn(singletonList(root));
@@ -155,7 +158,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void rootDirectoryWithContent() {
+    void rootDirectoryWithContent() {
         //Given
         Directory[] directories = new Directory[3];
         directories[0] = new DirectoryBuilder().owner(user).path(SEPARATOR).build();
@@ -190,7 +193,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void notRootDirectoryWithContent() {
+    void notRootDirectoryWithContent() {
         //Given
         Directory[] directories = new Directory[3];
         directories[0] = new DirectoryBuilder().owner(user).path(SEPARATOR).build();
@@ -224,8 +227,67 @@ public class DriveServiceImplTest {
         assertThat(result).hasSameElementsAs(expected);
     }
 
+    @Nested
+    class RetrieveDirectories {
+        Directory[] directories;
+        DirectoriesDTO expected;
+        String baseUrl;
+
+        @BeforeEach
+        void setUp() {
+            directories = new Directory[4];
+            directories[0] = new DirectoryBuilder().owner(user).path(SEPARATOR).build();
+            directories[1] = new DirectoryBuilder().owner(user).path(SEPARATOR + "first").build();
+            directories[2] = new DirectoryBuilder().owner(user).path(directories[1].getPath() + SEPARATOR + "second").build();
+            directories[3] = new DirectoryBuilder().owner(user).path(directories[1].getPath() + SEPARATOR + "third").build();
+            baseUrl = "/api/" + user.getLogin() + "/directories";
+            expected = new DirectoriesDTO();
+            expected.setCurrent(toDTO(directories[1], baseUrl));
+            expected.setParent(toDTO(directories[0], baseUrl));
+            expected.setChildDirectories(asList(toDTO(directories[2], baseUrl), toDTO(directories[3], baseUrl)));
+
+        }
+
+        @Test
+        void success() {
+            //Given
+            when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.ofNullable(user));
+            when(directoryRepository.findByOwnerAndPath(user, SEPARATOR + "first")).thenReturn(singletonList(directories[1]));
+            when(directoryRepository.findTopLevelSubDirectories(directories[1])).thenReturn(asList(directories[2], directories[3]));
+
+            //When
+            DirectoriesDTO directoriesDTO = instance.retrieveDirectories(user.getLogin(), directories[1].getPath());
+
+            //Then
+            assertThat(directoriesDTO).isEqualToComparingFieldByFieldRecursively(expected);
+            verify(userInfoRepository, times(1)).findByLogin(user.getLogin());
+            verify(directoryRepository, times(1)).findByOwnerAndPath(user, SEPARATOR + "first");
+            verify(directoryRepository, times(1)).findTopLevelSubDirectories(directories[1]);
+            verifyNoMoreInteractions(userInfoRepository);
+            verifyNoMoreInteractions(directoryRepository);
+        }
+
+        @Test
+        void withException() {
+            //Given
+            when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.ofNullable(user));
+            when(directoryRepository.findByOwnerAndPath(user, SEPARATOR + "first")).thenReturn(singletonList(directories[1]));
+            when(directoryRepository.findTopLevelSubDirectories(directories[1])).thenThrow(DataRetrievalFailureException.class);
+
+            //When
+            assertThrows(DriveException.class, () -> instance.retrieveDirectories(user.getLogin(), directories[1].getPath()));
+
+            //Then
+            verify(userInfoRepository, times(1)).findByLogin(user.getLogin());
+            verify(directoryRepository, times(1)).findByOwnerAndPath(user, SEPARATOR + "first");
+            verify(directoryRepository, times(1)).findTopLevelSubDirectories(directories[1]);
+            verifyNoMoreInteractions(userInfoRepository);
+            verifyNoMoreInteractions(directoryRepository);
+        }
+    }
+
     @Test
-    public void addDirectorySuccess() {
+    void addDirectorySuccess() {
         //Given
         Directory expected = new DirectoryBuilder().path(buildPath(root.getPath(), "first")).owner(user).build();
         DriveItemDTO expectedDTO = toDTO(new DirectoryBuilder().path(buildPath(root.getPath(), "first")).owner(user).build());
@@ -245,7 +307,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void addDirectoryWhenLoginFailure() {
+    void addDirectoryWhenLoginFailure() {
         //Given
         when(userInfoRepository.findByLogin(user.getLogin()))
                 .thenReturn(Optional.empty());
@@ -260,7 +322,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void addDirectoryWhenDirectoryAlreadyExists() {
+    void addDirectoryWhenDirectoryAlreadyExists() {
         //Given
         String newDirectoryPath = buildPath(root.getPath(), "existsDirectory");
         when(userInfoRepository.findByLogin(user.getLogin()))
@@ -277,7 +339,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void addDirectoryWhenDirectoryRepositoryThrowsException() {
+    void addDirectoryWhenDirectoryRepositoryThrowsException() {
         //Given
         Directory expected = new DirectoryBuilder().path(buildPath(root.getPath(), "first")).owner(user).build();
 
@@ -295,7 +357,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void moveDirectorySuccess() {
+    void moveDirectorySuccess() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
@@ -331,7 +393,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void moveDirectoryWhenDirectoryRepositoryThrowsException() {
+    void moveDirectoryWhenDirectoryRepositoryThrowsException() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
@@ -365,7 +427,7 @@ public class DriveServiceImplTest {
 
 
     @Test
-    public void moveDirectoryWhenUserNotExists() {
+    void moveDirectoryWhenUserNotExists() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
@@ -380,7 +442,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void moveDirectoryWhenSourceDirectoryNotExists() {
+    void moveDirectoryWhenSourceDirectoryNotExists() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first").build();
         String sourcePath = source.getPath();
@@ -400,7 +462,7 @@ public class DriveServiceImplTest {
 
 
     @Test
-    public void moveDirectoryWhenTargetDirectoryNotExists() {
+    void moveDirectoryWhenTargetDirectoryNotExists() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
@@ -419,7 +481,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void renameDirectorySuccess() {
+    void renameDirectorySuccess() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
@@ -456,7 +518,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void renameDirectoryWhenDirectoryRepositoryThrowsException() {
+    void renameDirectoryWhenDirectoryRepositoryThrowsException() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
@@ -490,7 +552,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void renameDirectoryWhenSourceDirectoryNotExists() {
+    void renameDirectoryWhenSourceDirectoryNotExists() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
@@ -509,7 +571,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void deleteDirectorySuccess() {
+    void deleteDirectorySuccess() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
@@ -528,7 +590,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void deleteDirectoryWhenOwnerNotExist() {
+    void deleteDirectoryWhenOwnerNotExist() {
         //Given
         when(userInfoRepository.findByLogin(anyString()))
                 .thenReturn(Optional.empty());
@@ -545,7 +607,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void deleteDirectoryWhenSourceDirectoryNotExists() {
+    void deleteDirectoryWhenSourceDirectoryNotExists() {
         //Given
         Directory source = new DirectoryBuilder().owner(user).path("/first/second").build();
         String sourcePath = source.getPath();
@@ -566,7 +628,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void retrievePictureFileDataSuccess() {
+    void retrievePictureFileDataSuccess() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/first/second").build();
         String path = directory.getPath();
@@ -600,7 +662,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void retrievePictureFileDataWhenFoundTooManyFiles() {
+    void retrievePictureFileDataWhenFoundTooManyFiles() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/first/second").build();
         String path = directory.getPath();
@@ -629,7 +691,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void retrievePictureFileDataWhenFileNotFound() {
+    void retrievePictureFileDataWhenFileNotFound() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/first/second").build();
         String path = directory.getPath();
@@ -650,7 +712,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void retrievePictureFileDataWhenFileRepositoryThrowsException() {
+    void retrievePictureFileDataWhenFileRepositoryThrowsException() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/first/second").build();
         String path = directory.getPath();
@@ -670,7 +732,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void addPictureFileSuccess() {
+    void addPictureFileSuccess() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/someDirectory").build();
         String originalFilename = "awesomeFile.jpg";
@@ -701,7 +763,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void addPictureFileWhenMultipartFileThrowsException() throws IOException {
+    void addPictureFileWhenMultipartFileThrowsException() throws IOException {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/someDirectory").build();
         String originalFilename = "awesomeFile.jpg";
@@ -724,7 +786,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void addPictureFileWhenPictureFileRepositoryThrowsException() throws IOException {
+    void addPictureFileWhenPictureFileRepositoryThrowsException() throws IOException {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/someDirectory").build();
         String originalFilename = "awesomeFile.jpg";
@@ -748,7 +810,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void moveAndRenamePictureFileSuccess() {
+    void moveAndRenamePictureFileSuccess() {
         //Given
         Directory sourceDirectory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         Directory targetDirectory = new DirectoryBuilder().owner(user).path("/another").build();
@@ -790,7 +852,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void movePictureFileWhenFileNotFound() {
+    void movePictureFileWhenFileNotFound() {
         //Given
         Directory sourceDirectory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         Directory targetDirectory = new DirectoryBuilder().owner(user).path("/another").build();
@@ -819,7 +881,7 @@ public class DriveServiceImplTest {
 
 
     @Test
-    public void movePictureWhenFoundTooManyFiles() {
+    void movePictureWhenFoundTooManyFiles() {
         //Given
         Directory sourceDirectory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         Directory targetDirectory = new DirectoryBuilder().owner(user).path("/another").build();
@@ -849,7 +911,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void movePictureWhenPictureFileRepositoryThrowsExceptionOnFind() {
+    void movePictureWhenPictureFileRepositoryThrowsExceptionOnFind() {
         //Given
         Directory sourceDirectory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         Directory targetDirectory = new DirectoryBuilder().owner(user).path("/another").build();
@@ -877,7 +939,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void movePictureWhenPictureFileRepositoryThrowsExceptionOnMove() {
+    void movePictureWhenPictureFileRepositoryThrowsExceptionOnMove() {
         //Given
         Directory sourceDirectory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         Directory targetDirectory = new DirectoryBuilder().owner(user).path("/another").build();
@@ -909,7 +971,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void deletePictureFileSuccess() {
+    void deletePictureFileSuccess() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         String originalFilename = "awesomeFile.jpg";
@@ -937,7 +999,7 @@ public class DriveServiceImplTest {
 
 
     @Test
-    public void deletePictureFileWhenDeletedFileNotFound() {
+    void deletePictureFileWhenDeletedFileNotFound() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         String originalFilename = "awesomeFile.jpg";
@@ -962,7 +1024,7 @@ public class DriveServiceImplTest {
 
 
     @Test
-    public void deletePictureFileWhenFoundTooManyFiles() {
+    void deletePictureFileWhenFoundTooManyFiles() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         String originalFilename = "awesomeFile.jpg";
@@ -992,7 +1054,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void deletePictureFileWhenPictureFileThrowsExceptionOnDelete() {
+    void deletePictureFileWhenPictureFileThrowsExceptionOnDelete() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         String originalFilename = "awesomeFile.jpg";
@@ -1024,7 +1086,7 @@ public class DriveServiceImplTest {
     }
 
     @Test
-    public void deletePictureFileWhenPictureFileThrowsExceptionOnFind() {
+    void deletePictureFileWhenPictureFileThrowsExceptionOnFind() {
         //Given
         Directory directory = new DirectoryBuilder().owner(user).path("/some/Directory").build();
         String originalFilename = "awesomeFile.jpg";
@@ -1044,5 +1106,49 @@ public class DriveServiceImplTest {
         //Then
         verify(fileRepository).findByDirectoryAndFilename(directory, originalFilename);
         verify(fileRepository, never()).delete(any());
+    }
+
+    @Nested
+    class MakeStatistics {
+        @Test
+        void success() {
+            //Given
+            when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.ofNullable(user));
+            when(directoryRepository.findByOwnerAndPathStartingWith(user, SEPARATOR)).thenReturn(singletonList(root));
+            when(fileRepository.findByDirectory(root)).thenReturn(asList(
+                    PictureFileBuilder.getInstance().filename("first").directory(root).data(new byte[]{1, 2, 3, 4, 5, 6, 7}).build(),
+                    PictureFileBuilder.getInstance().filename("second").directory(root).data(new byte[]{8, 9, 10, 11}).build()
+            ));
+            when(fileRepository.pictureSize(any())).thenAnswer(
+                    invocationOnMock -> (long) ((PictureFile) invocationOnMock.getArguments()[0]).getFilename().length()
+            );
+            DriveStatisticsDTO expected = new DriveStatisticsDTO(user.getLogin());
+            expected.setDirectoriesSize(11L);
+            expected.setPictureCount(2L);
+
+            //When
+            DriveStatisticsDTO statistics = instance.makeStatistics(user.getLogin());
+
+            //Then
+            assertThat(statistics).isEqualToComparingFieldByField(expected);
+            verify(userInfoRepository, times(1)).findByLogin(user.getLogin());
+            verify(directoryRepository, times(1)).findByOwnerAndPathStartingWith(user, SEPARATOR);
+            verify(fileRepository, times(1)).findByDirectory(root);
+            verify(fileRepository, times(2)).pictureSize(any());
+            verifyNoMoreInteractions(userInfoRepository, directoryRepository, fileRepository);
+        }
+
+        @Test
+        void userNotFound() {
+            //Given
+            when(userInfoRepository.findByLogin(user.getLogin())).thenReturn(Optional.empty());
+
+            //When
+            assertThrows(DriveException.class, () -> instance.makeStatistics(user.getLogin()));
+
+            //Then
+            verify(userInfoRepository, times(1)).findByLogin(user.getLogin());
+            verifyNoMoreInteractions(userInfoRepository, directoryRepository, fileRepository);
+        }
     }
 }

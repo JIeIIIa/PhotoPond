@@ -130,12 +130,14 @@ class UserAdministrationControllerTest {
     @Test
     void updateWhenDataValidationWithError() throws Exception {
         //Given
+
         UserInfoDTO user = UserInfoDTOBuilder.getInstance()
                 .id(77L)
                 .login("u")
                 .password("p")
                 .role(ADMIN)
                 .build();
+        user.setRole(null);
         MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post(URL_PREFIX + "/77")
                 .content(buildJsonContent(user))
                 .contentType(MediaType.APPLICATION_JSON);
