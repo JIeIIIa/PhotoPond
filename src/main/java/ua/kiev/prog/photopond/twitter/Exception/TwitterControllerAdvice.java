@@ -100,5 +100,4 @@ public class TwitterControllerAdvice {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(message);
     }
-
 }

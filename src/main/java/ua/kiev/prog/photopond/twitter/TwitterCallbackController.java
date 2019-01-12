@@ -18,6 +18,7 @@ import ua.kiev.prog.photopond.user.UserInfoDTO;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Locale;
 
+import static java.util.Objects.isNull;
 import static ua.kiev.prog.photopond.twitter.TwitterRequestMappingConstants.*;
 import static ua.kiev.prog.photopond.user.SettingsPageUtils.socials;
 
@@ -45,7 +46,7 @@ public class TwitterCallbackController {
                                          RedirectAttributes redirectAttributes) {
         LOG.traceEntry("Associate twitter account [oauth_token = {}]", oAuthToken);
 
-        if (!authentication.isAuthenticated()) {
+        if (isNull(authentication) || !authentication.isAuthenticated()) {
             LOG.error("Unauthorized user request [oauth_token = {}]", oAuthToken);
             redirectAttributes.addFlashAttribute(
                     ERROR_ATTRIBUTE_NAME,

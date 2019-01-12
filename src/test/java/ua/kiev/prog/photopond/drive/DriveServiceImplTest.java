@@ -1122,7 +1122,8 @@ class DriveServiceImplTest {
             when(fileRepository.pictureSize(any())).thenAnswer(
                     invocationOnMock -> (long) ((PictureFile) invocationOnMock.getArguments()[0]).getFilename().length()
             );
-            DriveStatisticsDTO expected = new DriveStatisticsDTO(user.getLogin());
+            DriveStatisticsDTO expected = new DriveStatisticsDTO();
+            expected.setLogin(user.getLogin());
             expected.setDirectoriesSize(11L);
             expected.setPictureCount(2L);
 
@@ -1150,5 +1151,35 @@ class DriveServiceImplTest {
             verify(userInfoRepository, times(1)).findByLogin(user.getLogin());
             verifyNoMoreInteractions(userInfoRepository, directoryRepository, fileRepository);
         }
+    }
+
+    @Test
+    void fullStatistics() {
+        //Given
+        when(userInfoRepository.findAll()).thenReturn(singletonList(user));
+        when(directoryRepository.findByOwnerAndPathStartingWith(user, SEPARATOR)).thenReturn(singletonList(root));
+        when(fileRepository.findByDirectory(root)).thenReturn(asList(
+                PictureFileBuilder.getInstance().filename("first").directory(root).data(new byte[]{1, 2, 3, 4, 5, 6, 7}).build(),
+                PictureFileBuilder.getInstance().filename("second").directory(root).data(new byte[]{8, 9, 10, 11}).build()
+        ));
+        when(fileRepository.pictureSize(any())).thenAnswer(
+                invocationOnMock -> (long) ((PictureFile) invocationOnMock.getArguments()[0]).getFilename().length()
+        );
+        DriveStatisticsDTO expected = new DriveStatisticsDTO(user.getLogin());
+        expected.setDirectoriesSize(11L);
+        expected.setPictureCount(2L);
+
+        //When
+        List<DriveStatisticsDTO> statistics = instance.fullStatistics();
+
+        //Then
+        assertThat(statistics)
+                .hasSize(1)
+                .containsExactly(expected);
+        verify(userInfoRepository, times(1)).findAll();
+        verify(directoryRepository, times(1)).findByOwnerAndPathStartingWith(user, SEPARATOR);
+        verify(fileRepository, times(1)).findByDirectory(root);
+        verify(fileRepository, times(2)).pictureSize(any());
+        verifyNoMoreInteractions(userInfoRepository, directoryRepository, fileRepository);
     }
 }

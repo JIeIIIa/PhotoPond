@@ -8,7 +8,6 @@ public class TwitterUserDTOBuilder {
     private String name;
 
     private TwitterUserDTOBuilder() {
-
     }
 
     public static TwitterUserDTOBuilder getInstance() {

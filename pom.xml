@@ -278,13 +278,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <excludes>
-                        <exclude>**/TweetDTO.*</exclude>
-                        <exclude>**/TwitterUserDTO.*</exclude>
-                        <exclude>**/TwitterUtils.*</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
 
             <plugin>
