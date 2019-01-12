@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.facebook.Exception;
+package ua.kiev.prog.photopond.facebook.exception;
 
 public class FBAccountAlreadyAssociateException extends AssociateFBAccountException {
 

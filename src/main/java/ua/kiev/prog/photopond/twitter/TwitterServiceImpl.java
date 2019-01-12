@@ -11,7 +11,7 @@ import twitter4j.auth.RequestToken;
 import ua.kiev.prog.photopond.Utils.Utils;
 import ua.kiev.prog.photopond.drive.DriveService;
 import ua.kiev.prog.photopond.drive.exception.DriveException;
-import ua.kiev.prog.photopond.twitter.Exception.*;
+import ua.kiev.prog.photopond.twitter.exception.*;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoDTO;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;

@@ -22,10 +22,10 @@ import org.springframework.web.util.NestedServletException;
 import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 import ua.kiev.prog.photopond.core.BindingErrorResolver;
 import ua.kiev.prog.photopond.security.SpringSecurityWebAuthenticationTestConfiguration;
-import ua.kiev.prog.photopond.twitter.Exception.AssociateTwitterAccountException;
-import ua.kiev.prog.photopond.twitter.Exception.TwitterAccountAlreadyAssociateException;
-import ua.kiev.prog.photopond.twitter.Exception.TwitterAuthenticationException;
-import ua.kiev.prog.photopond.twitter.Exception.TwitterControllerAdvice;
+import ua.kiev.prog.photopond.twitter.exception.AssociateTwitterAccountException;
+import ua.kiev.prog.photopond.twitter.exception.TwitterAccountAlreadyAssociateException;
+import ua.kiev.prog.photopond.twitter.exception.TwitterAuthenticationException;
+import ua.kiev.prog.photopond.twitter.exception.TwitterControllerAdvice;
 import ua.kiev.prog.photopond.user.UserInfoDTO;
 import ua.kiev.prog.photopond.user.UserInfoDTOBuilder;
 

@@ -18,9 +18,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 import ua.kiev.prog.photopond.core.BindingErrorResolver;
 import ua.kiev.prog.photopond.security.SpringSecurityWebAuthenticationTestConfiguration;
-import ua.kiev.prog.photopond.twitter.Exception.NotFoundTwitterAssociatedAccountException;
-import ua.kiev.prog.photopond.twitter.Exception.TweetPublishingException;
-import ua.kiev.prog.photopond.twitter.Exception.TwitterControllerAdvice;
+import ua.kiev.prog.photopond.twitter.exception.NotFoundTwitterAssociatedAccountException;
+import ua.kiev.prog.photopond.twitter.exception.TweetPublishingException;
+import ua.kiev.prog.photopond.twitter.exception.TwitterControllerAdvice;
 
 import java.util.Locale;
 

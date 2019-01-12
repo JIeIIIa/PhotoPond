@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.facebook.Exception;
+package ua.kiev.prog.photopond.facebook.exception;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

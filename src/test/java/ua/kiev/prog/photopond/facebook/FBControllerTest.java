@@ -15,8 +15,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 import ua.kiev.prog.photopond.core.BindingErrorResolver;
-import ua.kiev.prog.photopond.facebook.Exception.DisassociateFBAccountException;
-import ua.kiev.prog.photopond.facebook.Exception.FBControllerAdvice;
+import ua.kiev.prog.photopond.facebook.exception.DisassociateFBAccountException;
+import ua.kiev.prog.photopond.facebook.exception.FBControllerAdvice;
 import ua.kiev.prog.photopond.security.SpringSecurityWebAuthenticationTestConfiguration;
 
 import static org.hamcrest.Matchers.is;

@@ -1,6 +1,9 @@
 package ua.kiev.prog.photopond.exception;
 
 public class PhotoPondException extends RuntimeException {
+
+    private static final long serialVersionUID = -3268590186901253996L;
+
     public PhotoPondException() {
         super();
     }
@@ -17,7 +20,7 @@ public class PhotoPondException extends RuntimeException {
         super(cause);
     }
 
-    protected PhotoPondException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public PhotoPondException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

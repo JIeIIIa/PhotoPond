@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.Administration;
+package ua.kiev.prog.photopond.administration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +13,7 @@ public class AdministrationController {
     private static final Logger LOG = LogManager.getLogger(AdministrationController.class);
 
     @RequestMapping(value = "/adminPanel", method = RequestMethod.GET)
-    public ModelAndView viewAllUsers(ModelAndView modelAndView) {
+    public ModelAndView administrationPanelView(ModelAndView modelAndView) {
         LOG.traceEntry();
         modelAndView.setViewName("administration/administration");
 

@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.twitter.Exception;
+package ua.kiev.prog.photopond.twitter.exception;
 
 public class DisassociateTwitterAccountException extends CustomTwitterException {
     
