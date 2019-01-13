@@ -27,6 +27,7 @@ import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
 import ua.kiev.prog.photopond.drive.directories.DirectoryJpaRepository;
 import ua.kiev.prog.photopond.drive.directories.DirectoryRepository;
+import ua.kiev.prog.photopond.drive.exception.DriveException;
 import ua.kiev.prog.photopond.drive.pictures.PictureFile;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileBuilder;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileJpaRepository;
@@ -223,6 +224,25 @@ public class DriveServiceImplIT {
 
         //Then
         assertThat(result).hasSameElementsAs(expected);
+    }
+
+    @Test
+    void RetrieveDirectoriesSuccess() {
+        //Given
+        String baseUrl = "/api/" + user.getLogin() + "/directories";
+        DirectoriesDTO expected = new DirectoriesDTO();
+        expected.setCurrent(toDTO(new DirectoryBuilder().id(2100L).owner(user).path("/first").build(), baseUrl));
+        expected.setParent(toDTO(new DirectoryBuilder().id(2000L).owner(user).path(SEPARATOR).build(), baseUrl));
+        expected.setChildDirectories(asList(
+                toDTO(new DirectoryBuilder().id(2110L).owner(user).path("/first/second").build(), baseUrl),
+                toDTO(new DirectoryBuilder().id(2120L).owner(user).path("/first/folder(2)").build(), baseUrl)
+        ));
+
+        //When
+        DirectoriesDTO directoriesDTO = instance.retrieveDirectories(user.getLogin(), "/first");
+
+        //Then
+        assertThat(directoriesDTO).isEqualToComparingFieldByFieldRecursively(expected);
     }
 
     @Test
@@ -487,5 +507,44 @@ public class DriveServiceImplIT {
         DriveException driveException = assertThrows(DriveException.class,
                 () -> instance.deletePictureFile(user.getLogin(), buildPath(ROOT_PATH, "unknownPicture.jpg"))
         );
+    }
+
+    @Test
+    void makeStatistics() {
+        //Given
+        DriveStatisticsDTO expected = new DriveStatisticsDTO(user.getLogin());
+        expected.setDirectoriesSize(
+                (long) "root.jpg".getBytes().length + "targetFilename.jpg".getBytes().length
+        );
+        expected.setPictureCount(2L);
+
+        //When
+        DriveStatisticsDTO statistics = instance.makeStatistics(user.getLogin());
+
+        //Then
+        assertThat(statistics).isEqualToComparingFieldByField(expected);
+    }
+
+
+    @Test
+    void fullStatistics() {
+        //Given
+        DriveStatisticsDTO adminStatistics = new DriveStatisticsDTO("Administrator");
+        adminStatistics.setDirectoriesSize((long) "qwerty.jpg".getBytes().length);
+        adminStatistics.setPictureCount(1L);
+
+
+        DriveStatisticsDTO userStatistics = new DriveStatisticsDTO(user.getLogin());
+        userStatistics.setDirectoriesSize(
+                (long) "root.jpg".getBytes().length + "targetFilename.jpg".getBytes().length);
+        userStatistics.setPictureCount(2L);
+
+        //When
+        List<DriveStatisticsDTO> result = instance.fullStatistics();
+
+        //Then
+        assertThat(result)
+                .hasSize(2)
+                .containsExactlyInAnyOrder(adminStatistics, userStatistics);
     }
 }

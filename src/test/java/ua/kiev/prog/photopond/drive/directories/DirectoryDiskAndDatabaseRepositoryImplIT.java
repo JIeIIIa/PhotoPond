@@ -20,6 +20,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 import ua.kiev.prog.photopond.Utils.TestUtils;
+import ua.kiev.prog.photopond.drive.exception.DirectoryModificationException;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 
@@ -450,6 +451,34 @@ public class DirectoryDiskAndDatabaseRepositoryImplIT {
     public void findByOwnerAndPathFailure() {
         //When
         List<Directory> result = instance.findByOwnerAndPath(user, "/phantom/path");
+
+        //Then
+        assertThat(result)
+                .isNotNull()
+                .isEmpty();
+    }
+
+    @Test
+    public void findByOwnerAndPathStartingWithSuccess() {
+        //Given
+        String path = "/folder/folder(2)";
+        Directory first = new DirectoryBuilder().id(2210L).owner(user).path(path).build();
+        Directory second = new DirectoryBuilder().id(2211L).owner(user).path(path + "/folder").build();
+
+        //When
+        List<Directory> result = instance.findByOwnerAndPathStartingWith(user, path);
+
+        //Then
+        assertThat(result)
+                .isNotNull()
+                .hasSize(2)
+                .containsExactly(first, second);
+    }
+
+    @Test
+    public void findByOwnerAndPathStartingWithFailure() {
+        //When
+        List<Directory> result = instance.findByOwnerAndPathStartingWith(user, "/phantom/path");
 
         //Then
         assertThat(result)

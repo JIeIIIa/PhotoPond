@@ -34,8 +34,8 @@ public class TwitterController {
 
     @RequestMapping(value = ACCOUNT_VIEW_URL)
     @Deprecated
-    public ModelAndView associateList(ModelAndView modelAndView,
-                                      Authentication authentication) {
+    public ModelAndView associatedListView(ModelAndView modelAndView,
+                                           Authentication authentication) {
         LOG.traceEntry("Request to {}", ACCOUNT_VIEW_URL);
 
         modelAndView.setViewName("twitter/associate");

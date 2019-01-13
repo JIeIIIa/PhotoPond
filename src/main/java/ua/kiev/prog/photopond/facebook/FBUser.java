@@ -102,8 +102,7 @@ public class FBUser implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FBUser fbUser = (FBUser) o;
-        return Objects.equals(id, fbUser.id) &&
-                Objects.equals(fbId, fbUser.fbId) &&
+        return Objects.equals(fbId, fbUser.fbId) &&
                 Objects.equals(email, fbUser.email) &&
                 Objects.equals(name, fbUser.name) &&
                 Objects.equals(accessToken, fbUser.accessToken) &&
@@ -113,7 +112,7 @@ public class FBUser implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, fbId, email, name, accessToken, tokenExpires, userInfo);
+        return Objects.hash(fbId, email, name, accessToken, tokenExpires, userInfo);
     }
 
     @Override

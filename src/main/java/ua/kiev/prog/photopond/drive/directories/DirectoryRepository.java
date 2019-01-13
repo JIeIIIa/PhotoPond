@@ -1,5 +1,6 @@
 package ua.kiev.prog.photopond.drive.directories;
 
+import ua.kiev.prog.photopond.drive.exception.DirectoryModificationException;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 import java.util.List;

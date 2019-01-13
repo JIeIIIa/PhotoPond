@@ -27,7 +27,7 @@ import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DA
         SpringSecurityWebAuthenticationTestConfiguration.class
 })
 @ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "securityWebAuthTestConfig", "test"})
-public class WelcomeControllerTestRunWithSpringRunner {
+class WelcomeControllerTestRunWithSpringRunner {
 
     @Autowired
     MockMvc mockMvc;
@@ -37,45 +37,61 @@ public class WelcomeControllerTestRunWithSpringRunner {
     private static final String SERVER_ADDRESS = "https://localhost";
 
     @Test
-    public void rootUrlTest() throws Exception {
+    void rootUrlTest() throws Exception {
         matchViewNameAfterGetRequest("/", ROOT_VIEW_NAME);
     }
 
     @Test
-    public void indexWithoutSuffixUrlTest() throws Exception {
+    void indexWithoutSuffixUrlTest() throws Exception {
         matchViewNameAfterGetRequest("/index", ROOT_VIEW_NAME);
     }
 
     @Test
     @WithMockUser
-    public void indexWithoutSuffixUrlAndUserRoleTest() throws Exception {
+    void indexWithoutSuffixUrlAndUserRoleTest() throws Exception {
         matchViewNameAfterGetRequest("/index", ROOT_VIEW_NAME);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void indexWithoutSuffixUrlAndAdminRoleTest() throws Exception {
+    void indexWithoutSuffixUrlAndAdminRoleTest() throws Exception {
         matchViewNameAfterGetRequest("/index", ROOT_VIEW_NAME);
     }
 
     @Test
     @WithMockUser(roles = "DEACTIVATED")
-    public void indexWithoutSuffixUrlAndDeactivatedRoleTest() throws Exception {
+    void indexWithoutSuffixUrlAndDeactivatedRoleTest() throws Exception {
         matchViewNameAfterGetRequest("/index", ROOT_VIEW_NAME);
     }
 
 
     @Test
-    public void indexWithSuffixTest() throws Exception {
+    void indexWithSuffixTest() throws Exception {
         matchViewNameAfterGetRequest("/index.html", ROOT_VIEW_NAME);
     }
 
     @Test
-    public void indexWithBadSuffixUrlTest() throws Exception {
+    void indexWithBadSuffixUrlTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get(SERVER_ADDRESS + "/index.hhttmmll"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl(SERVER_ADDRESS + "/login"))
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void about() throws Exception {
+        matchViewNameAfterGetRequest("/about", "about");
+    }
+
+    @Test
+    void privacyPolicy() throws Exception {
+        matchViewNameAfterGetRequest("/public/privacyPolicy", "privacyPolicy");
+    }
+
+
+    @Test
+    void terms() throws Exception {
+        matchViewNameAfterGetRequest("/public/terms", "terms");
     }
 
     private void matchViewNameAfterGetRequest(String url, String viewName) throws Exception {

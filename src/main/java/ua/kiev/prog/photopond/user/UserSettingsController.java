@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ua.kiev.prog.photopond.core.BindingErrorResolver;
-import ua.kiev.prog.photopond.core.BindingErrorResolverImpl;
 import ua.kiev.prog.photopond.transfer.ChangeAvatar;
 import ua.kiev.prog.photopond.transfer.ChangePassword;
 
@@ -30,7 +29,7 @@ public class UserSettingsController {
     private UserInfoService userInfoService;
 
     @Autowired
-    public UserSettingsController(BindingErrorResolverImpl bindingErrorResolver,
+    public UserSettingsController(BindingErrorResolver bindingErrorResolver,
                                   UserInfoService userInfoService) {
         this.bindingErrorResolver = bindingErrorResolver;
         this.userInfoService = userInfoService;
@@ -54,12 +53,12 @@ public class UserSettingsController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(textHeader())
-                    .body(bindingErrorResolver.resolveMessage("user.password.change.success", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.password.change.success", locale));
         } else {
             return ResponseEntity
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .headers(textHeader())
-                    .body(bindingErrorResolver.resolveMessage("user.password.change.error", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.password.change.error", locale));
         }
     }
 
@@ -73,12 +72,12 @@ public class UserSettingsController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(textHeader())
-                    .body(bindingErrorResolver.resolveMessage("user.avatar.change.success", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.avatar.change.success", locale));
         } else {
             return ResponseEntity
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .headers(textHeader())
-                    .body(bindingErrorResolver.resolveMessage("user.avatar.change.error", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.avatar.change.error", locale));
         }
     }
 
@@ -91,12 +90,12 @@ public class UserSettingsController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(jsonHeader())
-                    .body(bindingErrorResolver.resolveMessage("user.avatar.remove.success", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.avatar.remove.success", locale));
         } else {
             return ResponseEntity
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .headers(jsonHeader())
-                    .body(bindingErrorResolver.resolveMessage("user.avatar.change.error", null, locale));
+                    .body(bindingErrorResolver.resolveMessage("user.avatar.change.error", locale));
         }
     }
 }

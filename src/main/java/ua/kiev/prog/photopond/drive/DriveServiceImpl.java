@@ -9,11 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
-import ua.kiev.prog.photopond.drive.directories.DirectoryModificationException;
 import ua.kiev.prog.photopond.drive.directories.DirectoryRepository;
+import ua.kiev.prog.photopond.drive.exception.DirectoryModificationException;
+import ua.kiev.prog.photopond.drive.exception.DriveException;
+import ua.kiev.prog.photopond.drive.exception.PictureFileException;
 import ua.kiev.prog.photopond.drive.pictures.PictureFile;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileBuilder;
-import ua.kiev.prog.photopond.drive.pictures.PictureFileException;
 import ua.kiev.prog.photopond.drive.pictures.PictureFileRepository;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
@@ -110,7 +111,7 @@ public class DriveServiceImpl implements DriveService {
 
             DriveItemDTO parent = new DriveItemDTO();
             parent.setType(DriveItemType.DIR);
-            parent.setName(getName(directory.getPath()));
+            parent.setName(getName(directory.parentPath()));
             parent.setParentUri(appendToPath(baseUrl, directory.parentPath()));
 
             directoriesDTO.setParent(parent);

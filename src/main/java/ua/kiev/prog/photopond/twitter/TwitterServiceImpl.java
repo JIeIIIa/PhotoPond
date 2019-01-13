@@ -9,11 +9,9 @@ import twitter4j.*;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import ua.kiev.prog.photopond.Utils.Utils;
-import ua.kiev.prog.photopond.drive.DriveException;
 import ua.kiev.prog.photopond.drive.DriveService;
-import ua.kiev.prog.photopond.facebook.Exception.AssociateFBAccountException;
-import ua.kiev.prog.photopond.facebook.Exception.DisassociateFBAccountException;
-import ua.kiev.prog.photopond.twitter.Exception.*;
+import ua.kiev.prog.photopond.drive.exception.DriveException;
+import ua.kiev.prog.photopond.twitter.exception.*;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoDTO;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
@@ -23,7 +21,6 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static ua.kiev.prog.photopond.twitter.TwitterUtils.getTwitterInstance;
 
 @Service
 public class TwitterServiceImpl implements TwitterService {
@@ -35,17 +32,20 @@ public class TwitterServiceImpl implements TwitterService {
     private final TwitterRequestTokenStorage requestTokenStorage;
     private final TwitterUserJpaRepository twitterUserJpaRepository;
     private final DriveService driveService;
+    private final TwitterFactoryFacade twitterFactory;
 
     @Autowired
     public TwitterServiceImpl(TwitterUserJpaRepository twitterUserJpaRepository,
                               UserInfoJpaRepository userInfoJpaRepository,
                               TwitterRequestTokenStorage requestTokenStorage,
-                              DriveService driveService) {
+                              DriveService driveService,
+                              TwitterFactoryFacade twitterFactory) {
         LOG.info("Create instance of {}", TwitterServiceImpl.class);
         this.twitterUserJpaRepository = twitterUserJpaRepository;
         this.userInfoJpaRepository = userInfoJpaRepository;
         this.requestTokenStorage = requestTokenStorage;
         this.driveService = driveService;
+        this.twitterFactory = twitterFactory;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class TwitterServiceImpl implements TwitterService {
     }
 
     private RequestToken generateRequestToken(String callbackUrl) throws TwitterException {
-        Twitter twitter = getTwitterInstance();
+        Twitter twitter = twitterFactory.getTwitterInstance();
         RequestToken requestToken = twitter.getOAuthRequestToken(callbackUrl);
         requestTokenStorage.add(requestToken);
         return requestToken;
@@ -87,7 +87,7 @@ public class TwitterServiceImpl implements TwitterService {
     @Override
     public TwitterUserDTO associateAccount(String login, String oauthToken, String oauthVerifier) {
         LOG.entry("Try to associate Twitter account with user [login = {}]", login);
-        UserInfo userInfo = userInfoJpaRepository.findByLogin(login).orElseThrow(AssociateFBAccountException::new);
+        UserInfo userInfo = userInfoJpaRepository.findByLogin(login).orElseThrow(AssociateTwitterAccountException::new);
 
         twitterUserJpaRepository.findByUserInfo(userInfo)
                 .ifPresent(u -> {
@@ -102,14 +102,14 @@ public class TwitterServiceImpl implements TwitterService {
         return TwitterUserMapper.toDto(twitterUser);
     }
 
-    private TwitterUser createTwitterUser(UserInfo userInfo, String oauthToken, String oauthVerifier) {
+    TwitterUser createTwitterUser(UserInfo userInfo, String oauthToken, String oauthVerifier) {
         LOG.trace("Start creating account for userInfo.id = {}", userInfo.getId());
         TwitterUser twitterUser;
         try {
             RequestToken requestToken = requestTokenStorage
                     .retrieveAndRemoveRequestToken(oauthToken)
                     .orElseThrow(AssociateTwitterAccountException::new);
-            Twitter twitter = getTwitterInstance();
+            Twitter twitter = twitterFactory.getTwitterInstance();
             AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, oauthVerifier);
 
             User user = twitter.verifyCredentials();
@@ -134,7 +134,7 @@ public class TwitterServiceImpl implements TwitterService {
     @Override
     public UserInfoDTO findUserInfoByRequestToken(String token, String verifier) {
         LOG.trace("Try to find userInfo");
-        Twitter twitter = getTwitterInstance();
+        Twitter twitter = twitterFactory.getTwitterInstance();
         try {
             RequestToken requestToken = requestTokenStorage
                     .retrieveAndRemoveRequestToken(token)
@@ -174,7 +174,7 @@ public class TwitterServiceImpl implements TwitterService {
         LOG.traceEntry("Start disassociating account for user with login = {}", login);
         TwitterUser twitterUser = userInfoJpaRepository.findByLogin(login)
                 .flatMap(twitterUserJpaRepository::findByUserInfo)
-                .orElseThrow(() -> new DisassociateFBAccountException("Not found associated account information"));
+                .orElseThrow(() -> new DisassociateTwitterAccountException("Not found associated account information"));
 
         twitterUserJpaRepository.deleteByUserInfo(twitterUser.getUserInfo());
         LOG.traceEntry("Account for user with login = {} was disassociated", login);
@@ -188,7 +188,7 @@ public class TwitterServiceImpl implements TwitterService {
                 .orElseThrow(() -> new NotFoundTwitterAssociatedAccountException("Not found Twitter associated account: userLogin = " + userLogin));
         List<byte[]> images = retrieveImagesData(userLogin, tweetDTO);
         try {
-            Twitter twitter = getTwitterInstance(twitterUser);
+            Twitter twitter = twitterFactory.getTwitterInstance(twitterUser);
             long[] ids = prepareImages(twitter, images);
 
             StatusUpdate update = new StatusUpdate(tweetDTO.getMessage());
@@ -201,12 +201,12 @@ public class TwitterServiceImpl implements TwitterService {
 
             LOG.debug("Tweet was created [userLogin = {}], [url = {}]", userLogin, url);
             return tweetDTO;
-        } catch (TwitterException e) {
+        } catch (TwitterException | NullPointerException e) {
             throw new TweetPublishingException(e);
         }
     }
 
-    private List<byte[]> retrieveImagesData(String userLogin, TweetDTO tweetDTO) {
+    List<byte[]> retrieveImagesData(String userLogin, TweetDTO tweetDTO) {
         try {
             LOG.traceEntry("Retrieve images for tweet");
 
@@ -219,7 +219,7 @@ public class TwitterServiceImpl implements TwitterService {
         }
     }
 
-    private long[] prepareImages(Twitter twitter, List<byte[]> images) throws TwitterException {
+    long[] prepareImages(Twitter twitter, List<byte[]> images) throws TwitterException {
         long[] ids = new long[images.size()];
         LOG.trace("Send images to Twitter server");
         for (int i = 0; i < images.size(); i++) {

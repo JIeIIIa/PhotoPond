@@ -85,8 +85,7 @@ public class TwitterUser implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TwitterUser that = (TwitterUser) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(socialId, that.socialId) &&
+        return Objects.equals(socialId, that.socialId) &&
                 Objects.equals(token, that.token) &&
                 Objects.equals(tokenSecret, that.tokenSecret) &&
                 Objects.equals(name, that.name) &&
@@ -95,7 +94,7 @@ public class TwitterUser implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, socialId, token, tokenSecret, name, userInfo);
+        return Objects.hash(socialId, token, tokenSecret, name, userInfo);
     }
 
     @Override

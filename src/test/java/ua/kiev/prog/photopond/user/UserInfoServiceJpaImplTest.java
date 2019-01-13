@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles({"test"})
-public class UserInfoServiceJpaImplTest {
+class UserInfoServiceJpaImplTest {
 
     @Mock
     private UserInfoJpaRepository userRepository;
@@ -35,19 +36,19 @@ public class UserInfoServiceJpaImplTest {
 
     private UserInfoDTO mockUserDTO;
 
-    public UserInfoServiceJpaImplTest() {
+    UserInfoServiceJpaImplTest() {
         passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         instance = new UserInfoServiceJpaImpl(userRepository, passwordEncoder);
         mockUser = new UserInfoBuilder().id(777L).login("mockUser").password("password").role(UserRole.USER).build();
         mockUserDTO = UserInfoMapper.toDto(mockUser);
     }
 
     @Test
-    public void existsByLoginSuccess() {
+    void existsByLoginSuccess() {
         //Given
         when(userRepository.findByLogin(mockUser.getLogin()))
                 .thenReturn(Optional.of(mockUser));
@@ -61,7 +62,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void existByLoginFailure() {
+    void existByLoginFailure() {
         //Given
         when(userRepository.findByLogin(USER_LOGIN))
                 .thenReturn(Optional.empty());
@@ -75,7 +76,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void addUserSuccess() {
+    void addUserSuccess() {
         //Given
         String password = "password";
         UserInfoDTO userDTO = UserInfoDTOBuilder.getInstance()
@@ -95,14 +96,14 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void AddNullAsUser() {
+    void AddNullAsUser() {
         instance.addUser(null);
 
         verify(userRepository, never()).save(any(UserInfo.class));
     }
 
     @Test
-    public void findByLoginExistsUser() {
+    void findByLoginExistsUser() {
         //Given
         UserInfo user = new UserInfo(USER_LOGIN, "qwerty123!", UserRole.USER);
         when(userRepository.findByLogin(USER_LOGIN))
@@ -123,7 +124,7 @@ public class UserInfoServiceJpaImplTest {
 
 
     @Test
-    public void findByLoginNotExistsUser() {
+    void findByLoginNotExistsUser() {
         //Given
         when(userRepository.findByLogin(USER_LOGIN))
                 .thenReturn(Optional.empty());
@@ -140,7 +141,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void findByLoginWhenLoginIsNull() {
+    void findByLoginWhenLoginIsNull() {
         //Given
         when(userRepository.findByLogin(null)).thenReturn(Optional.empty());
 
@@ -154,7 +155,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void findByIdExistUser() {
+    void findByIdExistUser() {
         //Given
         final Long id = 321L;
         UserInfo user = new UserInfoBuilder().id(id).login(USER_LOGIN).password("qwerty123!").role(UserRole.USER).build();
@@ -176,7 +177,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void findByIdNotExistsUser() {
+    void findByIdNotExistsUser() {
         //Given
         final Long id = 321L;
         when(userRepository.findById(id))
@@ -193,7 +194,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void findAllUsers() {
+    void findAllUsers() {
         //Given
         UserInfo user = new UserInfoBuilder().id(1L).login(USER_LOGIN).password("qwerty123!").role(UserRole.USER).build();
         UserInfo anotherUser = new UserInfoBuilder().id(2L).login("anotherUser").password("qwerty123!").role(UserRole.ADMIN).build();
@@ -218,7 +219,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void updatePasswordSuccess() {
+    void updatePasswordSuccess() {
         //Given
         String newPassword = "awesomePassword";
         String oldPassword = "password";
@@ -242,7 +243,130 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void updateWithPasswordNotNullSuccess() {
+    void resetPasswordSuccess() {
+        //Given
+        String newPassword = "awesomePassword";
+        String oldPassword = "password";
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
+                .login(USER_LOGIN)
+                .oldPassword(oldPassword)
+                .password(newPassword)
+                .passwordConfirmation(newPassword)
+                .build();
+        UserInfo user = new UserInfo(USER_LOGIN, passwordEncoder.encode(oldPassword), UserRole.USER);
+        when(userRepository.findByLogin(USER_LOGIN))
+                .thenReturn(Optional.of(user));
+
+        //When
+        boolean result = instance.resetPassword(userInfoDTO.getLogin(), userInfoDTO.getPassword());
+
+        //Then
+        assertThat(result).isTrue();
+
+        verify(userRepository).findByLogin(USER_LOGIN);
+    }
+
+
+    @Test
+    void resetPasswordFailure() {
+        //Given
+        String newPassword = "awesomePassword";
+        String oldPassword = "password";
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
+                .login(USER_LOGIN)
+                .oldPassword(oldPassword)
+                .password(newPassword)
+                .passwordConfirmation(newPassword)
+                .build();
+        when(userRepository.findByLogin(USER_LOGIN))
+                .thenReturn(Optional.empty());
+
+        //When
+        boolean result = instance.resetPassword(userInfoDTO.getLogin(), userInfoDTO.getPassword());
+
+        //Then
+        assertThat(result).isFalse();
+
+        verify(userRepository).findByLogin(USER_LOGIN);
+    }
+
+    @Test
+    void updateAvatarSuccess() {
+        //Given
+        String filename = "avatar.jpg";
+        MockMultipartFile file = new MockMultipartFile("avatar", filename, "img/jpg", filename.getBytes());
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
+                .login(USER_LOGIN)
+                .avatar(file)
+                .build();
+        UserInfo user = new UserInfo(USER_LOGIN, passwordEncoder.encode("password"), UserRole.USER);
+        when(userRepository.findByLogin(USER_LOGIN))
+                .thenReturn(Optional.of(user));
+        when(userRepository.saveAndFlush(any(UserInfo.class)))
+                .thenAnswer(invocationOnMock -> invocationOnMock.getArguments()[0]);
+
+        //When
+        boolean result = instance.updateAvatar(userInfoDTO);
+
+        //Then
+        assertThat(result).isTrue();
+        verify(userRepository).findByLogin(USER_LOGIN);
+        assertThat(user.getAvatar()).isEqualTo(filename.getBytes());
+    }
+
+
+    @Test
+    void updateAvatarFailure() {
+        //Given
+        UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
+                .login(USER_LOGIN)
+                .build();
+        when(userRepository.findByLogin(USER_LOGIN))
+                .thenReturn(Optional.empty());
+
+        //When
+        boolean result = instance.updateAvatar(userInfoDTO);
+
+        //Then
+        assertThat(result).isFalse();
+        verify(userRepository).findByLogin(USER_LOGIN);
+    }
+
+    @Test
+    void retrieveAvatar() {
+        //Given
+        UserInfo user = new UserInfo(USER_LOGIN, passwordEncoder.encode("password"), UserRole.USER);
+        String avatarString = "someAvatarString";
+        user.setAvatar(avatarString.getBytes());
+        when(userRepository.findByLogin(USER_LOGIN))
+                .thenReturn(Optional.of(user));
+
+        //When
+        byte[] result = instance.retrieveAvatar(USER_LOGIN);
+
+        //Then
+        assertThat(result).isEqualTo(avatarString.getBytes());
+        verify(userRepository).findByLogin(USER_LOGIN);
+    }
+
+    @Test
+    void retrieveAvatarWithDefaultValue() {
+        //Given
+        String avatarString = "someAvatarString";
+        instance.setDefaultAvatar(avatarString.getBytes());
+        when(userRepository.findByLogin(USER_LOGIN))
+                .thenReturn(Optional.empty());
+
+        //When
+        byte[] result = instance.retrieveAvatar(USER_LOGIN);
+
+        //Then
+        assertThat(result).isEqualTo(avatarString.getBytes());
+        verify(userRepository).findByLogin(USER_LOGIN);
+    }
+
+    @Test
+    void updateWithPasswordNotNullSuccess() {
         //Given
         String newPassword = "newPassword";
         UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
@@ -273,7 +397,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void updateWithPasswordIsNullSuccess() {
+    void updateWithPasswordIsNullSuccess() {
         //Given
         UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
                 .id(mockUser.getId())
@@ -303,7 +427,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void updateWhenExistsSameLogin() {
+    void updateWhenExistsSameLogin() {
         //Given
         String userLogin = "user";
         long id = 777L;
@@ -323,7 +447,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void updateWithWrongId() {
+    void updateWithWrongId() {
         //Given
         long id = 101010;
         UserInfoDTO newInformation = UserInfoDTOBuilder.getInstance()
@@ -342,7 +466,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void deleteExistsUser() {
+    void deleteExistsUser() {
         //Given
         UserInfo user = new UserInfoBuilder().id(777L).login("user").password("qwerty123!").role(UserRole.USER).build();
         UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
@@ -364,7 +488,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void deleteWithFailureId() {
+    void deleteWithFailureId() {
         //Given
         long id = 101010L;
         when(userRepository.findById(id)).thenReturn(Optional.empty());
@@ -381,7 +505,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void existsUserWithAdminRole() {
+    void existsUserWithAdminRole() {
         //Given
         when(userRepository.countByRole(UserRole.ADMIN))
                 .thenReturn(1L);
@@ -394,7 +518,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void notExistsUserWithAdminRole() {
+    void notExistsUserWithAdminRole() {
         //Given
         when(userRepository.countByRole(UserRole.ADMIN))
                 .thenReturn(0L);
@@ -407,7 +531,7 @@ public class UserInfoServiceJpaImplTest {
     }
 
     @Test
-    public void findByRoleAllUsers() {
+    void findByRoleAllUsers() {
         //Given
         UserInfo user = new UserInfoBuilder().id(1L).login("awesomeUser").password("qwerty123!").role(UserRole.USER).build();
         UserInfoDTO expected = UserInfoDTOBuilder.getInstance()
@@ -431,7 +555,7 @@ public class UserInfoServiceJpaImplTest {
 
 
     @Test
-    public void findByRoleAllAdmin() {
+    void findByRoleAllAdmin() {
         //Given
         UserInfo admin = new UserInfoBuilder().id(1L).login("ADMIN").password("qwerty123!").role(UserRole.ADMIN).build();
         UserInfoDTO expectedUser = UserInfoDTOBuilder.getInstance()

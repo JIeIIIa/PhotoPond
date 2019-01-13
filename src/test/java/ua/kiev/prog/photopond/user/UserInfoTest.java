@@ -1,5 +1,6 @@
 package ua.kiev.prog.photopond.user;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,5 +41,13 @@ public class UserInfoTest {
         //Then
         assertThat(user)
                 .isEqualTo(expected);
+    }
+
+    @Test
+    void equals() {
+        EqualsVerifier.forClass(UserInfo.class)
+                .usingGetClass()
+                .withIgnoredFields("role", "avatar")
+                .verify();
     }
 }

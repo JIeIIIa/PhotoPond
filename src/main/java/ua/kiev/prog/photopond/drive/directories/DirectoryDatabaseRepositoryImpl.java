@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.kiev.prog.photopond.annotation.profile.DatabaseStorage;
+import ua.kiev.prog.photopond.drive.exception.DirectoryModificationException;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 import javax.persistence.TransactionRequiredException;
@@ -236,7 +237,7 @@ public class DirectoryDatabaseRepositoryImpl implements DirectoryRepository {
         );
     }
 
-    private class OperationArgumentsVO {
+    class OperationArgumentsVO {
 
         private final Directory source;
         private final UserInfo owner;

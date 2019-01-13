@@ -16,6 +16,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ua.kiev.prog.photopond.drive.directories.Directory;
 import ua.kiev.prog.photopond.drive.directories.DirectoryBuilder;
+import ua.kiev.prog.photopond.drive.exception.PictureFileException;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoBuilder;
 import ua.kiev.prog.photopond.user.UserRole;
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 @TestPropertySource({"classpath:application.properties", "classpath:application-disk-database-storage.properties"})
 @ActiveProfiles({"test"})
-public class PictureFileDiskAndDatabaseRepositoryImplTest {
+class PictureFileDiskAndDatabaseRepositoryImplTest {
 
     private static final Logger LOG = LogManager.getLogger(PictureFileDiskAndDatabaseRepositoryImplTest.class);
 
@@ -61,7 +62,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     private final byte[] DATA = {1, 2, 3, 4, 5, 6, 7};
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         basedirPath = Paths.get(foldersBasedir + "/" + ThreadLocalRandom.current().nextInt());
 
         instance = new PictureFileDiskAndDatabaseRepositoryImpl(pictureFileJpaRepository);
@@ -103,13 +104,13 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void isBasedirExists() {
+    void isBasedirExists() {
         //Then
         assertThat(Files.exists(basedirPath)).isTrue();
     }
 
     @Test
-    public void saveNullPictureFile() {
+    void saveNullPictureFile() {
         //When
         assertThrows(IllegalArgumentException.class,
                 () -> instance.save(null)
@@ -117,7 +118,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveWhenPictureFileNotExists() throws IOException {
+    void saveWhenPictureFileNotExists() throws IOException {
         //Given
         when(pictureFileJpaRepository.save(any(PictureFile.class))).thenAnswer(
                 invocationOnMock -> invocationOnMock.getArguments()[0]
@@ -134,7 +135,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveFileWithNullData() {
+    void saveFileWithNullData() {
         //Given
         when(pictureFileJpaRepository.save(any(PictureFile.class))).thenAnswer(
                 invocationOnMock -> invocationOnMock.getArguments()[0]
@@ -149,7 +150,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveWhenPictureFileExistsOnDisk() throws IOException {
+    void saveWhenPictureFileExistsOnDisk() throws IOException {
         //Given
         when(pictureFileJpaRepository.save(any(PictureFile.class))).thenAnswer(
                 invocationOnMock -> invocationOnMock.getArguments()[0]
@@ -166,7 +167,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveWhenPictureFileExistsInDatabase() {
+    void saveWhenPictureFileExistsInDatabase() {
         //Given
         when(pictureFileJpaRepository.findFirstByDirectoryAndFilename(pictureFile.getDirectory(), pictureFile.getFilename()))
                 .thenReturn(java.util.Optional.ofNullable(pictureFile));
@@ -182,7 +183,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void saveSuccess() throws IOException {
+    void saveSuccess() throws IOException {
         //Given
         FileUtils.deleteQuietly(pictureFileOnDisk.toFile());
         PictureFile expected = PictureFileBuilder.getInstance().from(pictureFile).build();
@@ -198,7 +199,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteNullPictureFile() {
+    void deleteNullPictureFile() {
         //When
         assertThrows(IllegalArgumentException.class,
                 () -> instance.delete(null)
@@ -206,7 +207,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteSuccess() {
+    void deleteSuccess() {
         //When
         instance.delete(pictureFile);
 
@@ -216,7 +217,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteWithJpaRepositoryException() throws IOException {
+    void deleteWithJpaRepositoryException() throws IOException {
         //Given
         Files.write(pictureFileOnDisk, new byte[]{1, 2, 3});
         doThrow(QueryTimeoutException.class).when(pictureFileJpaRepository).delete(pictureFile);
@@ -231,7 +232,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void deleteWhenFileExistsOnlyInDatabase() {
+    void deleteWhenFileExistsOnlyInDatabase() {
         //Given
         FileUtils.deleteQuietly(pictureFileOnDisk.toFile());
 
@@ -244,7 +245,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveTargetEqualsSource() throws IOException {
+    void moveTargetEqualsSource() throws IOException {
         //Given
         PictureFile expected = PictureFileBuilder.getInstance().from(pictureFile).build();
 
@@ -260,7 +261,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveWhenTargetFileAlreadyExistsInDatabase() throws Exception {
+    void moveWhenTargetFileAlreadyExistsInDatabase() throws Exception {
         //Given
         String targetFilename = "targetFilename.jpg";
         final byte[] SOME_DATA = {7, 8, 7, 8, 7};
@@ -284,7 +285,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveWhenTargetFileAlreadyExistsOnDisk() throws Exception {
+    void moveWhenTargetFileAlreadyExistsOnDisk() throws Exception {
         //Given
         String targetFilename = "targetFilename.jpg";
         final byte[] SOME_DATA = {7, 8, 7, 8, 7};
@@ -310,7 +311,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveWhenWrongTargetFileName() {
+    void moveWhenWrongTargetFileName() {
         //Given
         String targetFilename = "/wrong/file.name";
 
@@ -327,7 +328,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveWhenSourceFileNotExistsOnDisk() {
+    void moveWhenSourceFileNotExistsOnDisk() {
         //Given
         FileUtils.deleteQuietly(directoryPathOnDisk.toFile());
 
@@ -342,7 +343,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveBetweenDifferentUsers() {
+    void moveBetweenDifferentUsers() {
         //Given
         UserInfo anotherUser = new UserInfoBuilder().id(5L).login("anotherUser").password("qwerty123!").build();
         Directory anotherDirectory = new DirectoryBuilder().id(9L).owner(anotherUser).path("/somewhere").build();
@@ -361,7 +362,29 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void moveToAnotherDirectorySuccess() throws IOException {
+    void moveWhenPictureFileThrowsException() throws IOException {
+        //Given
+        Directory targetDirectory = new DirectoryBuilder().id(3L).owner(user).path("/second").build();
+        Files.createDirectories(Paths.get(basedirPath + targetDirectory.getFullPath()));
+        String targetFilename = "targetFilename.jpg";
+        PictureFile expectedFile = PictureFileBuilder.getInstance()
+                .id(pictureFile.getId())
+                .directory(targetDirectory)
+                .filename(targetFilename)
+                .data(DATA)
+                .build();
+        pictureFile = spy(pictureFile);
+
+        when(pictureFileJpaRepository.findFirstByDirectoryAndFilename(expectedFile.getDirectory(), expectedFile.getFilename()))
+                .thenReturn(Optional.empty());
+        doThrow(IllegalArgumentException.class).when(pictureFile).setFilename(any());
+
+        //When
+        assertThrows(PictureFileException.class, () -> instance.move(pictureFile, targetDirectory, targetFilename));
+    }
+
+    @Test
+    void moveToAnotherDirectorySuccess() throws IOException {
         //Given
         Directory targetDirectory = new DirectoryBuilder().id(3L).owner(user).path("/second").build();
         Files.createDirectories(Paths.get(basedirPath + targetDirectory.getFullPath()));
@@ -385,7 +408,28 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByIdSuccess() {
+    void pictureSizeWhenFileNotExists() {
+        //Given
+        FileUtils.deleteQuietly(pictureFileOnDisk.toFile());
+
+        //When
+        long size = instance.pictureSize(pictureFile);
+
+        //Then
+        assertThat(size).isEqualTo(0);
+    }
+
+    @Test
+    void pictureSizeSuccess() {
+        //When
+        long size = instance.pictureSize(pictureFile);
+
+        //Then
+        assertThat(size).isEqualTo(DATA.length);
+    }
+
+    @Test
+    void findByIdSuccess() {
         //Given
         PictureFile expected = PictureFileBuilder.getInstance().from(pictureFile).build();
         when(pictureFileJpaRepository.findById(pictureFile.getId()))
@@ -403,7 +447,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByIdFailure() {
+    void findByIdFailure() {
         //Given
         Long id = 5L;
         when(pictureFileJpaRepository.findById(id)).thenReturn(Optional.empty());
@@ -419,7 +463,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByDirectorySuccess() throws IOException {
+    void findByDirectorySuccess() throws IOException {
         //Given
         final byte[] OTHER_DATA = {7, 8, 7, 8, 7};
         PictureFile otherFile = PictureFileBuilder.getInstance()
@@ -446,7 +490,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByDirectoryFailure() {
+    void findByDirectoryFailure() {
         //Given
         when(pictureFileJpaRepository.findByDirectory(directory)).thenReturn(emptyList());
 
@@ -460,7 +504,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByDirectoryAndFilenameSuccess() {
+    void findByDirectoryAndFilenameSuccess() {
         //Given
         List<PictureFile> expected = new LinkedList<>();
         PictureFile expectedFile = PictureFileBuilder.getInstance().from(pictureFile).build();
@@ -482,7 +526,7 @@ public class PictureFileDiskAndDatabaseRepositoryImplTest {
     }
 
     @Test
-    public void findByDirectoryAndFileNameFailure() {
+    void findByDirectoryAndFileNameFailure() {
         //Given
         when(pictureFileJpaRepository.findByDirectoryAndFilename(pictureFile.getDirectory(), pictureFile.getFilename()))
                 .thenReturn(emptyList());

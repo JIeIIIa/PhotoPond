@@ -16,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import ua.kiev.prog.photopond.core.BindingErrorDTO;
 import ua.kiev.prog.photopond.core.BindingErrorResolver;
-import ua.kiev.prog.photopond.drive.DriveException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -49,12 +48,6 @@ public class MainControllerAdvice {
 
         LOG.debug("Access denied for user '{}':   url = {}", login, url);
         return modelAndView;
-    }
-
-    @ExceptionHandler(DriveException.class)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void someDriveExceptionOccur(DriveException e) {
-        LOG.debug(e.getMessage());
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)

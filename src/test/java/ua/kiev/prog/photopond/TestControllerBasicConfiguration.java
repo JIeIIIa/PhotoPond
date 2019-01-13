@@ -14,7 +14,7 @@ public class TestControllerBasicConfiguration {
 
     protected void configure(Object... controllers) {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setPrefix("/WEB-INF/templates/");
+        viewResolver.setPrefix("classpath:static/templates/");
         viewResolver.setSuffix(".html");
 
         mockMvc = MockMvcBuilders.standaloneSetup(controllers)

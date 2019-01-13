@@ -24,6 +24,7 @@ public class FBConstants {
     private static final FacebookClient CLIENT = new DefaultFacebookClient(FB_CLIENT_VERSION);
 
     private static final ScopeBuilder SCOPE_BUILDER = new ScopeBuilder();
+
     static {
         SCOPE_BUILDER.addPermission(FacebookPermissions.EMAIL);
         SCOPE_BUILDER.addPermission(FacebookPermissions.PUBLIC_PROFILE);
@@ -50,17 +51,17 @@ public class FBConstants {
     }
 
     @PostConstruct
-    private static void updateFullCallbackUrl() {
+    static void postConstructUpdateUrls() {
         FBConstants.fullCallbackUrl = callbackHost + FB_CALLBACK_URL;
         FBConstants.associateAccountUrl = getOAuthUrl(FBState.ASSOCIATE);
         FBConstants.loginUrl = getOAuthUrl(FBState.LOGIN);
     }
 
-    static String getApplicationId(){
+    static String getApplicationId() {
         return FBConstants.APPLICATION_ID;
     }
 
-    static String getApplicationSecret(){
+    static String getApplicationSecret() {
         return FBConstants.APPLICATION_SECRET;
     }
 

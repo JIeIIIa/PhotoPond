@@ -31,8 +31,8 @@ public class FBController {
     }
 
     @RequestMapping(value = ACCOUNT_VIEW_URL)
-    public ModelAndView associateList(ModelAndView modelAndView,
-                                      Authentication authentication) {
+    public ModelAndView associatedListView(ModelAndView modelAndView,
+                                           Authentication authentication) {
         LOG.traceEntry("Request to {}", ACCOUNT_VIEW_URL);
         modelAndView.setViewName("facebook/associate");
         FBUserDTO fbUserDTO = fbService.findAccountByLogin(authentication.getName());

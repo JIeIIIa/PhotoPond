@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 import ua.kiev.prog.photopond.annotation.profile.DiskDatabaseStorage;
+import ua.kiev.prog.photopond.drive.exception.DirectoryModificationException;
 import ua.kiev.prog.photopond.user.UserInfo;
 
 import javax.persistence.TransactionRequiredException;
@@ -302,7 +303,7 @@ public class DirectoryDiskAndDatabaseRepositoryImpl implements DirectoryReposito
         );
     }
 
-    private class OperationArgumentsVO {
+    class OperationArgumentsVO {
 
         private final Directory source;
         private final UserInfo owner;

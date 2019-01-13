@@ -8,9 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import ua.kiev.prog.photopond.drive.exception.DriveException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -39,28 +37,6 @@ public class DriveController {
         modelAndView.setViewName("drive/directory");
 
         LOG.debug("echo:   " + tail);
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/**", method = RequestMethod.POST)
-    public ModelAndView createDirectory(
-            @PathVariable("login") String userLogin,
-            @NotNull @RequestParam("newDirectoryName") String newDirectoryName,
-            HttpServletRequest request) throws DriveException {
-
-        String sourcePath = getUriTail(request, userLogin);
-        DriveItemDTO createdDirectory = driveService.addDirectory(userLogin, sourcePath, newDirectoryName);
-
-        UriComponents uriComponents = UriComponentsBuilder.newInstance()
-                .path("/user/{login}/drive{path}")
-                .build()
-                .expand(userLogin, sourcePath)
-                .encode();
-        RedirectView redirectView = new RedirectView(uriComponents.toUriString(), true, true, false);
-        ModelAndView modelAndView = new ModelAndView(redirectView);
-        modelAndView.setStatus(HttpStatus.PERMANENT_REDIRECT);
-
-        LOG.debug("created:   " + createdDirectory);
         return modelAndView;
     }
 

@@ -10,18 +10,19 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.kiev.prog.photopond.facebook.Exception.AssociateFBAccountException;
-import ua.kiev.prog.photopond.facebook.Exception.DisassociateFBAccountException;
-import ua.kiev.prog.photopond.facebook.Exception.FBAccountAlreadyAssociateException;
-import ua.kiev.prog.photopond.facebook.Exception.FBAuthenticationException;
+import ua.kiev.prog.photopond.facebook.exception.AssociateFBAccountException;
+import ua.kiev.prog.photopond.facebook.exception.DisassociateFBAccountException;
+import ua.kiev.prog.photopond.facebook.exception.FBAccountAlreadyAssociateException;
+import ua.kiev.prog.photopond.facebook.exception.FBAuthenticationException;
 import ua.kiev.prog.photopond.user.UserInfo;
 import ua.kiev.prog.photopond.user.UserInfoDTO;
 import ua.kiev.prog.photopond.user.UserInfoJpaRepository;
 import ua.kiev.prog.photopond.user.UserInfoMapper;
 
-import java.util.Objects;
+import java.time.ZoneId;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static ua.kiev.prog.photopond.facebook.FBConstants.*;
 import static ua.kiev.prog.photopond.facebook.FBUserMapper.toDto;
 
@@ -60,7 +61,7 @@ public class FBServiceImpl implements FBService {
         return toDto(fbUser);
     }
 
-    private FBUser createFBUser(UserInfo userInfo, String code) {
+    FBUser createFBUser(UserInfo userInfo, String code) {
         LOG.trace("Start creating account for userInfo.id = {}", userInfo.getId());
         FBUser fbUser;
         try {
@@ -78,7 +79,7 @@ public class FBServiceImpl implements FBService {
         return LOG.traceExit(fbUser);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public UserInfoDTO findUserInfoByCode(String code) {
         LOG.trace("Try to find userInfo");
@@ -88,9 +89,17 @@ public class FBServiceImpl implements FBService {
         //todo: accessToken should be updated in database
         return user
                 .flatMap(u -> fbUserJpaRepository.findByFbId(u.getId()))
+                .map(u -> updateAccessToken(u, accessToken))
                 .map(FBUser::getUserInfo)
                 .map(UserInfoMapper::toDto)
                 .orElseThrow(() -> new FBAuthenticationException("Not found user information"));
+    }
+
+    private FBUser updateAccessToken(FBUser fbUser, FacebookClient.AccessToken accessToken) {
+        fbUser.setAccessToken(accessToken.getAccessToken());
+        fbUser.setTokenExpires(accessToken.getExpires().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+
+        return fbUserJpaRepository.saveAndFlush(fbUser);
     }
 
     @Transactional(readOnly = true)
@@ -117,24 +126,37 @@ public class FBServiceImpl implements FBService {
         LOG.traceEntry("Account for user with login = {} was disassociated", login);
     }
 
-    private void removeFacebookPermissions(FBUser fbUser) {
+    void removeFacebookPermissions(FBUser fbUser) {
         FacebookClient facebookClient = new DefaultFacebookClient(fbUser.getAccessToken(), FB_CLIENT_VERSION);
         facebookClient.deleteObject(fbUser.getFbId() + "/permissions");
         LOG.debug("Permissions for Facebook account [id = {}] was deleted", fbUser.getFbId());
     }
 
-    private Optional<User> retrieveUser(FacebookClient.AccessToken accessToken) {
-        if (Objects.isNull(accessToken)) {
+    Optional<User> retrieveUser(FacebookClient.AccessToken accessToken) {
+        LOG.traceEntry("retrieveUser by [accessToken = {}]", accessToken);
+        if (isNull(accessToken)) {
             return Optional.empty();
         }
         FacebookClient facebookClient = new DefaultFacebookClient(accessToken.getAccessToken(), FB_CLIENT_VERSION);
+        return retrieveUser(facebookClient);
+    }
+
+    Optional<User> retrieveUser(FacebookClient facebookClient) {
+        LOG.traceEntry("retrieveUser by [facebookClient = {}]", facebookClient);
+        if (isNull(facebookClient)) {
+            return Optional.empty();
+        }
+
         User me = facebookClient.fetchObject("/me", User.class, Parameter.with("fields", "email,name"));
 
         return Optional.of(me);
     }
 
-    private FacebookClient.AccessToken changeCodeToExtendedAccessToken(String code) {
-        FacebookClient facebookClient = new DefaultFacebookClient(FB_CLIENT_VERSION);
+    FacebookClient.AccessToken changeCodeToExtendedAccessToken(String code) {
+        return changeCodeToExtendedAccessToken(code, new DefaultFacebookClient(FB_CLIENT_VERSION));
+    }
+
+    FacebookClient.AccessToken changeCodeToExtendedAccessToken(String code, FacebookClient facebookClient) {
         FacebookClient.AccessToken userAccessToken = facebookClient
                 .obtainUserAccessToken(getApplicationId(), getApplicationSecret(), FBConstants.getFullCallbackUrl(), code);
 

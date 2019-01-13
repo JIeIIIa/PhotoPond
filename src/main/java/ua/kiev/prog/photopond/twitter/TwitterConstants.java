@@ -22,7 +22,7 @@ public class TwitterConstants {
     }
 
     @PostConstruct
-    private static void updateCallbackUrl() {
+    static void postConstructUpdateCallbackUrl() {
         TwitterConstants.associateCallbackUrl = callbackHost + TwitterRequestMappingConstants.ASSOCIATE_CALLBACK_SHORT_URL;
         TwitterConstants.loginCallbackUrl = callbackHost + TwitterRequestMappingConstants.LOGIN_CALLBACK_SHORT_URL;
     }

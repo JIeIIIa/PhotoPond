@@ -1,6 +1,5 @@
 package ua.kiev.prog.photopond.twitter;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import ua.kiev.prog.photopond.transfer.Exist;
 import ua.kiev.prog.photopond.transfer.New;
@@ -14,12 +13,12 @@ import java.util.List;
 public class TweetDTO implements Serializable {
     @NotEmpty(groups = {New.class})
     @Size(max = 4, groups = {New.class}, message = "Size.tweet.images")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonView(value = {New.class})
     private List<String> paths;
 
     @NotNull(groups = {New.class})
     @Size(min = 1, max = 240, groups = {New.class}, message = "Size.tweet.message")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonView(value = {New.class})
     private String message;
 
     @JsonView(value = {Exist.class})

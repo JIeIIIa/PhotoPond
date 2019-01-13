@@ -2,6 +2,8 @@ package ua.kiev.prog.photopond.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.stubbing.Answer;
@@ -12,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -21,12 +24,12 @@ import ua.kiev.prog.photopond.configuration.WebMvcTestContextConfiguration;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
 import static ua.kiev.prog.photopond.user.UserRole.ADMIN;
@@ -38,7 +41,7 @@ import static ua.kiev.prog.photopond.user.UserRole.ADMIN;
         UserInfoServiceMockConfiguration.class
 })
 @ActiveProfiles({DEV, DISK_DATABASE_STORAGE, "unitTest", "test"})
-public class UserAdministrationControllerTest {
+class UserAdministrationControllerTest {
     private static final String URL_PREFIX = "/administration/user";
 
     @Autowired
@@ -47,8 +50,13 @@ public class UserAdministrationControllerTest {
     @Autowired
     private UserInfoService userInfoService;
 
+    @BeforeEach
+    void setUp() {
+        reset(userInfoService);
+    }
+
     @Test
-    public void getAllUsers() throws Exception {
+    void getAllUsers() throws Exception {
         MockHttpServletRequestBuilder get = get("/administration/users");
         when(userInfoService.findAllUsers()).thenReturn(Collections.emptyList());
 
@@ -57,7 +65,7 @@ public class UserAdministrationControllerTest {
     }
 
     @Test
-    public void updateExistsUserSameIdInPathAndModelVariables() throws Exception {
+    void updateExistsUserSameIdInPathAndModelVariables() throws Exception {
         UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
                 .id(10L)
                 .login("someUser")
@@ -69,7 +77,7 @@ public class UserAdministrationControllerTest {
 
 
     @Test
-    public void updateExistsUserDifferentIdInPathAndModelVariables() throws Exception {
+    void updateExistsUserDifferentIdInPathAndModelVariables() throws Exception {
         UserInfoDTO userInfoDTO = UserInfoDTOBuilder.getInstance()
                 .id(22L)
                 .login("someUser")
@@ -101,7 +109,7 @@ public class UserAdministrationControllerTest {
     }
 
     @Test
-    public void updateNotExistsUser() throws Exception {
+    void updateNotExistsUser() throws Exception {
         when(userInfoService.updateBaseInformation(any(UserInfoDTO.class)))
                 .thenReturn(Optional.empty());
         UserInfoDTO user = UserInfoDTOBuilder.getInstance()
@@ -120,7 +128,29 @@ public class UserAdministrationControllerTest {
     }
 
     @Test
-    public void deleteExistsUser() throws Exception {
+    void updateWhenDataValidationWithError() throws Exception {
+        //Given
+
+        UserInfoDTO user = UserInfoDTOBuilder.getInstance()
+                .id(77L)
+                .login("u")
+                .password("p")
+                .role(ADMIN)
+                .build();
+        user.setRole(null);
+        MockHttpServletRequestBuilder post = MockMvcRequestBuilders.post(URL_PREFIX + "/77")
+                .content(buildJsonContent(user))
+                .contentType(MediaType.APPLICATION_JSON);
+
+        //When
+        ResultActions perform = mockMvc.perform(post);
+
+        //Then
+        perform.andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteExistsUser() throws Exception {
         UserInfoDTO userDTO = UserInfoDTOBuilder.getInstance()
                 .id(77L)
                 .login("someUser")
@@ -140,7 +170,7 @@ public class UserAdministrationControllerTest {
     }
 
     @Test
-    public void deleteNotExistsUser() throws Exception {
+    void deleteNotExistsUser() throws Exception {
         when(userInfoService.updateBaseInformation(any(UserInfoDTO.class)))
                 .thenReturn(null);
 
@@ -150,6 +180,46 @@ public class UserAdministrationControllerTest {
                 .andExpect(status().isNoContent())
                 .andExpect(content().string(""))
                 .andDo(print());
+    }
+
+    @Nested
+    class GetUser {
+        @Test
+        void existingUser() throws Exception {
+            //Given
+            when(userInfoService.findById(1L)).thenReturn(Optional.of(
+                    UserInfoDTOBuilder.getInstance().id(1L).login("userLogin").password("password").role(ADMIN).build()
+            ));
+            MockHttpServletRequestBuilder get = get("/administration/user/1");
+
+            //When
+            ResultActions perform = mockMvc.perform(get);
+
+            //Then
+            perform.andExpect(status().isOk())
+                    .andExpect(jsonPath("id", is(1)))
+                    .andExpect(jsonPath("login", is("userLogin")))
+                    .andExpect(jsonPath("role", is("ADMIN")))
+                    .andExpect(jsonPath("password").doesNotExist())
+                    .andExpect(jsonPath("avatar").doesNotExist());
+            verify(userInfoService, times(1)).findById(1L);
+            verifyNoMoreInteractions(userInfoService);
+        }
+
+        @Test
+        void notExistingUser() throws Exception {
+            //Given
+            when(userInfoService.findById(1L)).thenReturn(Optional.empty());
+            MockHttpServletRequestBuilder get = get("/administration/user/1");
+
+            //When
+            ResultActions perform = mockMvc.perform(get);
+
+            //Then
+            perform.andExpect(status().isNoContent());
+            verify(userInfoService, times(1)).findById(1L);
+            verifyNoMoreInteractions(userInfoService);
+        }
     }
 
     private String buildJsonContent(UserInfoDTO userDTO) throws JsonProcessingException {
