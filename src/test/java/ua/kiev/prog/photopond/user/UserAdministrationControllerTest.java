@@ -28,7 +28,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
@@ -104,8 +103,7 @@ class UserAdministrationControllerTest {
         mockMvc.perform(post)
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.content().json(expectedJsonContent, true))
-                .andDo(print());
+                .andExpect(MockMvcResultMatchers.content().json(expectedJsonContent, true));
     }
 
     @Test
@@ -165,8 +163,7 @@ class UserAdministrationControllerTest {
         mockMvc.perform(delete)
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(content().json(jsonContent))
-                .andDo(print());
+                .andExpect(content().json(jsonContent));
     }
 
     @Test
@@ -178,8 +175,7 @@ class UserAdministrationControllerTest {
 
         mockMvc.perform(delete)
                 .andExpect(status().isNoContent())
-                .andExpect(content().string(""))
-                .andDo(print());
+                .andExpect(content().string(""));
     }
 
     @Nested

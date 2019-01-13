@@ -20,7 +20,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
@@ -49,8 +48,7 @@ public class LoginControllerTest {
                 .andExpect(MockMvcResultMatchers.view().name("login"))
                 .andExpect(content().contentType("text/html;charset=UTF-8"))
                 .andExpect(content().string(Matchers.containsString("j_login")))
-                .andExpect(content().string(Matchers.containsString("j_password")))
-                .andDo(print());
+                .andExpect(content().string(Matchers.containsString("j_password")));
     }
 
     @Test
@@ -58,8 +56,7 @@ public class LoginControllerTest {
         mockMvc
                 .perform(get(SERVER_ADDRESS + "/user/user"))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl(SERVER_ADDRESS + "/login"))
-                .andDo(print());
+                .andExpect(redirectedUrl(SERVER_ADDRESS + "/login"));
     }
 
     @Test
@@ -70,8 +67,7 @@ public class LoginControllerTest {
                         .password("j_password", "invalid"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login"))
-                .andExpect(unauthenticated())
-                .andDo(print());
+                .andExpect(unauthenticated());
     }
 
 
@@ -104,8 +100,7 @@ public class LoginControllerTest {
                         .password("j_password", "qwerty123!"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/login"))
-                .andExpect(unauthenticated())
-                .andDo(print());
+                .andExpect(unauthenticated());
     }
 
 }

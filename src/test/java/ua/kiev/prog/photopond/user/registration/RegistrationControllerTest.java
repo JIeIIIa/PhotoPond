@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DEV;
 import static ua.kiev.prog.photopond.annotation.profile.ProfileConstants.DISK_DATABASE_STORAGE;
@@ -89,7 +88,6 @@ public class RegistrationControllerTest {
         mockMvc.perform(post)
                 .andExpect(status().isOk())
                 .andExpect(view().name(REGISTRATION_MODEL_VIEW_NAME))
-                .andDo(print())
                 .andExpect(model().hasErrors())
                 .andExpect(model().attributeExists(REGISTRATION_USER_ATTRIBUTE_NAME))
                 .andExpect(model().attributeHasErrors(REGISTRATION_USER_ATTRIBUTE_NAME));
