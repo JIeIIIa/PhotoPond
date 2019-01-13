@@ -4,7 +4,7 @@
     <groupId>ua.kiev.prog</groupId>
     <artifactId>photo-pond</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.RELEASE</version>
 
     <name>PhotoPond PetProject</name>
 
