@@ -32,7 +32,7 @@ after_script:
 
 after_success:
   - echo "Build was successful. $TRAVIS_TEST_RESULT"
-  - mvn jacoco:report coveralls:report
+  - mvn coveralls:report
 
 after_failure:
   - echo "Build was failed"

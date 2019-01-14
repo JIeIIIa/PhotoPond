@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" strict="true">
+    <Properties>
+        <!--<Property name="log-path">${sys:catalina.home}/AppLogs</Property>-->
+        <Property name="log-path">${sys:log-path:-/Temp/PhotoPond_Tests_Log}</Property>
+        <Property name="appLog">app-log</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>-->
+            <PatternLayout>
+                <pattern>
+                    %d{HH:mm:ss.SSS} %highlight{[%-5level]} [%-16.16t] %60.60c{2.4} - %msg%n
+                </pattern>
+                <disableAnsi>false</disableAnsi>
+            </PatternLayout>
+        </Console>
+        <Appender type="RollingFile" name="App-File-Appender" fileName="${log-path}/${appLog}.log"
+                  filePattern="${log-path}/${appLog}-%d{yyyy-MM-dd}-%i.log">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%-16.16t] %80.80c - %msg%n
+                </pattern>
+            </PatternLayout>
+        </Appender>
+        <Appender type="File" name="SpringBoot-File-Appender" fileName="${log-path}/springboot_log.log">
+            <PatternLayout>
+                <pattern>
+                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%-16.16t] %80.80c - %msg%n
+                </pattern>
+            </PatternLayout>
+        </Appender>
+
+        <Async name="ASYNC">
+            <AppenderRef ref="App-File-Appender"/>
+            <AppenderRef ref="Console"/>
+        </Async>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="ua.kiev.prog.photopond" level="INFO" additivity="false">
+            <AppenderRef ref="ASYNC"/>
+        </Logger>
+
+        <Logger name="org.springframework.web" level="INFO" additivity="false">
+            <AppenderRef ref="SpringBoot-File-Appender"/>
+        </Logger>
+
+        <!-- Root Logger -->
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+
+     
+</Configuration>
