@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO" strict="true">
     <Properties>
-        <!--<Property name="log-path">${sys:catalina.home}/AppLogs</Property>-->
         <Property name="log-path">${sys:log-path:-/Temp/PhotoPond_Log}</Property>
         <Property name="appLog">app-log</Property>
     </Properties>
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <!--<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>-->
             <PatternLayout>
                 <pattern>
                     %d{HH:mm:ss.SSS} %highlight{[%-5level]} [%-16.16t] %60.60c{2.4} - %msg%n
@@ -43,7 +41,7 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="ua.kiev.prog.photopond" level="all" additivity="false">
+        <Logger name="ua.kiev.prog.photopond" level="INFO" additivity="false">
             <AppenderRef ref="ASYNC"/>
         </Logger>
 
