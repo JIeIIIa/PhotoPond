@@ -4,7 +4,7 @@
     <groupId>ua.kiev.prog</groupId>
     <artifactId>photo-pond</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.RELEASE</version>
+    <version>1.2.RELEASE</version>
 
     <name>PhotoPond PetProject</name>
 
@@ -18,7 +18,7 @@
     <properties>
         <application.Name>photo-pond</application.Name>
         <application.finalName>${application.Name}-${project.version}</application.finalName>
-        <application.fullName>${application.Name}-${project.version}.${project.packaging}</application.fullName>
+        <application.fullName>${application.finalName}.${project.packaging}</application.fullName>
 
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
