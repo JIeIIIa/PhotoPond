@@ -545,6 +545,9 @@ var app = new Vue({
         },
         sortingDirection: function () {
             this.sortOptions.changeOrder(this.sortOptions.fieldName);
+        },
+        redirectToItem: function (url) {
+            window.location.href = url;
         }
     },
     created: function () {

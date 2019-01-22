@@ -5,16 +5,16 @@
 
 PhotoPond is a java study project. It available by https://photopond.herokuapp.com
 
-The objective of the PhotoPond project was to develop a user-friendly web-application to store images. 
-After sign up, user can create directories and upload files. 
-Each directory and file can be moving, renaming or deleting. 
-A user can associate a social (Facebook or Twitter) account to his PhotoPond-profile. 
-If the social account is associated, user can authorize with it. 
-If the Twitter account is associated, user can share stored in application images on Twitter. 
+The purpose of the PhotoPond project was to develop a user-friendly web-application for storing images. 
+After signing up a user can create directories and upload files. 
+Each directory and file can be moved, renamed or deleted. 
+A user can link his/her social (Facebook or Twitter) account to PhotoPond profile. 
+If the social account is linked, user can authorize with it. 
+When Twitter account has been linked a user can create a tweet and easily share images. 
 Administrator can view basic information about all users, change user's login or role, delete users.
 
 ## Getting Started
-These instructions will get you a copy of the project up and running on your local machine for development
+These instructions will give you a copy of the project and running on your local machine for development
 
 ### Prerequisites
 For building and running the application you need:
@@ -26,7 +26,7 @@ For building and running the application you need:
 ### Installing
 
 #### Clone repository
-Clone this repository onto your local machine, you can do so like this:
+Clone this repository onto your local machine. You can do it like this:
 ```shell
 $ git clone https://github.com/JIeIIIa/PhotoPond
 ```
@@ -60,7 +60,7 @@ e.g. `http://127.0.0.1:8099`):
 #### Active profiles 
 You should choose exact one of `prod` or `dev` profiles and 
 one of `disk-database-storage` or `database-storage`. Also you are able to use another profiles if necessary.
-See below fow a full list of available profiles:  
+See below full list of available profiles:  
 
 * **_prod_** - if application run in production environment;
 * **_dev_** - if application run in development environment (e.g. on your local pc);
@@ -90,7 +90,7 @@ This project can be built with [Apache Maven](http://maven.apache.org/).
 
 Use the following steps to run the application locally:
 
-1. Execute full Maven build to create the `target/photo-pond-1.0-SNAPSHOT.jar` file:
+1. Execute next Maven goals to create the `target/photo-pond-1.0-SNAPSHOT.jar` file:
    ```bash
    $ mvn clean install -Dmaven.test.skip=true
    ```

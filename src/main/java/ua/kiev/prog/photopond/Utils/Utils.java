@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 
 import static ua.kiev.prog.photopond.drive.directories.Directory.SEPARATOR;
 
@@ -70,7 +71,9 @@ public class Utils {
 
     public static HttpHeaders textHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.TEXT_HTML);
+        Charset utf8 = Charset.forName("UTF-8");
+        MediaType mediaType = new MediaType("text", "html", utf8);
+        headers.setContentType(mediaType);
 
         return headers;
     }

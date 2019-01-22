@@ -2,6 +2,7 @@ package ua.kiev.prog.photopond.user;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Type;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -29,6 +30,7 @@ public class UserInfo implements Serializable {
     private UserRole role;
 
     @Lob
+    @Type(type = "org.hibernate.type.ImageType")
     @Nullable
     @Basic(fetch = FetchType.LAZY)
     @Column(length = 1_048_576)         /*max length == 1Mb*/

@@ -58,7 +58,7 @@
                                                     <img class="form-control img-contain border-primary" v-if="hasOldData"
                                                          th:src="@{/public/user/{login}/avatar(login=${#authentication.name})}" src="#">
                                                     <img class="form-control img-contain" v-else
-                                                         v-bind:src="imageData" src="#">
+                                                         v-bind:src="imageData">
                                                 </div>
 
                                                 <div class="col-12 mt-1">

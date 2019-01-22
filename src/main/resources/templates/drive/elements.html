@@ -39,22 +39,25 @@
                              v-bind:class="{selected: item.selected}">
                             <i class="fa fa-folder drive-item-icon dir-item-icon p-1"></i>
                             <div class="card-body drive-item-body h-100 w-100 text-left text-truncate">
-                                <a v-bind:href="item.data.uri"
-                                   class="ml-4"
+                                <div class="d-block ml-4"
                                    v-tooltip data-toggle="tooltip" data-placement="bottom" v-bind:title="item.data.name">
 
                                     {{ item.data.name }}
 
-                                </a>
+                                </div>
 
                                 <div class="item-date"><span th:text="#{audit.created}">Created</span>:
                                     <p class="mb-0">{{ item.data.creationDateString }}</p>
                                 </div>
 
+                                <span v-on:click="redirectToItem(item.data.uri)"
+                                      class="full-fill cursor-pointer">
+                                </span>
+
                                 <div class="rounded-checkbox m-1">
-                                    <input title="" type="checkbox" v-model="item.selected" class="position-absolute" style="top:0; left: 0"
+                                    <input title="" type="checkbox" v-model="item.selected" class="position-absolute" style="top:0; left: 0;"
                                            :id="'input' + item.data.name">
-                                    <label :for="'input' + item.data.name"></label>
+                                    <label :for="'input' + item.data.name" ></label>
                                 </div>
                             </div>
                         </div>

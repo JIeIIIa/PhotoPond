@@ -9054,6 +9054,9 @@ h1, h2, h3, h4, h5, h6 {
   color: #6CC5EC;
 }
 
+.cursor-grab {
+  cursor: grab;
+}
 .cursor-pointer {
   cursor: pointer;
 }
@@ -9557,7 +9560,7 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: inset 7px 7px 15px 0px rgba(0, 0, 0, 0.8);
   -webkit-box-shadow: inset 7px 7px 15px 0px rgba(0, 0, 0, 0.8);
   -moz-box-shadow: inset 7px 7px 15px 0px rgba(0, 0, 0, 0.8);
-  cursor: pointer;
+  cursor: grab;
   position: absolute;
   left: 0;
   top: 0;
