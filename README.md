@@ -6,7 +6,7 @@
 PhotoPond is a java study project. It available by https://photopond.herokuapp.com
 
 The purpose of the PhotoPond project was to develop a user-friendly web-application for storing images. 
-After signing up a user can create directories and upload files. 
+After signing up the user can create directories and upload files. 
 Each directory and file can be moved, renamed or deleted. 
 A user can link his/her social (Facebook or Twitter) account to PhotoPond profile. 
 If the social account is linked, user can authorize with it. 

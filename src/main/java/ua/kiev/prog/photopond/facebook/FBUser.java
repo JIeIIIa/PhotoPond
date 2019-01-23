@@ -23,7 +23,6 @@ public class FBUser implements Serializable {
     @NotNull
     private String fbId;
 
-    @NotNull
     private String email;
 
     private String name;
