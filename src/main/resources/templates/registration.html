@@ -47,6 +47,7 @@
                                 Password
                             </label>
                             <input class="form-control bg-light" type="text"
+                                   th:type="${#arrays.contains(@environment.getActiveProfiles(),'dev') ? 'text' : 'password'} "
                                    placeholder="Password" th:placeholder="#{user.password}"
                                    th:field="*{password}"/>
                             <div class="mt-2" th:if="${#fields.hasErrors('password')}"
@@ -59,6 +60,7 @@
                                 Confirmation
                             </label>
                             <input class="form-control bg-light" type="text"
+                                   th:type="${#arrays.contains(@environment.getActiveProfiles(),'dev') ? 'text' : 'password'} "
                                    placeholder="Confirmation" th:placeholder="#{user.passwordConfirmation}"
                                    th:field="*{passwordConfirmation}"/>
                             <div class="mt-2" th:if="${#fields.hasGlobalErrors()}"

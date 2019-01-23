@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ua.kiev.prog.photopond.transfer.*;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.IOException;
 
@@ -17,6 +18,8 @@ public class UserInfoDTO implements ConfirmedPassword {
 
     @NotNull(message = "{NotNull.login}", groups = {New.class, Exist.class})
     @Size(min = 4, max = 30, message = "{Size.login}",
+            groups = {New.class, Exist.class})
+    @Pattern(regexp = "[\\d\\p{L}.]+", message = "Pattern.login",
             groups = {New.class, Exist.class})
     @UniqueLogin(groups = New.class)
     @JsonView(value = {AdminEditing.class})

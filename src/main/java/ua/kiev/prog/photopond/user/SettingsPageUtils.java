@@ -4,6 +4,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static java.util.Objects.isNull;
 
@@ -15,7 +17,12 @@ public class SettingsPageUtils {
         if (isNull(authentication) || !authentication.isAuthenticated()) {
             return "";
         }
-        return "/user/" + authentication.getName() + "/settings";
+        UriComponents uriComponents = UriComponentsBuilder.newInstance()
+                .path("/user/{login}/settings")
+                .build()
+                .expand(authentication.getName())
+                .encode();
+        return uriComponents.toUriString();
     }
 
     public static ModelAndView socials(Authentication authentication, RedirectAttributes redirectAttributes) {

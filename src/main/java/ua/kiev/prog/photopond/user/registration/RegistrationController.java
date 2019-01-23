@@ -3,6 +3,7 @@ package ua.kiev.prog.photopond.user.registration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +38,9 @@ public class RegistrationController {
 
     private final UserInfoService userInfoService;
 
+    @Value("${debug:false}")
+    private boolean debug;
+
     @Autowired
     public RegistrationController(UserInfoService userInfoService) {
         this.userInfoService = userInfoService;
@@ -48,11 +52,14 @@ public class RegistrationController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("registration");
 
-        UserInfoDTO user = UserInfoDTOBuilder.getInstance()
-                .login("newUser")
-                .password("qwerty")
-                .passwordConfirmation("qwerty")
-                .build();
+        UserInfoDTOBuilder userBuilder = UserInfoDTOBuilder.getInstance();
+        if (debug) {
+            userBuilder.login("newUser")
+                    .password("qwerty")
+                    .passwordConfirmation("qwerty");
+        }
+
+        UserInfoDTO user = userBuilder.build();
         modelAndView.addObject(REGISTRATION_USER_ATTRIBUTE_NAME, user);
         return modelAndView;
     }

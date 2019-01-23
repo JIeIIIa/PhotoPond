@@ -1,4 +1,4 @@
-package ua.kiev.prog.photopond.user.Configuration;
+package ua.kiev.prog.photopond.user.configuration;
 
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
