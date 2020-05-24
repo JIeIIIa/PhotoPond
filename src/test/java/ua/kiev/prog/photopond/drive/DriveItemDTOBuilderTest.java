@@ -1,5 +1,6 @@
 package ua.kiev.prog.photopond.drive;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -64,7 +65,7 @@ class DriveItemDTOBuilderTest implements TestDataStreams {
 
     @Test
     void creationDate() {
-        //When
+        //Given
         final Date date = new Date();
 
         //When
@@ -95,8 +96,10 @@ class DriveItemDTOBuilderTest implements TestDataStreams {
 
     @ParameterizedTest(name = "[{index}] ==> locale = {1}, date = {2}")
     @MethodSource(value = {"creationDateData"})
+    @Disabled(value = "enable after localization will be changed")
+    //see: https://bugs.openjdk.java.net/browse/JDK-8218903
     void creationDateString(Date date, Locale locale, String dateAsString) {
-        //When
+        //Given
         LocaleContextHolder.setLocale(locale);
 
         //When
