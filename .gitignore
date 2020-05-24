@@ -8,5 +8,8 @@
 
 /.secrets
 
+*.css.map
+
+/src/main/resources/static/min/**
 ### Heroku ###
 /.env
