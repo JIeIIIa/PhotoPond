@@ -1,1 +1,0 @@
-var passwordInput=Vue.component("password-input-control",{props:["label","value","errorMsg","name"],methods:{close:function(a){this.$emit("alert-item-close",a)}}});

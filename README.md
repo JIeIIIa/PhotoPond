@@ -18,7 +18,7 @@ These instructions will give you a copy of the project and running on your local
 
 ### Prerequisites
 For building and running the application you need:
-* [JDK 8](https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html)
+* [JDK 11](https://docs.oracle.com/en/java/javase/11/install/overview-jdk-installation.html)
 * MySQL 5.7 or PostgreSQL 10.6
 * [Git Guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * Maven 3.5.3 or later ([Installing Apache Maven](https://maven.apache.org/install.html))
