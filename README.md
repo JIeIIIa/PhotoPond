@@ -41,13 +41,13 @@ CREATE DATABASE PhotoPond;
 * Create an application following [App development](https://developers.facebook.com/docs/apps/)
 * Open created Facebook app 
 * Set up **Facebook login** (from **_Add a Product_** section)
-* Open Settings->Basic and add **App Domains** (e.g. `localhost`)  
+* Open Settings-\>Basic and add **App Domains** (e.g. `localhost`)  
 * Make a note of your **App ID** and **App Secret**
 
 #### Create Twitter application
 * Create an application following [How to create a Twitter application](https://docs.inboundnow.com/guide/create-twitter-application/)
 * On the _Step 7_ choose `Read and Write` **Access permission**
-* Open **App details** and add _Callback urls_ (where **<your_server_address>** is the address to listen by Photopond application, 
+* Open **App details** and add _Callback urls_ (where **\<your_server_address\>** is the address to listen by Photopond application, 
 e.g. `http://127.0.0.1:8099`):
   ```
   <your_server_address>/public/twitter-auth/callback/login
@@ -59,7 +59,7 @@ e.g. `http://127.0.0.1:8099`):
 
 #### Active profiles 
 You should choose exact one of `prod` or `dev` profiles and 
-one of `disk-database-storage` or `database-storage`. Also you are able to use another profiles if necessary.
+one of `disk-database-storage` or `database-storage`. Also, you are able to use another profiles if necessary.
 See below full list of available profiles:  
 
 * **_prod_** - if application run in production environment;
@@ -83,7 +83,7 @@ Use environment variables below:
 * **_TWITTER_CONSUMER_SECRET_** - _Consumer Secret_ of your Twitter App
 * **_KEY_STORE_PASSWORD_** - the password for the keystore (*.p12)
 
-Also you can change corresponding variables in *.properties files
+Also, you can change corresponding variables in *.properties files
 
 #### Running the application using the command-line
 This project can be built with [Apache Maven](http://maven.apache.org/).
@@ -99,9 +99,9 @@ Use the following steps to run the application locally:
    java -Dspring.profiles.active=<ACTIVE_PROFILES_LIST> <OTHER_VARIABLES> -jar target/photo-pond-1.0-SNAPSHOT.jar
    ```
    where:
-   * **_<ACTIVE_PROFILES_LIST>_** - list of spring boot active profiles 
+   * **_\<ACTIVE_PROFILES_LIST\>_** - list of spring boot active profiles 
    (e.g `dev,postgresql,database-storage`) 
-   * **_<OTHER_VARIABLES>_** - list of environment variables that are required to run 
+   * **_\<OTHER_VARIABLES\>_** - list of environment variables that are required to run 
    and have not been set before 
    (e.g. `-DJDBC_DATABASE_USERNAME=username`) 
 3. Once running with `dev` active profile, the application will be available at:
@@ -111,8 +111,8 @@ Use the following steps to run the application locally:
    If you need to start your application on another port use `-Dserver.port=PORT` variable.
 
 ## Built With
-* [Spring boot](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) - A framework that provides a simpler and faster way to set up, 
-configure, and run both simple and web-based applications
+* [Spring boot](https://docs.spring.io/spring-boot/docs/2.1.1.RELEASE/reference/htmlsingle/) - A framework that provides 
+a simpler and faster way to set up, configure, and run both simple and web-based applications
 * [Thymeleaf](https://www.thymeleaf.org/) - A server-side Java template engine
 * [Vue.js](https://vuejs.org/v2/guide/) - An open-source JavaScript framework for building user interfaces and single-page applications
 * [Maven](https://maven.apache.org/) - Dependency Management
