@@ -1,0 +1,31 @@
+version: '3.4'
+services:
+  web-api:
+    container_name: photo-pond
+    image:
+    #network_mode: host
+    ports:
+      - 8095:8095
+    env_file:
+      - .env
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:8095/public/ping || exit 1"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 1m
+
+
+  autoheal:
+    image: willfarrell/autoheal
+    container_name: autoheal
+    restart: always
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+      - AUTOHEAL_INTERVAL=30               # check every 30 seconds
+      - AUTOHEAL_START_PERIOD=0            # wait 0 seconds before first health check
+      - AUTOHEAL_DEFAULT_STOP_TIMEOUT=10   # Docker waits max 10 seconds (the Docker default) for a container to stop before killing during restarts
+      - CURL_TIMEOUT=5                     # --max-time seconds for curl requests to Docker API
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
