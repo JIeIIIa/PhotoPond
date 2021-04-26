@@ -27,7 +27,7 @@
         <skip.integrationTest>false</skip.integrationTest>
         <integrationTest.mask>**/*IT.java</integrationTest.mask>
 
-        <commons-io.version>2.5</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <commons-text.version>1.6</commons-text.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <dbunit.version>2.6.0</dbunit.version>
